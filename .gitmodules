@@ -1,0 +1,9 @@
+[submodule "micropython"]
+	path = micropython
+	url = https://github.com/mocleiri/micropython.git
+	branch = tensorflow-1.13
+
+[submodule "tensorflow"]
+	path = tensorflow
+	url = https://github.com/tensorflow/tensorflow.git
+	branch = r2.4
