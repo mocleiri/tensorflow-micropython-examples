@@ -1,0 +1,32 @@
+diff --git a/PORT/include/bsd-queue.h b/PORT/include/bsd-queue.h
+index f28ad5d..4ebd3f3 120000
+--- a/PORT/include/bsd-queue.h
++++ b/PORT/include/bsd-queue.h
+@@ -1 +1 @@
+-queue.h
+\ No newline at end of file
++#include "queue.h"
+diff --git a/PORT/include/db.h b/PORT/include/db.h
+index 44c1ba4..9d62cba 120000
+--- a/PORT/include/db.h
++++ b/PORT/include/db.h
+@@ -1 +1 @@
+-../../include/db.h
+\ No newline at end of file
++#include "../../include/db.h"
+diff --git a/PORT/include/filevtable.h b/PORT/include/filevtable.h
+index 25306d1..7f8b252 120000
+--- a/PORT/include/filevtable.h
++++ b/PORT/include/filevtable.h
+@@ -1 +1 @@
+-../../include/filevtable.h
+\ No newline at end of file
++#include "../../include/filevtable.h"
+diff --git a/PORT/include/mpool.h b/PORT/include/mpool.h
+index 03f870c..4b685f6 120000
+--- a/PORT/include/mpool.h
++++ b/PORT/include/mpool.h
+@@ -1 +1 @@
+-../../include/mpool.h
+\ No newline at end of file
++#include "../../include/mpool.h"
