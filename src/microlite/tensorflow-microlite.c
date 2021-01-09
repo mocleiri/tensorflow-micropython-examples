@@ -4,6 +4,8 @@
 #include "py/objstr.h"
 
 #include "hello-world-microlite.h"
+#include "hello-world-model.h"
+
 #include "openmv-libtf.h"
 
 #include "tensorflow/lite/version.h"
@@ -21,9 +23,25 @@ STATIC void interpreter_print(const mp_print_t *print, mp_obj_t self_in, mp_prin
 }
 
 STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
-    mp_arg_check_num(n_args, n_kw, 2, 2, true);
+    mp_arg_check_num(n_args, n_kw, 1, 1, false);
+
+//    args:
+//      - model data
+//      - model data length
+//      - size of the tensor area
+
+    int tensor_area_len = mp_obj_get_int(args[0]);
+
+    // to start with just hard code to the hello-world model
+
     microlite_interpreter_obj_t *self = m_new_obj(microlite_interpreter_obj_t);
     self->base.type = &microlite_interpreter_type;
+
+//extern const unsigned char g_model[];
+//extern const int g_model_len;
+    self->model_data = mp_obj_new_bytearray_by_ref(g_model_len, g_model);
+
+    self->tensor_area = mp_obj_new_bytearray (tensor_area_len);
 
 //    self.model_data = mp_obj_new_bytes()
     // MP_DEFINE_STR_OBJ(obj_name, str)
