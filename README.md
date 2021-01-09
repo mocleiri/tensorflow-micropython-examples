@@ -29,6 +29,9 @@ esptool.py --chip esp32 --port /dev/ttyUSB0 write_flash -z 0x1000 esp32-20180511
 
 This firmware copied extensively from OpenMV.  Specifically starting from  
 
-https://github.com/openmv/tensorflow-lib/blob/master/libtf.cc
+
+https://github.com/openmv/tensorflow-lib/blob/343fe84c97f73d2fe17a0ed23540d06c782fafe7/libtf.cc
 and
-https://github.com/openmv/tensorflow-lib/blob/master/libtf.h
+https://github.com/openmv/tensorflow-lib/blob/343fe84c97f73d2fe17a0ed23540d06c782fafe7/libtf.h
+
+https://github.com/openmv/openmv/blob/3d9929eeae563c5b370ac86afa9216df50f0c079/src/omv/ports/stm32/modules/py_micro_speech.c

@@ -1,4 +1,5 @@
 # expects to be called from esp-idf docker container
+# This is the makefile to run when building micropython
 ESPIDF ?= /opt/esp/idf
 BOARD ?= GENERIC
 #PORT ?= /dev/ttyUSB0
@@ -8,5 +9,7 @@ CROSS_COMPILE ?= xtensa-esp32-elf-
 PYTHON2 = python3
 USER_C_MODULES=../../../src
 CFLAGS_EXTRA=-DMODULE_MICROLITE_ENABLED=1
+
+PART_SRC=/src/custom-partitions.csv
 
 include Makefile
