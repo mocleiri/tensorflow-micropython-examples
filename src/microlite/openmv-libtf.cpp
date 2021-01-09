@@ -1,8 +1,6 @@
 /* This file is part of the OpenMV project.
  * Copyright (c) 2013-2019 Ibrahim Abdelkader <iabdalkader@openmv.io> & Kwabena W. Agyeman <kwagyeman@openmv.io>
  * This work is licensed under the MIT license, see the file LICENSE for details.
- *
- * copied from github.com/openmv/tensorflow-lib/libtf.cc (at commit: 343fe84c97f73d2fe17a0ed23540d06c782fafe7)
  */
 
 #include "tensorflow/lite/micro/all_ops_resolver.h"
@@ -10,7 +8,9 @@
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/version.h"
+#include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.h"
 #include "openmv-libtf.h"
+#include <stdio.h>
 
 extern "C" {
 
@@ -215,7 +215,7 @@ extern "C" {
                      libtf_input_data_callback_t input_callback, void *input_callback_data,
                      libtf_output_data_callback_t output_callback, void *output_callback_data)
     {
-        tflite::MicroErrorReporter micro_error_reporter;
+         tflite::MicroErrorReporter micro_error_reporter;
         tflite::ErrorReporter *error_reporter = &micro_error_reporter;
 
         const tflite::Model *model = tflite::GetModel(model_data);
@@ -362,6 +362,30 @@ extern "C" {
             return 1;
         }
 
+        return 0;
+    }
+
+    int libtf_initialize_micro_features()
+    {
+        tflite::MicroErrorReporter micro_error_reporter;
+        tflite::ErrorReporter *error_reporter = &micro_error_reporter;
+
+        if (InitializeMicroFeatures(error_reporter) != kTfLiteOk) {
+            return 1;
+        }
+        return 0;
+    }
+
+    int libtf_generate_micro_features(const int16_t* input, int input_size,
+            int output_size, int8_t* output, size_t* num_samples_read)
+    {
+        tflite::MicroErrorReporter micro_error_reporter;
+        tflite::ErrorReporter *error_reporter = &micro_error_reporter;
+
+        if (GenerateMicroFeatures(error_reporter, input, input_size,
+                    output_size, output, num_samples_read) != kTfLiteOk) {
+            return 1;
+        }
         return 0;
     }
 }
