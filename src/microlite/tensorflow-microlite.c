@@ -79,11 +79,14 @@ STATIC void libtf_input_callback(TfLiteTensor *input) {
 
     float position = ((float)inference_count) / (float)1.0;
 
-    float x_val = position * kXrange;
+    float x = position * kXrange;
 
-    input->data.f[0] = x_val;
+    // Quantize the input from floating-point to integer
+      int8_t x_quantized = (int8_t)(x / input->params.scale + input->params.zero_point);
+      // Place the quantized input in the model's input tensor
+      input->data.int8[0] = x_quantized;
 
-    mp_printf(MP_PYTHON_PRINTER, "input value : %f\n", (double)x_val);
+    mp_printf(MP_PYTHON_PRINTER, "input value : %d\n", x_quantized);
 }
 
 // Callback to use the model output data byte array (laid out in [height][width][channel] order).
@@ -96,13 +99,16 @@ STATIC void libtf_output_callback(TfLiteTensor *output) { // Actual is float32 (
 //      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[1]);
 //      TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, output->type);
 
-    // Obtain the output value from the tensor
-    float value = output->data.f[0];
+    // Obtain the quantized output from model's output tensor
+    int8_t y_quantized = output->data.int8[0];
+
+    // Dequantize the output from integer to floating-point
+    float y = (y_quantized - output->params.zero_point) * output->params.scale;
 
     // Check that the output value is within 0.05 of the expected value
 //    TF_LITE_MICRO_EXPECT_NEAR(0., value, 0.05);
 
-    mp_printf(MP_PYTHON_PRINTER, "output value : %f\n", (double)value);
+    mp_printf(MP_PYTHON_PRINTER, "output value : %f\n", (double)y);
 
 }
 
