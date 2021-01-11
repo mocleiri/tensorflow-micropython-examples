@@ -1,5 +1,34 @@
 # Tensorflow Lite for Microcontrollers in Micropython
 
+The purpose of this project is to make a custom micropython firmware that installs tensorflow lite for micro controllers and allows for experimentation.
+
+# Status
+
+Tensorflow for ESP32 can be built and accessed by the microlite c/c++ module.  Inference is not yet working.
+
+I have ESP32 boards but it should work for other ports as well.
+
+# Roadmap
+
+First we need to get the hello world example running.  Then we need to investigate how to externalize the provisioning of:
+1. Model file
+2. Setup data on the input tensor.
+3. Extract data from output tensor.
+
+I want to come up with a way where native modules can be used to provide these details and then the base firmware contains the tensorflow-microlite.a library and some micropython module plumbing but the model details come in externally.
+
+If this works then we can look at using a similiar approach to externalize the Op's which would then allow shrinking the firmware and putting those items on the file system.
+
+## Implement 'hello-world' example
+
+At the moment things are hard coded but not working.
+
+## Implement 'micro-speech' example
+
+This firmware is based on https://github.com/miketeachman/micropython/tree/esp32-i2s which adds an i2s module which is needed for sampling audio for this example.
+
+Plan to copy the openmv py_micro_speech.c file which converts the audio sample into the correct input tensor values.
+
 
 # How to Build Tensorflow
 
