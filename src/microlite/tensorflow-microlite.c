@@ -2,6 +2,9 @@
 #include "py/runtime.h"
 #include "py/mpprint.h"
 #include "py/objstr.h"
+#include "py/objarray.h"
+#include "py/mpprint.h"
+#include "py/misc.h"
 
 #include "hello-world-microlite.h"
 #include "hello-world-model.h"
@@ -9,6 +12,7 @@
 #include "openmv-libtf.h"
 
 #include "tensorflow/lite/version.h"
+#include "tensorflow/lite/c/common.h"
 
 const mp_obj_type_t microlite_interpreter_type;
 
@@ -37,38 +41,69 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
     microlite_interpreter_obj_t *self = m_new_obj(microlite_interpreter_obj_t);
     self->base.type = &microlite_interpreter_type;
 
-//extern const unsigned char g_model[];
-//extern const int g_model_len;
+    // for now hard code the model to the hello world model
     self->model_data = mp_obj_new_bytearray_by_ref(g_model_len, g_model);
 
-    self->tensor_area = mp_obj_new_bytearray (tensor_area_len);
+    byte *tensor_area_buffer = m_new(byte, tensor_area_len);
 
-//    self.model_data = mp_obj_new_bytes()
-    // MP_DEFINE_STR_OBJ(obj_name, str)
-    // obj.h mp_obj_t mp_obj_new_bytes(const byte *data, size_t len);
-//    mp_obj_new_bytes
-//    self->a = mp_obj_get_int(args[0]);
-//    self->b = mp_obj_get_int(args[1]);
+    self->tensor_area = mp_obj_new_bytearray_by_ref (tensor_area_len, tensor_area_buffer);
+
+    mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d", g_model_len, tensor_area_len);
+
     return MP_OBJ_FROM_PTR(self);
 }
 
+// these 2 are for the hello world example:
+static int inference_count = 1;
+const float kXrange = 2.f * 3.14159265359f;
 
-STATIC void libtf_input_callback(void *callback_data,    void *model_input,
-                                            const unsigned int input_height,
-                                            const unsigned int input_width,
-                                            const unsigned int input_channels,
-                                            const bool signed_or_unsigned,
-                                            const bool is_float) {
+STATIC void libtf_input_callback(TfLiteTensor *input) {
+
+     mp_print_str(MP_PYTHON_PRINTER, "libtf_input_callback\n");
+
+     // copied from example: https://www.tensorflow.org/lite/microcontrollers/get_started
+
+     // Make sure the input has the properties we expect
+//     TF_LITE_MICRO_EXPECT_NE(nullptr, input);
+     // The property "dims" tells us the tensor's shape. It has one element for
+     // each dimension. Our input is a 2D tensor containing 1 element, so "dims"
+     // should have size 2.
+//     TF_LITE_MICRO_EXPECT_EQ(2, input->dims->size);
+     // The value of each element gives the length of the corresponding tensor.
+     // We should expect two single element tensors (one is contained within the
+     // other).
+//     TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[0]);
+//     TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[1]);
+     // The input is a 32 bit floating point value
+//     TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, input->type);
+
+    float position = ((float)inference_count) / (float)1.0;
+
+    float x_val = position * kXrange;
+
+    input->data.f[0] = x_val;
+
+    mp_printf(MP_PYTHON_PRINTER, "input value : %f\n", (double)x_val);
 }
 
 // Callback to use the model output data byte array (laid out in [height][width][channel] order).
-STATIC void libtf_output_callback(void *callback_data,
-                                             void *model_output,
-                                             const unsigned int output_height,
-                                             const unsigned int output_width,
-                                             const unsigned int output_channels,
-                                             const bool signed_or_unsigned, // True if output is int8_t ([-128:127]->[0:255]->[0.0f:1.0f]), False if output is uint8_t ([0:255]->[0:255]->[0.0f:1.0f]).
-                                             const bool is_float) { // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
+STATIC void libtf_output_callback(TfLiteTensor *output) { // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
+
+      mp_print_str(MP_PYTHON_PRINTER, "libtf_output_callback\n");
+
+//      TF_LITE_MICRO_EXPECT_EQ(2, output->dims->size);
+//      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[0]);
+//      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[1]);
+//      TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, output->type);
+
+    // Obtain the output value from the tensor
+    float value = output->data.f[0];
+
+    // Check that the output value is within 0.05 of the expected value
+//    TF_LITE_MICRO_EXPECT_NEAR(0., value, 0.05);
+
+    mp_printf(MP_PYTHON_PRINTER, "output value : %f\n", (double)value);
+
 }
 
 char input_callback_data[2048];
@@ -77,13 +112,15 @@ char output_callback_data[2048];
 STATIC mp_obj_t interpreter_invoke(mp_obj_t self_in) {
     microlite_interpreter_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
-    int code = libtf_invoke(self->model_data->data,
-                            self->tensor_area->data,
+    int code = libtf_invoke(self->model_data->items,
+                            self->tensor_area->items,
                             self->tensor_area->len,
                             &libtf_input_callback,
                             &input_callback_data,
                             &libtf_output_callback,
                             &output_callback_data);
+
+    inference_count += 1;
 
     return mp_obj_new_int(code);
 }
