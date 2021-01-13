@@ -1,3 +1,28 @@
+#
+# This file is part of the Tensorflow Micropython Examples Project.
+#
+# The MIT License (MIT)
+#
+# Copyright (c) 2021 Michael O'Cleirigh
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#/
 MICROLITE_MOD_DIR := $(USERMOD_DIR)
 
 # Add all C files to SRC_USERMOD.
@@ -5,6 +30,7 @@ SRC_USERMOD += $(MICROLITE_MOD_DIR)/tensorflow-microlite.c
 
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/openmv-libtf.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/hello-world-model.cpp
+SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/micropython-error-reporter.cpp
 
 
 # needed with c++
@@ -27,4 +53,4 @@ CXXFLAGS_USERMOD += -Wno-error=sign-compare
 
 override CFLAGS_EXTRA += -DMODULE_MICROLITE_ENABLED=1
 
-PART_SRC=partitions-2MiB.csv
+PART_SRC=$(MICROLITE_MOD_DIR)/../../partitions-2MiB.csv

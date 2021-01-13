@@ -12,6 +12,8 @@ extern "C" {
 
 #include "tensorflow/lite/c/common.h"
 
+#include "py/mpprint.h"
+
 // Call this first to get the shape of the model input.
 // Returns 0 on success and 1 on failure.
 // Errors are printed to stdout.
@@ -48,9 +50,7 @@ int libtf_invoke(const unsigned char *model_data, // TensorFlow Lite binary mode
                  unsigned char *tensor_arena, // As big as you can make it scratch buffer.
                  unsigned int tensor_arena_size, // Size of the above scratch buffer.
                  libtf_input_data_callback_t input_callback, // Callback to populate the model input data byte array.
-                 void *input_callback_data, // User data structure passed to input callback.
-                 libtf_output_data_callback_t output_callback, // Callback to use the model output data byte array.
-                 void *output_callback_data); // User data structure passed to output callback.
+                 libtf_output_data_callback_t output_callback); // Callback to use the model output data byte array.
 
 // Returns 0 on success and 1 on failure.
 // Errors are printed to stdout.

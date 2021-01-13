@@ -10,6 +10,7 @@
 #include "tensorflow/lite/version.h"
 #include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.h"
 #include "openmv-libtf.h"
+#include "micropython-error-reporter.h"
 #include <stdio.h>
 
 extern "C" {
@@ -212,10 +213,10 @@ extern "C" {
 
     int libtf_invoke(const unsigned char *model_data,
                      unsigned char *tensor_arena, unsigned int tensor_arena_size,
-                     libtf_input_data_callback_t input_callback, void *input_callback_data,
-                     libtf_output_data_callback_t output_callback, void *output_callback_data)
+                     libtf_input_data_callback_t input_callback,
+                     libtf_output_data_callback_t output_callback)
     {
-         tflite::MicroErrorReporter micro_error_reporter;
+         microlite::MicropythonErrorReporter micro_error_reporter;
         tflite::ErrorReporter *error_reporter = &micro_error_reporter;
 
         const tflite::Model *model = tflite::GetModel(model_data);
@@ -373,7 +374,7 @@ extern "C" {
 
     int libtf_initialize_micro_features()
     {
-        tflite::MicroErrorReporter micro_error_reporter;
+        microlite::MicropythonErrorReporter micro_error_reporter;
         tflite::ErrorReporter *error_reporter = &micro_error_reporter;
 
         if (InitializeMicroFeatures(error_reporter) != kTfLiteOk) {
@@ -385,7 +386,7 @@ extern "C" {
     int libtf_generate_micro_features(const int16_t* input, int input_size,
             int output_size, int8_t* output, size_t* num_samples_read)
     {
-        tflite::MicroErrorReporter micro_error_reporter;
+        microlite::MicropythonErrorReporter micro_error_reporter;
         tflite::ErrorReporter *error_reporter = &micro_error_reporter;
 
         if (GenerateMicroFeatures(error_reporter, input, input_size,

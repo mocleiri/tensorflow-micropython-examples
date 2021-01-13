@@ -23,26 +23,48 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#ifndef HELLO_WORLD_MICRO_LITE_H_
-#define HELLO_WORLD_MICRO_LITE_H_
+#include "micropython-error-reporter.h"
 
-#include "py/runtime.h"
-#include "py/obj.h"
-#include "py/objstr.h"
-
-#ifdef __cplusplus
-extern "C" {
+#if MICROPY_USE_INTERNAL_PRINTF
+#include "py/mpprint.h"
 #endif
 
-typedef struct _microlite_interpreter_obj_t {
-    mp_obj_base_t base;
-    mp_obj_array_t  *model_data;
-    mp_obj_array_t  *tensor_area;
-    int16_t inference_count;
-} microlite_interpreter_obj_t;
+#if CONFIG_IDF_TARGET_ESP32
+#include "esp_log.h"
+#endif
 
-#ifdef __cplusplus
+#include "py/qstr.h"
+
+#include <cstdarg>
+
+namespace microlite {
+
+int MicropythonErrorReporter::Report(const char* format, va_list args) {
+
+#if MICROPY_USE_INTERNAL_PRINTF
+    return mp_vprintf(MP_PYTHON_PRINTER, format, args);
+#else
+
+#if CONFIG_IDF_TARGET_ESP32
+
+  /*
+   Needed on ESP32 because MICROPY_USE_INTERNAL_PRINTF is not enabled.
+
+   So we don't have access to mp_vprintf used above.
+   */
+
+  esp_log_writev(esp_log_level_t.ESP_LOG_INFO, MP_QSTR_Microlite, format, args);
+
+#else
+    // need to find out what to use for other ports
+
+#endif
+
+#endif
+
+
+
+  return 0;
 }
-#endif
 
-#endif
+} // end microlite

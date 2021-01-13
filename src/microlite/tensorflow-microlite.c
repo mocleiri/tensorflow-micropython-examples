@@ -1,3 +1,28 @@
+/*
+ * This file is part of the Tensorflow Micropython Examples Project.
+ *
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2021 Michael O'Cleirigh
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 // Include MicroPython API.
 #include "py/runtime.h"
 #include "py/mpprint.h"
@@ -39,6 +64,9 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
     // to start with just hard code to the hello-world model
 
     microlite_interpreter_obj_t *self = m_new_obj(microlite_interpreter_obj_t);
+
+    self->inference_count = 0;
+
     self->base.type = &microlite_interpreter_type;
 
     // for now hard code the model to the hello world model
@@ -90,30 +118,35 @@ STATIC void libtf_input_callback(TfLiteTensor *input) {
 }
 
 // Callback to use the model output data byte array (laid out in [height][width][channel] order).
-STATIC void libtf_output_callback(TfLiteTensor *output) { // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
+STATIC void libtf_output_callback(TfLiteTensor *model_output) { // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
 
       mp_print_str(MP_PYTHON_PRINTER, "libtf_output_callback\n");
 
-//      TF_LITE_MICRO_EXPECT_EQ(2, output->dims->size);
+//      TF_LITE_MICRO_EXPECT_EQ(2, model_output->dims->size);
 //      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[0]);
 //      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[1]);
-//      TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, output->type);
+//      TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, model_output->type);
 
-    // Obtain the quantized output from model's output tensor
-    int8_t y_quantized = output->data.int8[0];
 
-    // Dequantize the output from integer to floating-point
-    float y = (y_quantized - output->params.zero_point) * output->params.scale;
+    if ((model_output->type != kTfLiteUInt8) && (model_output->type != kTfLiteInt8) && (model_output->type != kTfLiteFloat32)) {
+                mp_printf(MP_PYTHON_PRINTER, "Output model data type should be 8-bit quantized!\n");
+                return;
+      }
 
-    // Check that the output value is within 0.05 of the expected value
+    // Obtain the quantized model_output from model's model_output tensor
+    int8_t y_quantized = model_output->data.int8[0];
+
+    mp_printf(MP_PYTHON_PRINTER, "model_output y_quantized : %d\n", y_quantized);
+
+    // Dequantize the model_output from integer to floating-point
+    float y = (y_quantized - model_output->params.zero_point) * model_output->params.scale;
+
+    // Check that the model_output value is within 0.05 of the expected value
 //    TF_LITE_MICRO_EXPECT_NEAR(0., value, 0.05);
 
-    mp_printf(MP_PYTHON_PRINTER, "output value : %f\n", (double)y);
+    mp_printf(MP_PYTHON_PRINTER, "model_output value : %f\n", (double)y);
 
 }
-
-char input_callback_data[2048];
-char output_callback_data[2048];
 
 STATIC mp_obj_t interpreter_invoke(mp_obj_t self_in) {
     microlite_interpreter_obj_t *self = MP_OBJ_TO_PTR(self_in);
@@ -122,11 +155,9 @@ STATIC mp_obj_t interpreter_invoke(mp_obj_t self_in) {
                             self->tensor_area->items,
                             self->tensor_area->len,
                             &libtf_input_callback,
-                            &input_callback_data,
-                            &libtf_output_callback,
-                            &output_callback_data);
+                            &libtf_output_callback);
 
-    inference_count += 1;
+    self->inference_count += 1;
 
     return mp_obj_new_int(code);
 }

@@ -23,26 +23,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-#ifndef HELLO_WORLD_MICRO_LITE_H_
-#define HELLO_WORLD_MICRO_LITE_H_
+#ifndef MICROPYTHON__ERROR_REPORTER_H_
+#define MICROPYTHON__ERROR_REPORTER_H_
 
-#include "py/runtime.h"
-#include "py/obj.h"
-#include "py/objstr.h"
+#include <cstdarg>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include "tensorflow/lite/core/api/error_reporter.h"
+#include "tensorflow/lite/micro/compatibility.h"
 
-typedef struct _microlite_interpreter_obj_t {
-    mp_obj_base_t base;
-    mp_obj_array_t  *model_data;
-    mp_obj_array_t  *tensor_area;
-    int16_t inference_count;
-} microlite_interpreter_obj_t;
+namespace microlite {
 
-#ifdef __cplusplus
-}
-#endif
+class MicropythonErrorReporter : public tflite::ErrorReporter {
+ public:
+  ~MicropythonErrorReporter() override {}
+  int Report(const char* format, va_list args) override;
+
+ private:
+  TF_LITE_REMOVE_VIRTUAL_DELETE
+};
+
+}  // namespace tflite
 
 #endif
