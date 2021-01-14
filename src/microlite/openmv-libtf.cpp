@@ -17,19 +17,21 @@ extern "C" {
 
     static int libtf_align_tensor_arena(unsigned char **tensor_arena, unsigned int *tensor_arena_size)
     {
-        unsigned int alignment = ((unsigned int) (*tensor_arena)) % 16;
 
-        if (alignment) {
-
-            unsigned int fix = 16 - alignment;
-
-            if ((*tensor_arena_size) < fix) {
-                return 1;
-            }
-
-            (*tensor_arena) += fix;
-            (*tensor_arena_size) -= fix;
-        }
+    // unix port doesn't like this code
+//        unsigned int alignment = ((unsigned int) (*tensor_arena)) % 16;
+//
+//        if (alignment) {
+//
+//            unsigned int fix = 16 - alignment;
+//
+//            if ((*tensor_arena_size) < fix) {
+//                return 1;
+//            }
+//
+//            (*tensor_arena) += fix;
+//            (*tensor_arena_size) -= fix;
+//        }
 
         return 0;
     }

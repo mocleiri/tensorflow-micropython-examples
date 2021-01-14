@@ -45,10 +45,18 @@ CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow
 
 CFLAGS_USERMOD += -Wno-error=discarded-qualifiers
+# unix port
+CFLAGS_USERMOD += -Wno-error=unused-variable
+CFLAGS_USERMOD += -Wno-error=int-conversion
 
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow/tensorflow/lite/micro/tools/make/downloads/flatbuffers/include
 CXXFLAGS_USERMOD += -Wno-error=sign-compare
+
+# unix port
+CXXFLAGS_USERMOD += -Wno-error=deprecated-declarations
+#CXXFLAGS_USERMOD += -fno-permissive
+#CXXFLAGS_USERMOD += -Wwarning=permissive
 
 
 override CFLAGS_EXTRA += -DMODULE_MICROLITE_ENABLED=1

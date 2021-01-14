@@ -40,6 +40,40 @@ _TOOL=xtensa-esp32-elf-g++  CC_TOOL=xtensa-esp32-elf-gcc AR_TOOL=xtensa-esp32-el
  
 # How to Build Micropython
 
+## Build for Unix Port
+
+### Get docker setup
+
+```
+docker pull madduci/docker-linux-cpp
+
+```
+
+### Build Tensorflow for Unix
+```
+cd /src/tensorflow
+
+make -f tensorflow/lite/micro/tools/make/Makefile
+
+# should put this into the script
+cp tensorflow/lite/micro/tools/make/gen/linux_x86_64/lib/libtensorflow-microlite.a /src/lib
+
+```
+
+### Build Micropyton
+
+```
+cd /src/micropython
+
+git submodule update --init lib/axtls
+
+cd ports/unix
+
+make -f /src/src/GNUmakefile-unix V=1
+
+```
+
+## Build for ESP32
 ```
 make -f /src/src/GNUmakefile V=1 PART_SRC=/src/custom-partitions.csv MICROPY_PY_BLUETOOTH=0 M
 ICROPY_BLUETOOTH_NIMBLE=0 MICROPY_BLUETOOTH_NIMBLE_BINDINGS_ONLY=0 CONFIG_ESP32_SPIRAM_SUPPORT=n all
