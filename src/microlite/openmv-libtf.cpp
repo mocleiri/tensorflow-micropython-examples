@@ -216,7 +216,7 @@ extern "C" {
                      libtf_input_data_callback_t input_callback,
                      libtf_output_data_callback_t output_callback)
     {
-         microlite::MicropythonErrorReporter micro_error_reporter;
+        microlite::MicropythonErrorReporter micro_error_reporter;
         tflite::ErrorReporter *error_reporter = &micro_error_reporter;
 
         const tflite::Model *model = tflite::GetModel(model_data);

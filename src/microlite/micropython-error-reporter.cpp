@@ -25,18 +25,32 @@
  */
 #include "micropython-error-reporter.h"
 
-#include "py/mpprint.h"
-
-#include "py/qstr.h"
-
 #include <cstdarg>
 
 namespace microlite {
 
-const char *MICROLITE = "Microlite";
+int MicropythonErrorReporter::Report(const char* format, ...) {
+
+    va_list args;
+    va_start(args, format);
+    MicropythonErrorReporter::Report(format, args);
+    va_end(args);
+
+    return 0;
+
+}
 
 int MicropythonErrorReporter::Report(const char* format, va_list args) {
-    return mp_printf(MP_PYTHON_PRINTER, format, args);
+
+    static constexpr int kMaxLogLen = 256;
+    char log_buffer[kMaxLogLen];
+
+    MicroVsnprintf(log_buffer, kMaxLogLen, format, args);
+
+    mp_printf(MP_PYTHON_PRINTER, log_buffer);
+    mp_printf(MP_PYTHON_PRINTER, log_buffer);
+
+    return 0;
 
 }
 

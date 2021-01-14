@@ -30,6 +30,7 @@
 
 #include "tensorflow/lite/core/api/error_reporter.h"
 #include "tensorflow/lite/micro/compatibility.h"
+#include "tensorflow/lite/micro/micro_string.h"
 
 namespace microlite {
 
@@ -37,11 +38,20 @@ class MicropythonErrorReporter : public tflite::ErrorReporter {
  public:
   ~MicropythonErrorReporter() override {}
   int Report(const char* format, va_list args) override;
+  int Report(const char* format, ...);
 
  private:
   TF_LITE_REMOVE_VIRTUAL_DELETE
 };
 
 }  // namespace tflite
+
+extern "C" {
+ // added the micropython functions used by MicropythonErrorReporter implementation here to prevent the c++ compiler
+ // from mangling the names which then prevents the linker from working properly.
+#include "py/mpprint.h"
+int mp_printf(const mp_print_t *print, const char *fmt, ...);
+int mp_vprintf(const mp_print_t *print, const char *fmt, va_list args);
+}
 
 #endif
