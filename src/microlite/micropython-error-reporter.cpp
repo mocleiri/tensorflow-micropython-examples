@@ -25,13 +25,7 @@
  */
 #include "micropython-error-reporter.h"
 
-#if MICROPY_USE_INTERNAL_PRINTF
 #include "py/mpprint.h"
-#endif
-
-#if CONFIG_IDF_TARGET_ESP32
-#include "esp_log.h"
-#endif
 
 #include "py/qstr.h"
 
@@ -39,32 +33,11 @@
 
 namespace microlite {
 
+const char *MICROLITE = "Microlite";
+
 int MicropythonErrorReporter::Report(const char* format, va_list args) {
+    return mp_printf(MP_PYTHON_PRINTER, format, args);
 
-#if MICROPY_USE_INTERNAL_PRINTF
-    return mp_vprintf(MP_PYTHON_PRINTER, format, args);
-#else
-
-#if CONFIG_IDF_TARGET_ESP32
-
-  /*
-   Needed on ESP32 because MICROPY_USE_INTERNAL_PRINTF is not enabled.
-
-   So we don't have access to mp_vprintf used above.
-   */
-
-  esp_log_writev(esp_log_level_t.ESP_LOG_INFO, MP_QSTR_Microlite, format, args);
-
-#else
-    // need to find out what to use for other ports
-
-#endif
-
-#endif
-
-
-
-  return 0;
 }
 
 } // end microlite
