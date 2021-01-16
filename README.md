@@ -107,6 +107,17 @@ use 'update-microlite.sh' script to copy the tensorflow static library into the 
 
 # How to Build Micropython
 
+## Build mpy-cross
+```
+git submodule update --recursive
+
+cd micropython/mpy-cross
+
+make
+```
+
+Make sure to use the correct cross compiler if needed.
+
 ## Build for Unix 
 
 
@@ -114,6 +125,8 @@ use 'update-microlite.sh' script to copy the tensorflow static library into the 
 cd /src/micropython
 
 git submodule update --init lib/axtls
+
+git submodule update --init lib/berkeley-db-1.xx
 
 cd ports/unix
 
