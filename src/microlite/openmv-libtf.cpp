@@ -309,10 +309,10 @@ extern "C" {
 
         TfLiteTensor *model_output = interpreter.output(0);
 
-        if ((model_output->type != kTfLiteUInt8) && (model_output->type != kTfLiteInt8) && (model_output->type != kTfLiteFloat32)) {
-            error_reporter->Report("Output model data type should be 8-bit quantized!");
-            return 1;
-        }
+        // if ((model_output->type != kTfLiteUInt8) && (model_output->type != kTfLiteInt8) && (model_output->type != kTfLiteFloat32)) {
+        //     error_reporter->Report("Output model data type should be 8-bit quantized!");
+        //     return 1;
+        // }
 
 //        if (model_output->dims->size == 1) {
 //

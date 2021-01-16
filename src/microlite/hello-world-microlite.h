@@ -39,6 +39,8 @@ typedef struct _microlite_interpreter_obj_t {
     mp_obj_array_t  *model_data;
     mp_obj_array_t  *tensor_area;
     int16_t inference_count;
+    mp_obj_t input_callback;
+    mp_obj_t output_callback;
 } microlite_interpreter_obj_t;
 
 #ifdef __cplusplus

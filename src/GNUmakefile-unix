@@ -12,4 +12,6 @@ CFLAGS_EXTRA=-DMODULE_MICROLITE_ENABLED=1
 
 #PART_SRC=/src/custom-partitions.csv
 
+DEBUG=true
+
 include Makefile

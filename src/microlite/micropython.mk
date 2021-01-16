@@ -37,7 +37,7 @@ SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/micropython-error-reporter.cpp
 LDFLAGS_USERMOD += -lstdc++
 
 # this path is valid if used within the esp-idf-4.0.1 docker container
-LDFLAGS_USERMOD += /src/lib/libtensorflow-microlite.a
+LDFLAGS_USERMOD += $(USERMOD_DIR)/../../lib/libtensorflow-microlite.a
 
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)
@@ -45,13 +45,16 @@ CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow
 
 CFLAGS_USERMOD += -Wno-error=discarded-qualifiers
+
 # unix port
 CFLAGS_USERMOD += -Wno-error=unused-variable
 CFLAGS_USERMOD += -Wno-error=int-conversion
+CFLAGS_USERMOD += -g
 
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow/tensorflow/lite/micro/tools/make/downloads/flatbuffers/include
 CXXFLAGS_USERMOD += -Wno-error=sign-compare
+CXXFLAGS_USERMOD += -g
 
 # unix port
 CXXFLAGS_USERMOD += -Wno-error=deprecated-declarations
