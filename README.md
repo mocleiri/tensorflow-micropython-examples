@@ -86,12 +86,14 @@ There are helper scripts:
 ```
 cd /src/tensorflow
 
-make -f tensorflow/lite/micro/tools/make/Makefile
+make -f tensorflow/lite/micro/tools/make/Makefile [BUILD_TYPE=debug]
 
 # should put this into the script
 cp tensorflow/lite/micro/tools/make/gen/linux_x86_64/lib/libtensorflow-microlite.a /src/lib
 
 ```
+
+Specify BUILD_TYPE=debug if you want to be able to debug the resultant code. 
 
 ## Build for ESP32
 
