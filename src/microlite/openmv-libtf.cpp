@@ -9,6 +9,8 @@
 #include "tensorflow/lite/schema/schema_generated.h"
 #include "tensorflow/lite/version.h"
 #include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.h"
+
+#include "tensorflow-microlite.h"
 #include "openmv-libtf.h"
 #include "micropython-error-reporter.h"
 #include <stdio.h>
@@ -213,28 +215,29 @@ extern "C" {
 //        }
 //    }
 
-    int libtf_invoke(const unsigned char *model_data,
-                     unsigned char *tensor_arena, unsigned int tensor_arena_size,
-                     libtf_input_data_callback_t input_callback,
-                     libtf_output_data_callback_t output_callback)
+    int libtf_invoke(microlite_interpreter_obj_t *microlite_interpretor)
     {
         microlite::MicropythonErrorReporter micro_error_reporter;
         tflite::ErrorReporter *error_reporter = &micro_error_reporter;
 
-        const tflite::Model *model = tflite::GetModel(model_data);
+        const tflite::Model *model = tflite::GetModel(microlite_interpretor->model_data->items);
 
         if (model->version() != TFLITE_SCHEMA_VERSION) {
             error_reporter->Report("Model provided is schema version is not equal to supported version!");
             return 1;
         }
 
-        if (libtf_align_tensor_arena(&tensor_arena, &tensor_arena_size)) {
+        if (libtf_align_tensor_arena((unsigned char **)&microlite_interpretor->tensor_area->items, (unsigned int*)&microlite_interpretor->tensor_area->len)) {
             error_reporter->Report("Align failed!");
             return 1;
         }
 
         tflite::AllOpsResolver resolver;
-        tflite::MicroInterpreter interpreter(model, resolver, tensor_arena, tensor_arena_size, error_reporter);
+        tflite::MicroInterpreter interpreter(model, 
+                                             resolver, 
+                                             (unsigned char*)microlite_interpretor->tensor_area->items, 
+                                             microlite_interpretor->tensor_area->len, 
+                                             error_reporter);
 
         if (interpreter.AllocateTensors() != kTfLiteOk) {
             error_reporter->Report("AllocateTensors() failed!");
@@ -248,7 +251,7 @@ extern "C" {
             return 1;
         }
 
-        input_callback(model_input);
+        mp_call_function_2(microlite_interpretor->input_callback, microlite_interpretor, model_input);
 
 
 // commented out since these are for the person detection example
@@ -369,7 +372,7 @@ extern "C" {
 //            return 1;
 //        }
 
-        output_callback(model_output);
+        mp_call_function_2(microlite_interpretor->output_callback, microlite_interpretor, model_output);
 
         return 0;
     }

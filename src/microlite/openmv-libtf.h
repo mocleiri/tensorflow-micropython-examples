@@ -10,8 +10,10 @@
 extern "C" {
 #endif
 
+
 #include "tensorflow/lite/c/common.h"
 
+#include "py/runtime.h"
 #include "py/mpprint.h"
 
 // Call this first to get the shape of the model input.
@@ -46,11 +48,7 @@ typedef void (*libtf_output_data_callback_t)(TfLiteTensor *output_tensor); // Ac
 
 // Returns 0 on success and 1 on failure.
 // Errors are printed to stdout.
-int libtf_invoke(const unsigned char *model_data, // TensorFlow Lite binary model (8-bit quant).
-                 unsigned char *tensor_arena, // As big as you can make it scratch buffer.
-                 unsigned int tensor_arena_size, // Size of the above scratch buffer.
-                 libtf_input_data_callback_t input_callback, // Callback to populate the model input data byte array.
-                 libtf_output_data_callback_t output_callback); // Callback to use the model output data byte array.
+int libtf_invoke(microlite_interpreter_obj_t *interpreter); // Callback to use the model output data byte array.
 
 // Returns 0 on success and 1 on failure.
 // Errors are printed to stdout.

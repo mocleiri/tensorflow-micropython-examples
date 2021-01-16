@@ -26,13 +26,17 @@
 #ifndef HELLO_WORLD_MICRO_LITE_H_
 #define HELLO_WORLD_MICRO_LITE_H_
 
-#include "py/runtime.h"
-#include "py/obj.h"
-#include "py/objstr.h"
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "py/runtime.h"
+#include "py/obj.h"
+#include "py/objstr.h"
+#include "py/objarray.h"
+
 
 typedef struct _microlite_interpreter_obj_t {
     mp_obj_base_t base;
@@ -48,3 +52,4 @@ typedef struct _microlite_interpreter_obj_t {
 #endif
 
 #endif
+

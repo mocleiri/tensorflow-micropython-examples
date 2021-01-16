@@ -32,7 +32,8 @@
 #include "py/qstr.h"
 #include "py/misc.h"
 
-#include "hello-world-microlite.h"
+#include "tensorflow-microlite.h"
+
 #include "hello-world-model.h"
 
 #include "openmv-libtf.h"
@@ -101,85 +102,81 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
 static int inference_count = 1;
 const float kXrange = 2.f * 3.14159265359f;
 
-STATIC void libtf_input_callback(TfLiteTensor *input) {
+// STATIC void libtf_input_callback(TfLiteTensor *input) {
 
-     mp_print_str(MP_PYTHON_PRINTER, "libtf_input_callback\n");
+//      mp_print_str(MP_PYTHON_PRINTER, "libtf_input_callback\n");
 
-     // copied from example: https://www.tensorflow.org/lite/microcontrollers/get_started
+//      // copied from example: https://www.tensorflow.org/lite/microcontrollers/get_started
 
-     // Make sure the input has the properties we expect
-//     TF_LITE_MICRO_EXPECT_NE(nullptr, input);
-     // The property "dims" tells us the tensor's shape. It has one element for
-     // each dimension. Our input is a 2D tensor containing 1 element, so "dims"
-     // should have size 2.
-//     TF_LITE_MICRO_EXPECT_EQ(2, input->dims->size);
-     // The value of each element gives the length of the corresponding tensor.
-     // We should expect two single element tensors (one is contained within the
-     // other).
-//     TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[0]);
-//     TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[1]);
-     // The input is a 32 bit floating point value
-//     TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, input->type);
+//      // Make sure the input has the properties we expect
+// //     TF_LITE_MICRO_EXPECT_NE(nullptr, input);
+//      // The property "dims" tells us the tensor's shape. It has one element for
+//      // each dimension. Our input is a 2D tensor containing 1 element, so "dims"
+//      // should have size 2.
+// //     TF_LITE_MICRO_EXPECT_EQ(2, input->dims->size);
+//      // The value of each element gives the length of the corresponding tensor.
+//      // We should expect two single element tensors (one is contained within the
+//      // other).
+// //     TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[0]);
+// //     TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[1]);
+//      // The input is a 32 bit floating point value
+// //     TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, input->type);
 
-    if (model_input->type != kTfLiteFloat32) {
-            mp_print_str(MP_PYTHON_PRINTER, "Expected model_input to be kTFLiteFloat32, was %d", model_input->type);
-            // TODO find a way to allow this method to terminate and then have that stop inference in the calling method scope
-            return;
-    }
+//     if (model_input->type != kTfLiteFloat32) {
+//             mp_print_str(MP_PYTHON_PRINTER, "Expected model_input to be kTFLiteFloat32, was %d", model_input->type);
+//             // TODO find a way to allow this method to terminate and then have that stop inference in the calling method scope
+//             return;
+//     }
 
-    float position = ((float)inference_count) / (float)1.0;
+//     float position = ((float)inference_count) / (float)1.0;
 
-    float x = position * kXrange;
+//     float x = position * kXrange;
 
-    // // Quantize the input from floating-point to integer
-    //   int8_t x_quantized = (int8_t)(x / input->params.scale + input->params.zero_point);
-    //   // Place the quantized input in the model's input tensor
-      input->data.f[0] = x;
+//     // // Quantize the input from floating-point to integer
+//     //   int8_t x_quantized = (int8_t)(x / input->params.scale + input->params.zero_point);
+//     //   // Place the quantized input in the model's input tensor
+//       input->data.f[0] = x;
 
-    mp_printf(MP_PYTHON_PRINTER, "input value : %f\n", x);
-}
+//     mp_printf(MP_PYTHON_PRINTER, "input value : %f\n", x);
+// }
 
-// Callback to use the model output data byte array (laid out in [height][width][channel] order).
-STATIC void libtf_output_callback(TfLiteTensor *model_output) { // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
+// // Callback to use the model output data byte array (laid out in [height][width][channel] order).
+// STATIC void libtf_output_callback(TfLiteTensor *model_output) { // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
 
-      mp_print_str(MP_PYTHON_PRINTER, "libtf_output_callback\n");
+//       mp_print_str(MP_PYTHON_PRINTER, "libtf_output_callback\n");
 
-//      TF_LITE_MICRO_EXPECT_EQ(2, model_output->dims->size);
-//      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[0]);
-//      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[1]);
-//      TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, model_output->type);
+// //      TF_LITE_MICRO_EXPECT_EQ(2, model_output->dims->size);
+// //      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[0]);
+// //      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[1]);
+// //      TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, model_output->type);
 
 
-    if (model_output->type != kTfLiteFloat32) {
-        mp_printf(MP_PYTHON_PRINTER, "Output model data type should be kTfLiteFloat32\n");
-        return;
-      }
+//     if (model_output->type != kTfLiteFloat32) {
+//         mp_printf(MP_PYTHON_PRINTER, "Output model data type should be kTfLiteFloat32\n");
+//         return;
+//       }
 
-    // // Obtain the quantized model_output from model's model_output tensor
-    // int8_t y_quantized = model_output->data.int8[0];
+//     // // Obtain the quantized model_output from model's model_output tensor
+//     // int8_t y_quantized = model_output->data.int8[0];
 
-    // mp_printf(MP_PYTHON_PRINTER, "model_output y_quantized : %d\n", y_quantized);
+//     // mp_printf(MP_PYTHON_PRINTER, "model_output y_quantized : %d\n", y_quantized);
 
-    // // Dequantize the model_output from integer to floating-point
-    // float y = (y_quantized - model_output->params.zero_point) * model_output->params.scale;
+//     // // Dequantize the model_output from integer to floating-point
+//     // float y = (y_quantized - model_output->params.zero_point) * model_output->params.scale;
 
-    float y = model_output->data.f[0];
+//     float y = model_output->data.f[0];
 
-    // Check that the model_output value is within 0.05 of the expected value
-//    TF_LITE_MICRO_EXPECT_NEAR(0., value, 0.05);
+//     // Check that the model_output value is within 0.05 of the expected value
+// //    TF_LITE_MICRO_EXPECT_NEAR(0., value, 0.05);
 
-    mp_printf(MP_PYTHON_PRINTER, "model_output value : %f\n", (double)y);
+//     mp_printf(MP_PYTHON_PRINTER, "model_output value : %f\n", (double)y);
 
-}
+// }
 
 STATIC mp_obj_t interpreter_invoke(mp_obj_t self_in) {
     microlite_interpreter_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
-    int code = libtf_invoke(self->model_data->items,
-                            self->tensor_area->items,
-                            self->tensor_area->len,
-                            &self->input_callback,
-                            &self->output_callback);
+    int code = libtf_invoke(self);
 
     self->inference_count += 1;
 
