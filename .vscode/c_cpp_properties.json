@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu17",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "gcc-x64",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/src",
+                    "${workspaceFolder}/lib",
+                    "${workspaceFolder}/micropython",
+                    "${workspaceFolder}/tensorflow"
+                ]
+            }
+        }
+    ],
+    "version": 4
+}

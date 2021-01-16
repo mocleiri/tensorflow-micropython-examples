@@ -1,0 +1,62 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Build Tensorflow - Unix",
+			"type": "shell",
+			"command": "make -f tensorflow/lite/micro/tools/make/Makefile BUILD_TYPE=debug clean all",
+			"options": {
+				"cwd": "${workspaceFolder}/tensorflow"
+			  },
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Build Micropython - Unix",
+			"type": "shell",
+			"command": "make -f /home/mike/git/tensorflow-micropython-examples/src/GNUmakefile-unix V=1",
+			"options": {
+				"cwd": "${workspaceFolder}/micropython/ports/unix"
+			  },
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
+			"label": "Clean Micropython - Unix",
+			"type": "shell",
+			"command": "make -f /home/mike/git/tensorflow-micropython-examples/src/GNUmakefile-unix V=1 clean",
+			"options": {
+				"cwd": "${workspaceFolder}/micropython/ports/unix"
+			  },
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		}
+	]
+}
