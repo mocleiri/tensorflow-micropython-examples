@@ -1,6 +1,7 @@
 # Microlite implementation of the tensorflow hello-world example
 # https://github.com/tensorflow/tensorflow/tree/master/tensorflow/lite/micro/examples/hello_world
 import microlite
+import model
 
 counter = 1
 
@@ -52,7 +53,7 @@ def output_callback (microlite_interpreter):
 
 
 
-interp = microlite.interpreter(2048, input_callback, output_callback)
+interp = microlite.interpreter(model.hello_world_model,2048, input_callback, output_callback)
 
 print ("time step,y")
 for c in range(1000):

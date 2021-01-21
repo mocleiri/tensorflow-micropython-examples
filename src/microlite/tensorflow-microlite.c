@@ -41,6 +41,7 @@
 #include "tensorflow/lite/version.h"
 #include "tensorflow/lite/c/common.h"
 
+const mp_obj_type_t microlite_model_type;
 const mp_obj_type_t microlite_interpreter_type;
 const mp_obj_type_t microlite_tensor_type;
 
@@ -197,18 +198,22 @@ STATIC void interpreter_print(const mp_print_t *print, mp_obj_t self_in, mp_prin
 }
 
 STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
-    mp_arg_check_num(n_args, n_kw, 3, 3, false);
+    mp_arg_check_num(n_args, n_kw, 4, 4, false);
 
 //    args:
+//      - model
+
 //      - size of the tensor area
 //      - input callback function
 //      - output callback function
 
-    int tensor_area_len = mp_obj_get_int(args[0]);
+    mp_obj_array_t *model = MP_OBJ_TO_PTR (args[0]);
 
-    mp_obj_t input_callback_fn = args[1];
+    int tensor_area_len = mp_obj_get_int(args[1]);
 
-    mp_obj_t output_callback_fn = args[2];
+    mp_obj_t input_callback_fn = args[2];
+
+    mp_obj_t output_callback_fn = args[3];
 
     if (input_callback_fn != mp_const_none && !mp_obj_is_callable(input_callback_fn)) {
         mp_raise_ValueError(MP_ERROR_TEXT("Invalid Input Callback Handler"));
@@ -229,24 +234,23 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
 
     self->base.type = &microlite_interpreter_type;
 
+
+
     // for now hard code the model to the hello world model
-    self->model_data = mp_obj_new_bytearray_by_ref(g_model_len, g_model);
+    // self->model_data = mp_obj_new_bytearray_by_ref(g_model_len, g_model);
+
+    self->model_data = model;
 
     byte *tensor_area_buffer = m_new(byte, tensor_area_len);
 
     self->tensor_area = mp_obj_new_bytearray_by_ref (tensor_area_len, tensor_area_buffer);
 
-    mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d\n", g_model_len, tensor_area_len);
+    mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d\n", self->model_data->len, tensor_area_len);
 
     libtf_init(self);
 
     return MP_OBJ_FROM_PTR(self);
 }
-
-// these 2 are for the hello world example:
-// static int inference_count = 1;
-// const float kXrange = 2.f * 3.14159265359f;
-
 
 // called before passing the tensor to the callback
 STATIC mp_obj_t interpreter_get_input_tensor(mp_obj_t self_in, mp_obj_t index_obj) {
@@ -321,6 +325,88 @@ const mp_obj_type_t microlite_interpreter_type = {
 };
 
 
+// model class
+STATIC void model_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
+    (void)kind;
+    microlite_model_obj_t *self = MP_OBJ_TO_PTR(self_in);
+    mp_print_str(print, "model(size=");
+
+    mp_print_str(print, mp_obj_new_int(self->model_data->len));
+
+    mp_print_str(print, ")");
+}
+
+STATIC mp_obj_t model_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
+    mp_arg_check_num(n_args, n_kw, 4, 4, false);
+
+//    args:
+//      - model
+
+//      - size of the tensor area
+//      - input callback function
+//      - output callback function
+
+    
+    // mp_obj_array_t model = MP_OBJ_FROM_PTR (args[0]);
+
+    int tensor_area_len = mp_obj_get_int(args[1]);
+
+    mp_obj_t input_callback_fn = args[2];
+
+    mp_obj_t output_callback_fn = args[3];
+
+    if (input_callback_fn != mp_const_none && !mp_obj_is_callable(input_callback_fn)) {
+        mp_raise_ValueError(MP_ERROR_TEXT("Invalid Input Callback Handler"));
+    }
+
+    if (output_callback_fn != mp_const_none && !mp_obj_is_callable(output_callback_fn)) {
+        mp_raise_ValueError(MP_ERROR_TEXT("Invalid Output Callback Handler"));
+    }
+
+    // to start with just hard code to the hello-world model
+
+    microlite_interpreter_obj_t *self = m_new_obj(microlite_interpreter_obj_t);
+
+    self->input_callback = input_callback_fn;
+    self->output_callback = output_callback_fn;
+
+    self->inference_count = 0;
+
+    self->base.type = &microlite_interpreter_type;
+
+
+
+    // for now hard code the model to the hello world model
+    // self->model_data = mp_obj_new_bytearray_by_ref(g_model_len, g_model);
+    // self->model_data = model;
+
+    byte *tensor_area_buffer = m_new(byte, tensor_area_len);
+
+    self->tensor_area = mp_obj_new_bytearray_by_ref (tensor_area_len, tensor_area_buffer);
+
+    mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d\n", g_model_len, tensor_area_len);
+
+    libtf_init(self);
+
+    return MP_OBJ_FROM_PTR(self);
+}
+// STATIC const mp_rom_map_elem_t model_locals_dict_table[] = {
+//     { MP_ROM_QSTR(MP_QSTR_invoke), MP_ROM_PTR(&microlite_interpreter_invoke) },
+//     { MP_ROM_QSTR(MP_QSTR_getInputTensor), MP_ROM_PTR(&microlite_interpreter_get_input_tensor) },
+//     { MP_ROM_QSTR(MP_QSTR_getOutputTensor), MP_ROM_PTR(&microlite_interpreter_get_output_tensor) },
+// };
+
+// STATIC MP_DEFINE_CONST_DICT(interpreter_locals_dict, interpreter_locals_dict_table);
+
+const mp_obj_type_t microlite_model_type = {
+    { &mp_type_type },
+    .name = MP_QSTR_model,
+    .print = model_print,
+    .make_new = model_make_new,
+    .locals_dict = (mp_obj_dict_t*)&interpreter_locals_dict,
+};
+
+
 // main microlite module
 
 // needs to be manually updated when the firmware is built.
@@ -336,7 +422,8 @@ STATIC const mp_rom_map_elem_t microlite_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_microlite) },
     { MP_ROM_QSTR(MP_QSTR___version__), MP_ROM_PTR(&microlite_version_string_obj) },
     { MP_ROM_QSTR(MP_QSTR_interpreter), (mp_obj_t)&microlite_interpreter_type },
-    { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_tensor_type }
+    { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_tensor_type },
+    { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_model_type }
 };
 STATIC MP_DEFINE_CONST_DICT(microlite_module_globals, microlite_module_globals_table);
 
