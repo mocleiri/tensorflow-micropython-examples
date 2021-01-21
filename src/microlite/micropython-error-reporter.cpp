@@ -48,7 +48,7 @@ int MicropythonErrorReporter::Report(const char* format, va_list args) {
     MicroVsnprintf(log_buffer, kMaxLogLen, format, args);
 
     mp_printf(MP_PYTHON_PRINTER, log_buffer);
-    mp_printf(MP_PYTHON_PRINTER, log_buffer);
+    mp_printf(MP_PYTHON_PRINTER, "\n");
 
     return 0;
 

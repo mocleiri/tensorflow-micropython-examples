@@ -1,6 +1,22 @@
 {
     "C_Cpp.errorSquiggles": "Disabled",
     "files.associations": {
-        "any": "c"
+        "any": "c",
+        "variant": "c",
+        "*.inc": "cpp",
+        "*.tcc": "cpp",
+        "bitset": "cpp",
+        "string": "cpp",
+        "vector": "cpp",
+        "string_view": "cpp",
+        "iomanip": "cpp",
+        "istream": "cpp",
+        "limits": "cpp",
+        "ostream": "cpp",
+        "ratio": "cpp",
+        "sstream": "cpp",
+        "streambuf": "cpp",
+        "functional": "cpp",
+        "regex": "cpp"
     }
 }

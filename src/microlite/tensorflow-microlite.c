@@ -42,6 +42,149 @@
 #include "tensorflow/lite/c/common.h"
 
 const mp_obj_type_t microlite_interpreter_type;
+const mp_obj_type_t microlite_tensor_type;
+
+// - microlite tensor
+STATIC void tensor_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
+    (void)kind;
+    microlite_tensor_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    TfLiteTensor * tensor = (TfLiteTensor *)self->tf_tensor;
+
+    mp_print_str(print, "tensor(type=");
+
+    mp_print_str(print, TfLiteTypeGetName(tensor->type));
+
+    int size = tensor->dims->size;
+
+    mp_printf(print, ", dims->size=%d\n", size);
+
+    mp_print_str(print, ")\n");
+}
+
+STATIC mp_obj_t tensor_get_value (mp_obj_t self_in, mp_obj_t index_obj) {
+
+    microlite_tensor_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    TfLiteTensor * tensor = (TfLiteTensor *)self->tf_tensor;
+
+    if (tensor->type == kTfLiteFloat32) {
+        mp_int_t index = mp_obj_int_get_checked(index_obj);
+
+        float f_value = tensor->data.f[index];
+
+        return mp_obj_new_float_from_f(f_value);
+    }
+    else if (tensor->type == kTfLiteInt8) {
+        mp_int_t index = mp_obj_int_get_checked(index_obj);
+
+        int8_t int8_value = tensor->data.int8[index];
+
+        return MP_OBJ_NEW_SMALL_INT(int8_value);
+    }
+    else {
+        mp_raise_TypeError("Unsupported Tensor Type");
+    }
+
+    return mp_const_none;
+}
+
+MP_DEFINE_CONST_FUN_OBJ_2(microlite_tensor_get_value, tensor_get_value);
+
+STATIC mp_obj_t tensor_set_value (mp_obj_t self_in, mp_obj_t index_obj, mp_obj_t value) {
+    
+    mp_int_t index = mp_obj_int_get_checked(index_obj);
+
+    microlite_tensor_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    TfLiteTensor * tensor = (TfLiteTensor *)self->tf_tensor;
+
+    if (tensor->type == kTfLiteFloat32) {
+        tensor->data.f[index] = mp_obj_get_float_to_f(value);
+    }
+    else if (tensor->type == kTfLiteInt8) {
+        tensor->data.int8[index] = MP_OBJ_SMALL_INT_VALUE(value);
+    }
+    else {
+        mp_raise_TypeError("Unsupported Tensor Type");
+    }
+
+    return MP_OBJ_FROM_PTR(self);
+}
+
+MP_DEFINE_CONST_FUN_OBJ_3(microlite_tensor_set_value, tensor_set_value);
+
+STATIC mp_obj_t tensor_quantize_float_to_int8 (mp_obj_t self_in, mp_obj_t float_obj) {
+    
+    if (!mp_obj_is_float(float_obj)) {
+         mp_raise_TypeError("Expecting Parameter of float type");
+        // return mp_const_none;
+    }
+
+    microlite_tensor_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    TfLiteTensor * tensor = (TfLiteTensor *)self->tf_tensor;
+
+    if (tensor->type != kTfLiteInt8) {
+        mp_raise_TypeError ("Expected Tensor to be of type ktfLiteInt8.");
+    }
+
+    // may need to add #ifdef sheild on this method as its only defined on boards with floating point
+    float value = mp_obj_get_float_to_f(float_obj);
+
+    // Quantize the input from floating-point to integer
+    int8_t quantized_value = (int8_t)(value / tensor->params.scale + tensor->params.zero_point);
+
+    return MP_OBJ_NEW_SMALL_INT(quantized_value);
+}
+
+MP_DEFINE_CONST_FUN_OBJ_2(microlite_tensor_quantize_float_to_int8, tensor_quantize_float_to_int8);
+
+STATIC mp_obj_t tensor_quantize_int8_to_float (mp_obj_t self_in, mp_obj_t int_obj) {
+    
+    if (!mp_obj_is_integer(int_obj)) {
+         mp_raise_TypeError("Expecting Parameter of float type");
+        // return mp_const_none;
+    }
+
+    microlite_tensor_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    TfLiteTensor * tensor = (TfLiteTensor *)self->tf_tensor;
+
+    if (tensor->type != kTfLiteInt8) {
+        mp_raise_TypeError ("Expected Tensor to be of type ktfLiteInt8.");
+    }
+
+    // may need to add #ifdef sheild on this method as its only defined on boards with floating point
+    int8_t value = mp_obj_int_get_checked(int_obj);
+
+    // Quantize the input from floating-point to integer
+    float quantized_value = (value - tensor->params.zero_point) * tensor->params.scale;
+
+    return mp_obj_new_float_from_f(quantized_value);
+}
+
+MP_DEFINE_CONST_FUN_OBJ_2(microlite_tensor_quantize_int8_to_float, tensor_quantize_int8_to_float);
+
+// interpreter class
+STATIC const mp_rom_map_elem_t tensor_locals_dict_table[] = {
+    { MP_ROM_QSTR(MP_QSTR_getValue), MP_ROM_PTR(&microlite_tensor_get_value) },
+    { MP_ROM_QSTR(MP_QSTR_setValue), MP_ROM_PTR(&microlite_tensor_set_value) },
+    { MP_ROM_QSTR(MP_QSTR_quantizeFloatToInt8), MP_ROM_PTR(&microlite_tensor_quantize_float_to_int8) },
+    { MP_ROM_QSTR(MP_QSTR_quantizeInt8ToFloat), MP_ROM_PTR(&microlite_tensor_quantize_int8_to_float) }
+};
+
+STATIC MP_DEFINE_CONST_DICT(tensor_locals_dict, tensor_locals_dict_table);
+
+const mp_obj_type_t microlite_tensor_type = {
+    { &mp_type_type },
+    .name = MP_QSTR_tensor,
+    .print = tensor_print,
+    .locals_dict = (mp_obj_dict_t*)&tensor_locals_dict,
+};
+
+
+// - microlite interpreter
 
 STATIC void interpreter_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
     (void)kind;
@@ -93,101 +236,78 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
 
     self->tensor_area = mp_obj_new_bytearray_by_ref (tensor_area_len, tensor_area_buffer);
 
-    mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d", g_model_len, tensor_area_len);
+    mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d\n", g_model_len, tensor_area_len);
+
+    libtf_init(self);
 
     return MP_OBJ_FROM_PTR(self);
 }
 
 // these 2 are for the hello world example:
-static int inference_count = 1;
-const float kXrange = 2.f * 3.14159265359f;
-
-// STATIC void libtf_input_callback(TfLiteTensor *input) {
-
-//      mp_print_str(MP_PYTHON_PRINTER, "libtf_input_callback\n");
-
-//      // copied from example: https://www.tensorflow.org/lite/microcontrollers/get_started
-
-//      // Make sure the input has the properties we expect
-// //     TF_LITE_MICRO_EXPECT_NE(nullptr, input);
-//      // The property "dims" tells us the tensor's shape. It has one element for
-//      // each dimension. Our input is a 2D tensor containing 1 element, so "dims"
-//      // should have size 2.
-// //     TF_LITE_MICRO_EXPECT_EQ(2, input->dims->size);
-//      // The value of each element gives the length of the corresponding tensor.
-//      // We should expect two single element tensors (one is contained within the
-//      // other).
-// //     TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[0]);
-// //     TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[1]);
-//      // The input is a 32 bit floating point value
-// //     TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, input->type);
-
-//     if (model_input->type != kTfLiteFloat32) {
-//             mp_print_str(MP_PYTHON_PRINTER, "Expected model_input to be kTFLiteFloat32, was %d", model_input->type);
-//             // TODO find a way to allow this method to terminate and then have that stop inference in the calling method scope
-//             return;
-//     }
-
-//     float position = ((float)inference_count) / (float)1.0;
-
-//     float x = position * kXrange;
-
-//     // // Quantize the input from floating-point to integer
-//     //   int8_t x_quantized = (int8_t)(x / input->params.scale + input->params.zero_point);
-//     //   // Place the quantized input in the model's input tensor
-//       input->data.f[0] = x;
-
-//     mp_printf(MP_PYTHON_PRINTER, "input value : %f\n", x);
-// }
-
-// // Callback to use the model output data byte array (laid out in [height][width][channel] order).
-// STATIC void libtf_output_callback(TfLiteTensor *model_output) { // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
-
-//       mp_print_str(MP_PYTHON_PRINTER, "libtf_output_callback\n");
-
-// //      TF_LITE_MICRO_EXPECT_EQ(2, model_output->dims->size);
-// //      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[0]);
-// //      TF_LITE_MICRO_EXPECT_EQ(1, input->dims->data[1]);
-// //      TF_LITE_MICRO_EXPECT_EQ(kTfLiteFloat32, model_output->type);
+// static int inference_count = 1;
+// const float kXrange = 2.f * 3.14159265359f;
 
 
-//     if (model_output->type != kTfLiteFloat32) {
-//         mp_printf(MP_PYTHON_PRINTER, "Output model data type should be kTfLiteFloat32\n");
-//         return;
-//       }
+// called before passing the tensor to the callback
+STATIC mp_obj_t interpreter_get_input_tensor(mp_obj_t self_in, mp_obj_t index_obj) {
 
-//     // // Obtain the quantized model_output from model's model_output tensor
-//     // int8_t y_quantized = model_output->data.int8[0];
+    mp_uint_t index = mp_obj_int_get_uint_checked(index_obj);
 
-//     // mp_printf(MP_PYTHON_PRINTER, "model_output y_quantized : %d\n", y_quantized);
+    microlite_interpreter_obj_t *microlite_interpreter = MP_OBJ_TO_PTR(self_in);
 
-//     // // Dequantize the model_output from integer to floating-point
-//     // float y = (y_quantized - model_output->params.zero_point) * model_output->params.scale;
+    microlite_tensor_obj_t *microlite_tensor = m_new_obj(microlite_tensor_obj_t);
 
-//     float y = model_output->data.f[0];
+    TfLiteTensor *input_tensor = libtf_get_input_tensor(microlite_interpreter, index);
 
-//     // Check that the model_output value is within 0.05 of the expected value
-// //    TF_LITE_MICRO_EXPECT_NEAR(0., value, 0.05);
+    microlite_tensor->tf_tensor = input_tensor;
+    microlite_tensor->microlite_interpreter = microlite_interpreter;
+    microlite_tensor->base.type = &microlite_tensor_type;
 
-//     mp_printf(MP_PYTHON_PRINTER, "model_output value : %f\n", (double)y);
+    return MP_OBJ_FROM_PTR(microlite_tensor);
+}
 
-// }
+MP_DEFINE_CONST_FUN_OBJ_2(microlite_interpreter_get_input_tensor, interpreter_get_input_tensor);
+
+STATIC mp_obj_t interpreter_get_output_tensor(mp_obj_t self_in, mp_obj_t index_obj) {
+
+    mp_uint_t index = mp_obj_int_get_uint_checked(index_obj);
+
+    microlite_interpreter_obj_t *microlite_interpreter = MP_OBJ_TO_PTR(self_in);
+
+    microlite_tensor_obj_t *microlite_tensor = m_new_obj(microlite_tensor_obj_t);
+
+    TfLiteTensor *output_tensor = libtf_get_output_tensor(microlite_interpreter, index);
+
+    microlite_tensor->tf_tensor = output_tensor;
+    microlite_tensor->microlite_interpreter = microlite_interpreter;
+    microlite_tensor->base.type = &microlite_tensor_type;
+
+    return MP_OBJ_FROM_PTR(microlite_tensor);
+}
+
+MP_DEFINE_CONST_FUN_OBJ_2(microlite_interpreter_get_output_tensor, interpreter_get_output_tensor);
 
 STATIC mp_obj_t interpreter_invoke(mp_obj_t self_in) {
     microlite_interpreter_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
+    
     int code = libtf_invoke(self);
 
     self->inference_count += 1;
 
     return mp_obj_new_int(code);
+
 }
 
 MP_DEFINE_CONST_FUN_OBJ_1(microlite_interpreter_invoke, interpreter_invoke);
 
+
+
 // interpreter class
 STATIC const mp_rom_map_elem_t interpreter_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_invoke), MP_ROM_PTR(&microlite_interpreter_invoke) },
+    { MP_ROM_QSTR(MP_QSTR_getInputTensor), MP_ROM_PTR(&microlite_interpreter_get_input_tensor) },
+    { MP_ROM_QSTR(MP_QSTR_getOutputTensor), MP_ROM_PTR(&microlite_interpreter_get_output_tensor) },
 };
 
 STATIC MP_DEFINE_CONST_DICT(interpreter_locals_dict, interpreter_locals_dict_table);
@@ -215,7 +335,8 @@ STATIC const MP_DEFINE_STR_OBJ(microlite_version_string_obj, TFLITE_VERSION_STRI
 STATIC const mp_rom_map_elem_t microlite_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_microlite) },
     { MP_ROM_QSTR(MP_QSTR___version__), MP_ROM_PTR(&microlite_version_string_obj) },
-    { MP_ROM_QSTR(MP_QSTR_interpreter), (mp_obj_t)&microlite_interpreter_type }
+    { MP_ROM_QSTR(MP_QSTR_interpreter), (mp_obj_t)&microlite_interpreter_type },
+    { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_tensor_type }
 };
 STATIC MP_DEFINE_CONST_DICT(microlite_module_globals, microlite_module_globals_table);
 

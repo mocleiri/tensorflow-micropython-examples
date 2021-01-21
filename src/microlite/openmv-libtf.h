@@ -46,6 +46,17 @@ typedef void (*libtf_input_data_callback_t)(TfLiteTensor *input_tensor); // Actu
 // Callback to use the model output data byte array (laid out in [height][width][channel] order).
 typedef void (*libtf_output_data_callback_t)(TfLiteTensor *output_tensor); // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
 
+int libtf_init(microlite_interpreter_obj_t *microlite_interpretor);
+
+TfLiteTensor *libtf_get_input_tensor(microlite_interpreter_obj_t *microlite_interpretor, mp_uint_t index);
+
+TfLiteTensor *libtf_get_output_tensor(microlite_interpreter_obj_t *microlite_interpretor, mp_uint_t index);
+
+// get the input tensor
+mp_obj_t libtf_get_input(microlite_interpreter_obj_t *microlite_interpretor, int index);
+
+int libtf_interpreter_outputs(microlite_interpreter_obj_t *microlite_interpretor);
+
 // Returns 0 on success and 1 on failure.
 // Errors are printed to stdout.
 int libtf_invoke(microlite_interpreter_obj_t *interpreter); // Callback to use the model output data byte array.
