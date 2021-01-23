@@ -52,10 +52,11 @@ def output_callback (microlite_interpreter):
     print ("%f,%f" % (current_input,y))
 
 
+def run():
+    global counter
+    interp = microlite.interpreter(model.hello_world_model,2048, input_callback, output_callback)
 
-interp = microlite.interpreter(model.hello_world_model,2048, input_callback, output_callback)
-
-print ("time step,y")
-for c in range(1000):
-    interp.invoke()
-    counter = counter + 1
+    print ("time step,y")
+    for c in range(1000):
+        interp.invoke()
+        counter = counter + 1
