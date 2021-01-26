@@ -89,8 +89,7 @@ Specify BUILD_TYPE=debug if you want to be able to debug the resultant code.
 ## Build for ESP32
 
 ```
-make -f tensorflow/lite/micro/tools/make/Makefile  TARGET=esp32  TOOLCHAIN=xtensa-esp32-elf-gcc CXX
-_TOOL=xtensa-esp32-elf-g++  CC_TOOL=xtensa-esp32-elf-gcc AR_TOOL=xtensa-esp32-elf-ar
+make -f tensorflow/lite/micro/tools/make/Makefile  TARGET=esp32  TOOLCHAIN=xtensa-esp32-elf-gcc CXX_TOOL=xtensa-esp32-elf-g++  CC_TOOL=xtensa-esp32-elf-gcc AR_TOOL=xtensa-esp32-elf-ar
 
 ```
  
@@ -127,7 +126,8 @@ make -f /src/src/GNUmakefile-unix V=1
 
 ## Build for ESP32
 ```
-make -f /src/src/GNUmakefile-esp32 V=1 PART_SRC=/src/custom-partitions.csv all
+make -f /src/micropython-modules/microlite/GNUmakefile-esp32 V=1 PART_SRC=/src/custom-partitions.csv all
+
 ```
 
 Note as-is the firmware is too big to fit into the default Micropython partition scheme on a 4MB flash board.  The custom-partitions.csv parition table increases the space for the application and decreases the amount of filesystem available.
