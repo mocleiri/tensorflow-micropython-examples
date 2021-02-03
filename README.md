@@ -18,6 +18,8 @@ Tensorflow for ESP32 and Unix can be built and accessed by the microlite c/c++ m
 
 I have ESP32 boards but it should work for other ports as well.
 
+I am in progress on the micro_speech example.  I am able to read wav data from an INMP441 microphone using miketeachman's i2s module and am working on the audio_frontend needed to convert the wav data into spectogram format needed by the micro_speech model.
+
 # Roadmap
 
 Inference is working for the hello-world sine example.  
@@ -58,16 +60,38 @@ Building can be done using specially prepared docker images.
 
 There are two docker images:
 1. build-environment for linux: docker/unix-build/Dockerfile
-2. esp-idf version 4.0.1 image, for building esp32.
+2. build-envionrment for esp32: esp-idf version 4.0.1 image, for building esp32.
 
-The esp-idf image was made from the upstream dockerfile but just for 4.0.1 which is currently needed to build Micropython but not released in Espressif's current docker repository.
+### Make esp-idf docker image for version 4.0.1
 
-Its available in dockerhub here: https://hub.docker.com/r/mocleiri/esp-idf-4.0.1
+At the moment to build using the esp32 idf version 4 we need to use version 4.0.1 which is just outside of the tags espressif publish in their dockerhub repository.  
+
+I checked and 4.0.2 doesn't work right so you will need to first build a dockerfile from the latest esp-idf source code.
+
+Build base esp-idf 4.0.1 Docker image:
+1. Checkout the latest [esp-idf](https://github.com/espressif/esp-idf) then go into **tools/docker**.
+2. docker build -t espressif-idf-v4.0.1 --build-arg IDF_CHECKOUT_REF=4c81978a3e2220674a432a588292a4c860eef27b .
+
+This is the 4.0.1 version that micropython wants.  I have done the above steps and put the resultant image into dockerhub here:
+https://hub.docker.com/r/mocleiri/esp-idf-4.0.1
+
+Next in order to build the audio_frontend we need to have the xxd library installed.
+
+The docker/esp32-build/Dockerfile can be used to create such an image.
+
+```
+$ docker build -t esp-idf-4.0.1-builder .
+```
+
+### Make unix build environment
 
 The unix build environment needs to be built manually at the moment.
 
-There are helper scripts:
+### Helper Scripts
+
+
 1. build-with-unix-docker.sh; this uses the unix-build image and mounts the project as /src in the container.
+
 2. build-with-docker-idf.sh; this uses the esp-idf 4.0.1 image and mounts the project as /src in the container.
 
 # How to Build Tensorflow
@@ -89,8 +113,7 @@ Specify BUILD_TYPE=debug if you want to be able to debug the resultant code.
 ## Build for ESP32
 
 ```
-make -f tensorflow/lite/micro/tools/make/Makefile  TARGET=esp32  TOOLCHAIN=xtensa-esp32-elf-gcc CXX
-_TOOL=xtensa-esp32-elf-g++  CC_TOOL=xtensa-esp32-elf-gcc AR_TOOL=xtensa-esp32-elf-ar
+make -f tensorflow/lite/micro/tools/make/Makefile  TARGET=esp32  TOOLCHAIN=xtensa-esp32-elf-gcc CXX_TOOL=xtensa-esp32-elf-g++  CC_TOOL=xtensa-esp32-elf-gcc AR_TOOL=xtensa-esp32-elf-ar
 
 ```
  
@@ -127,7 +150,8 @@ make -f /src/src/GNUmakefile-unix V=1
 
 ## Build for ESP32
 ```
-make -f /src/src/GNUmakefile-esp32 V=1 PART_SRC=/src/custom-partitions.csv all
+make -f /src/micropython-modules/microlite/GNUmakefile-esp32 V=1 PART_SRC=/src/custom-partitions.csv all
+
 ```
 
 Note as-is the firmware is too big to fit into the default Micropython partition scheme on a 4MB flash board.  The custom-partitions.csv parition table increases the space for the application and decreases the amount of filesystem available.
