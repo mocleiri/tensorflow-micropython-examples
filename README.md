@@ -7,7 +7,9 @@ The purpose of this project is to make a custom micropython firmware that instal
 | Area        | Are           | 
 | ------------- |:-------------:| 
 | tensorflow-microlite.a | This is the tensorflow lite library with all operations to start with |
-| src/microlite | Micropython 'microlite' module that interconnects micropython to tensorflow lite |
+| micropython-modules/microlite | Micropython 'microlite' module that interconnects micropython to tensorflow lite |
+| micropython-modules/audio_frontend | Wrapper for tensorflow experimental microfrontend audio processor needed by the micro_speech example to convert wav data into spectrogram data for processing by the model. |
+| micropython-modules/ulab | We have a submodule dependency on [ulab](https://github.com/v923z/micropython-ulab).  |
 
 At the moment all of the tensor operations are included in tensorflow-microlite.a but in the future we will try to externalize them so they can be brought on the file system with the model being run.
 
@@ -30,6 +32,7 @@ Inference is working for the hello-world sine example.
 
 ## Implement 'micro-speech' example
 
+
 This firmware is based on https://github.com/miketeachman/micropython/tree/esp32-i2s which adds an i2s module which is needed for sampling audio for this example.
 
 Plan to copy the openmv py_micro_speech.c file which converts the audio sample into the correct input tensor values.
@@ -48,13 +51,29 @@ Probably if you don't need that then you could build from either the last releas
 
 # How to Build
 
-First we need to get the micropython and tensorflow submodules.
+First the submodules need to be initialized.  We have 3:
+1. tensorflow
+2. micropython
+3. ulab (micropython numpy equivelent)
 
-Next we need to build **tensorflow-microlite.a** which is the tensorflow library using the cross compiler of the target port.
+```
+git submodule init --recursive
+```
 
-Then we copy library into the top level lib directory and go and build micropython which refers to the top level library to include into the firmware.
+Next we need to link the micropython-ulab/code directory under micropython-modules so that the build can find it.
 
-Building can be done using specially prepared docker images.
+```
+$ cd micropython-modules
+
+$ ln -s ../micropython-ulab/code ulab
+
+```
+
+For building there are two main steps:
+1. Build **tensorflow-microlite.a** which is the tensorflow library from the tensorflow sources using the port specific cross compiler.
+2. Build micropython firmware which builds the microlite, audio_frontend and ulab modules.  At the moment we are also building the i2s module as we are on the miketeachman branch for this purpose to support dma sampling of audio for the microspeech example.
+
+Building can be done using specially prepared docker images for esp32 and unix.  But mostly for the unix build I have been building in Microsoft Visual Studio Code through the linux subsystem for windows (to be documented)
 
 ## Docker Environments
 
