@@ -28,6 +28,8 @@ AUDIO_FRONTEND_MOD_DIR := $(USERMOD_DIR)
 # current working directory seems to be micropython/ports/esp32 when this is run
 TENSORFLOW := ../../../tensorflow
 
+ULAB := ../../../micropython-ulab
+
 # Add all C files to SRC_USERMOD.
 SRC_USERMOD += $(TENSORFLOW)/tensorflow/lite/micro/tools/make/downloads/kissfft/kiss_fft.c
 SRC_USERMOD += $(TENSORFLOW)/tensorflow/lite/micro/tools/make/downloads/kissfft/tools/kiss_fftr.c
@@ -55,6 +57,7 @@ LDFLAGS_USERMOD += -lstdc++
 CFLAGS_USERMOD += -I$(AUDIO_FRONTEND_MOD_DIR)
 CFLAGS_USERMOD += -I$(TENSORFLOW)/tensorflow/lite/micro/tools/make/downloads/kissfft
 CFLAGS_USERMOD += -I$(TENSORFLOW)/tensorflow/lite/experimental/microfrontend/lib
+CFLAGS_USERMOD += -I$(ULAB)/code
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow
 
 CFLAGS_USERMOD += -DTF_LITE_STATIC_MEMORY=1

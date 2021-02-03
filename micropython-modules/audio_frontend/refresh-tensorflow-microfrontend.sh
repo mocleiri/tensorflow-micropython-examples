@@ -10,7 +10,7 @@ rm -rf tensorflow/lite/micro/tools/make/downloads
 make -f tensorflow/lite/micro/tools/make/Makefile generate_hello_world_make_project
 
 
-cd ../micropython-modules/mfcc
+cd ../micropython-modules/audio_frontend
 
 # at the moment micropython esp32 port doesn't work with .cc extension c++ files only .cpp
 # so copy to rename the line ending

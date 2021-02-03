@@ -32,11 +32,59 @@
 #include "py/qstr.h"
 #include "py/misc.h"
 
+// ulab
+#include "ndarray.h"
+
+// tensorflow
 #include "tensorflow/lite/experimental/microfrontend/lib/frontend.h"
+#include "tensorflow/lite/experimental/microfrontend/lib/frontend_util.h"
+
+// this brings in the constannts used within the config.
+// later we will set these in python and pass in.
+#include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_model_settings.h"
+
+STATIC struct FrontendConfig config;
+STATIC struct FrontendState state;
+
+
+STATIC mp_obj_t configure (size_t n_args, size_t n_kw, const mp_obj_t *args) {
+
+//  mp_arg_check_num(n_args, n_kw, 5, 5, true);
+
+    // Copied from: https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.cc
+
+  // the 3 variables pass through from the micro_speech micro_model_settings.h file imported above
+  // this is temporary and we will make them pass through micropython as a next step.
+  config.window.size_ms = kFeatureSliceDurationMs;
+  config.window.step_size_ms = kFeatureSliceStrideMs;
+  config.noise_reduction.smoothing_bits = 10;
+  config.filterbank.num_channels = kFeatureSliceSize;
+  config.filterbank.lower_band_limit = 125.0;
+  config.filterbank.upper_band_limit = 7500.0;
+  config.noise_reduction.smoothing_bits = 10;
+  config.noise_reduction.even_smoothing = 0.025;
+  config.noise_reduction.odd_smoothing = 0.06;
+  config.noise_reduction.min_signal_remaining = 0.05;
+  config.pcan_gain_control.enable_pcan = 1;
+  config.pcan_gain_control.strength = 0.95;
+  config.pcan_gain_control.offset = 80.0;
+  config.pcan_gain_control.gain_bits = 21;
+  config.log_scale.enable_log = 1;
+  config.log_scale.scale_shift = 6;
+
+    if (!FrontendPopulateState(&config, &state,
+                             kAudioSampleFrequency)) {
+        mp_raise_TypeError("Failed to setup the frontend state");
+    }
+
+    return mp_const_none;
+}
+
+MP_DEFINE_CONST_FUN_OBJ_KW(audio_frontend_configure, 1, configure);
 
 STATIC mp_obj_t execute (size_t n_args, size_t n_kw, const mp_obj_t *args) {
 
-  mp_arg_check_num(n_args, n_kw, 5, 5, true);
+  mp_arg_check_num(n_args, n_kw, 2, 2, false);
 
 //  copied from tensorflow:
 //  tensorflow/tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.cc
@@ -46,6 +94,8 @@ STATIC mp_obj_t execute (size_t n_args, size_t n_kw, const mp_obj_t *args) {
 //                                     int output_size, int8_t* output,
 //                                     size_t* num_samples_read) {
     ndarray_obj_t *frontend_input = MP_OBJ_TO_PTR(args[0]);
+
+    ndarray_obj_t *micro_features_output = MP_OBJ_TO_PTR(args[1]);
 
 //    frontend_input.dtype == int16_t
 
@@ -57,8 +107,12 @@ STATIC mp_obj_t execute (size_t n_args, size_t n_kw, const mp_obj_t *args) {
 //      frontend_input = input + 160;
 //    }
 
+    int num_samples_read = 0;
+
     FrontendOutput frontend_output = FrontendProcessSamples(
-        &g_micro_features_state, frontend_input, input_size, num_samples_read);
+        &state, frontend_input->array, frontend_input->len, &num_samples_read);
+
+     mp_print_str(MP_PYTHON_PRINTER, "num_samples_read %d", num_samples_read);
 
     for (size_t i = 0; i < frontend_output.size; ++i) {
       // These scaling values are derived from those used in input_data.py in the
@@ -88,10 +142,12 @@ STATIC mp_obj_t execute (size_t n_args, size_t n_kw, const mp_obj_t *args) {
       if (value > 127) {
         value = 127;
       }
-      output[i] = value;
+      // I may need to cast this
+      // and also make sure the output is of size int16
+        micro_features_output->array[i] = value;
     }
 
-    return mp_obj_new_float_from_f(quantized_value);
+    return mp_const_none;
 }
 
 MP_DEFINE_CONST_FUN_OBJ_KW(audio_frontend_execute, 1, execute);
@@ -105,7 +161,8 @@ MP_DEFINE_CONST_FUN_OBJ_KW(audio_frontend_execute, 1, execute);
 // optimized to word-sized integers by the build system (interned strings).
 STATIC const mp_rom_map_elem_t microlite_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_audio_frontend) },
-    { MP_ROM_QSTR(MP_QSTR_execute), MP_ROM_PTR(&audio_frontend_execute) }
+    { MP_ROM_QSTR(MP_QSTR_execute), MP_ROM_PTR(&audio_frontend_execute) },
+    { MP_ROM_QSTR(MP_QSTR_configure), MP_ROM_PTR(&audio_frontend_configure) }
 };
 STATIC MP_DEFINE_CONST_DICT(audio_frontend_module_globals, audio_frontend_module_globals_table);
 
