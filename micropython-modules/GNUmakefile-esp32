@@ -7,7 +7,8 @@ BOARD ?= GENERIC
 #FLASH_SIZE ?= 4MB
 CROSS_COMPILE ?= xtensa-esp32-elf-
 PYTHON2 = python3
-USER_C_MODULES=../../../src
+USER_C_MODULES= /src/micropython-modules
+
 CFLAGS_EXTRA=-DMODULE_MICROLITE_ENABLED=1 -Wno-error=incompatible-pointer-types
 
 PART_SRC=/src/custom-partitions.csv
