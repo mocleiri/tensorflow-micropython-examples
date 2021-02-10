@@ -48,6 +48,8 @@ SRC_USERMOD += $(TENSORFLOW)/tensorflow/lite/experimental/microfrontend/lib/pcan
 SRC_USERMOD += $(TENSORFLOW)/tensorflow/lite/experimental/microfrontend/lib/window.c
 SRC_USERMOD += $(TENSORFLOW)/tensorflow/lite/experimental/microfrontend/lib/window_util.c
 
+SRC_USERMOD += $(AUDIO_FRONTEND_MOD_DIR)/audio_frontend_module.c
+
 SRC_USERMOD_CXX += $(AUDIO_FRONTEND_MOD_DIR)/fft.cpp
 SRC_USERMOD_CXX += $(AUDIO_FRONTEND_MOD_DIR)/fft_util.cpp
 
@@ -65,6 +67,7 @@ CFLAGS_USERMOD += -DTF_LITE_STATIC_MEMORY=1
 CFLAGS_USERMOD += -Wno-error=float-conversion
 CFLAGS_USERMOD += -Wno-error=nonnull
 CFLAGS_USERMOD += -Wno-error=double-promotion
+CFLAGS_USERMOD += -Wno-error=pointer-arith
 
 CXXFLAGS_USERMOD += -I$(AUDIO_FRONTEND_MOD_DIR)
 CXXFLAGS_USERMOD += -I$(TENSORFLOW)/tensorflow/lite/micro/tools/make/downloads/kissfft
@@ -75,10 +78,7 @@ CXXFLAGS_USERMOD += -DTF_LITE_STATIC_MEMORY=1
 
 # unix port
 CFLAGS_USERMOD += -g
-
-
-
-
+CFLAGS_USERMOD += -Wno-error=unused-const-variable
 
 override CFLAGS_EXTRA += -DMODULE_AUDIO_FRONTEND_ENABLED=1
 

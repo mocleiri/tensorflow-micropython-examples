@@ -9,7 +9,7 @@ CROSS_COMPILE ?= xtensa-esp32-elf-
 PYTHON2 = python3
 USER_C_MODULES= /src/micropython-modules
 
-CFLAGS_EXTRA=-DMODULE_MICROLITE_ENABLED=1 -Wno-error=incompatible-pointer-types
+CFLAGS_EXTRA=-DMODULE_MICROLITE_ENABLED=1 -DMODULE_AUDIO_FRONTEND_ENABLED=1 -DMODULE_ULAB_ENABLED=1 -Wno-error=incompatible-pointer-types
 
 PART_SRC=/src/custom-partitions.csv
 

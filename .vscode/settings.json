@@ -17,6 +17,8 @@
         "sstream": "cpp",
         "streambuf": "cpp",
         "functional": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "stdint.h": "c",
+        "stdint-intn.h": "c"
     }
 }

@@ -7,8 +7,9 @@ BOARD ?= GENERIC
 #FLASH_SIZE ?= 4MB
 #CROSS_COMPILE ?= xtensa-esp32-elf-
 PYTHON2 = python3
-USER_C_MODULES=../../../src
-CFLAGS_EXTRA=-DMODULE_MICROLITE_ENABLED=1
+USER_C_MODULES=../../../micropython-modules
+
+CFLAGS_EXTRA=-Wno-error=sign-compare
 
 #PART_SRC=/src/custom-partitions.csv
 

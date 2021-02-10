@@ -4,12 +4,36 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+    
         {
-            "name": "(gdb) Micropython",
+            "name": "(gdb) Micropython - hello world",
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/micropython/ports/unix/micropython",
-            "args": ["${workspaceFolder}/src/hello-world/hello-world.py"],
+            "args": ["${workspaceFolder}/examples/hello-world/hello-world.py"],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "symbolLoadInfo": {
+                "loadAll": true,
+                "exceptionList": ""
+            },           
+            "MIMode": "gdb",            
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "(gdb) Micropython - micro speech",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/micropython/ports/unix/micropython",
+            "args": ["${workspaceFolder}/examples/micro-speech/main-unix.py"],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
             "environment": [],

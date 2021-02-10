@@ -23,6 +23,8 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
+#include <bits/stdint-intn.h>
+
 // Include MicroPython API.
 #include "py/runtime.h"
 #include "py/mpprint.h"
@@ -41,13 +43,38 @@
 
 // this brings in the constannts used within the config.
 // later we will set these in python and pass in.
-#include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_model_settings.h"
+// #include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_model_settings.h"
+
+// }
+
+// Keeping these as constant expressions allow us to allocate fixed-sized arrays
+// on the stack for our working memory.
+
+// The size of the input time series data we pass to the FFT to produce the
+// frequency information. This has to be a power of two, and since we're dealing
+// with 30ms of 16KHz inputs, which means 480 samples, this is the next value.
+static const int kMaxAudioSampleSize = 512;
+static const int kAudioSampleFrequency = 16000;
+
+// The following values are derived from values used during model training.
+// If you change the way you preprocess the input, update all these constants.
+static const int kFeatureSliceSize = 40;
+static const int kFeatureSliceCount = 49;
+static const int kFeatureElementCount = (kFeatureSliceSize * kFeatureSliceCount);
+static const int kFeatureSliceStrideMs = 20;
+static const int kFeatureSliceDurationMs = 30;
+
+// Variables for the model's output categories.
+static const int kSilenceIndex = 0;
+static const int kUnknownIndex = 1;
+// If you modify the output categories, you need to update the following values.
+static const int kCategoryCount = 4;
 
 STATIC struct FrontendConfig config;
 STATIC struct FrontendState state;
 
 
-STATIC mp_obj_t configure (size_t n_args, size_t n_kw, const mp_obj_t *args) {
+STATIC mp_obj_t configure () {
 
 //  mp_arg_check_num(n_args, n_kw, 5, 5, true);
 
@@ -80,11 +107,14 @@ STATIC mp_obj_t configure (size_t n_args, size_t n_kw, const mp_obj_t *args) {
     return mp_const_none;
 }
 
-MP_DEFINE_CONST_FUN_OBJ_KW(audio_frontend_configure, 1, configure);
+MP_DEFINE_CONST_FUN_OBJ_0(audio_frontend_configure, configure);
 
-STATIC mp_obj_t execute (size_t n_args, size_t n_kw, const mp_obj_t *args) {
+static int32_t value_scale = 256;
+static int32_t value_div = (int32_t)((25.6f * 26.0f) + 0.5f);
 
-  mp_arg_check_num(n_args, n_kw, 2, 2, false);
+STATIC mp_obj_t execute (mp_obj_t input) {
+
+  // mp_arg_check_num(n_args, n_kw, 2, 2, false);
 
 //  copied from tensorflow:
 //  tensorflow/tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.cc
@@ -93,9 +123,7 @@ STATIC mp_obj_t execute (size_t n_args, size_t n_kw, const mp_obj_t *args) {
 //                                     const int16_t* input, int input_size,
 //                                     int output_size, int8_t* output,
 //                                     size_t* num_samples_read) {
-    ndarray_obj_t *frontend_input = MP_OBJ_TO_PTR(args[0]);
-
-    ndarray_obj_t *micro_features_output = MP_OBJ_TO_PTR(args[1]);
+    ndarray_obj_t *frontend_input = MP_OBJ_TO_PTR(input);
 
 //    frontend_input.dtype == int16_t
 
@@ -107,12 +135,16 @@ STATIC mp_obj_t execute (size_t n_args, size_t n_kw, const mp_obj_t *args) {
 //      frontend_input = input + 160;
 //    }
 
-    int num_samples_read = 0;
+    size_t num_samples_read = 0;
 
-    FrontendOutput frontend_output = FrontendProcessSamples(
+    struct FrontendOutput frontend_output = FrontendProcessSamples(
         &state, frontend_input->array, frontend_input->len, &num_samples_read);
 
-     mp_print_str(MP_PYTHON_PRINTER, "num_samples_read %d", num_samples_read);
+     mp_printf(MP_PYTHON_PRINTER, "num_samples_read %d", num_samples_read);
+
+    ndarray_obj_t *micro_features_output = ndarray_new_linear_array(frontend_output.size, NDARRAY_INT16);
+
+    int16_t *output_array = (int16_t *)micro_features_output->array;
 
     for (size_t i = 0; i < frontend_output.size; ++i) {
       // These scaling values are derived from those used in input_data.py in the
@@ -130,8 +162,7 @@ STATIC mp_obj_t execute (size_t n_args, size_t n_kw, const mp_obj_t *args) {
       // input = (((feature / 25.6) / 26.0) * 256) - 128
       // To simplify this and perform it in 32-bit integer math, we rearrange to:
       // input = (feature * 256) / (25.6 * 26.0) - 128
-      constexpr int32_t value_scale = 256;
-      constexpr int32_t value_div = static_cast<int32_t>((25.6f * 26.0f) + 0.5f);
+       
       int32_t value =
           ((frontend_output.values[i] * value_scale) + (value_div / 2)) /
           value_div;
@@ -144,13 +175,13 @@ STATIC mp_obj_t execute (size_t n_args, size_t n_kw, const mp_obj_t *args) {
       }
       // I may need to cast this
       // and also make sure the output is of size int16
-        micro_features_output->array[i] = value;
+      output_array[i] = (int16_t)value;
     }
 
-    return mp_const_none;
+    return MP_OBJ_FROM_PTR(micro_features_output);
 }
 
-MP_DEFINE_CONST_FUN_OBJ_KW(audio_frontend_execute, 1, execute);
+MP_DEFINE_CONST_FUN_OBJ_1(audio_frontend_execute, execute);
 
 // audio_frontend module
 
@@ -159,7 +190,7 @@ MP_DEFINE_CONST_FUN_OBJ_KW(audio_frontend_execute, 1, execute);
 // and the MicroPython object reference.
 // All identifiers and strings are written as MP_QSTR_xxx and will be
 // optimized to word-sized integers by the build system (interned strings).
-STATIC const mp_rom_map_elem_t microlite_module_globals_table[] = {
+STATIC const mp_rom_map_elem_t audio_frontend_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_audio_frontend) },
     { MP_ROM_QSTR(MP_QSTR_execute), MP_ROM_PTR(&audio_frontend_execute) },
     { MP_ROM_QSTR(MP_QSTR_configure), MP_ROM_PTR(&audio_frontend_configure) }

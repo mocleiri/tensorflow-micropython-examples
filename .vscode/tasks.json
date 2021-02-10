@@ -23,7 +23,7 @@
 		{
 			"label": "Build Micropython - Unix",
 			"type": "shell",
-			"command": "make -f /home/mike/git/tensorflow-micropython-examples/src/GNUmakefile-unix V=1",
+			"command": "make -f /home/mike/git/tensorflow-micropython-examples/micropython-modules/GNUmakefile-unix V=1",
 			"options": {
 				"cwd": "${workspaceFolder}/micropython/ports/unix"
 			  },
@@ -42,7 +42,7 @@
 		{
 			"label": "Clean Micropython - Unix",
 			"type": "shell",
-			"command": "make -f /home/mike/git/tensorflow-micropython-examples/src/GNUmakefile-unix V=1 clean",
+			"command": "make -f /home/mike/git/tensorflow-micropython-examples/micropython-modules/GNUmakefile-unix V=1 clean",
 			"options": {
 				"cwd": "${workspaceFolder}/micropython/ports/unix"
 			  },
