@@ -119,6 +119,9 @@ STATIC mp_obj_t execute (mp_obj_t input) {
 //  copied from tensorflow:
 //  tensorflow/tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.cc
 
+// need to further incorporate code in FeatureProvider::PopulateFeatureData from 
+// tensorflow/tensorflow/lite/micro/examples/micro_speech/feature_provider.cc
+//
 //  TfLiteStatus GenerateMicroFeatures(tflite::ErrorReporter* error_reporter,
 //                                     const int16_t* input, int input_size,
 //                                     int output_size, int8_t* output,
@@ -140,7 +143,7 @@ STATIC mp_obj_t execute (mp_obj_t input) {
     struct FrontendOutput frontend_output = FrontendProcessSamples(
         &state, frontend_input->array, frontend_input->len, &num_samples_read);
 
-     mp_printf(MP_PYTHON_PRINTER, "num_samples_read %d", num_samples_read);
+     mp_printf(MP_PYTHON_PRINTER, "num_samples_read %d\n", num_samples_read);
 
     ndarray_obj_t *micro_features_output = ndarray_new_linear_array(frontend_output.size, NDARRAY_INT16);
 
