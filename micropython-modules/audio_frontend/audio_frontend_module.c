@@ -80,6 +80,8 @@ STATIC mp_obj_t configure () {
 
     // Copied from: https://github.com/tensorflow/tensorflow/blob/master/tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.cc
 
+  // TODO externalize this into a type where these different values can be configured.
+
   // the 3 variables pass through from the micro_speech micro_model_settings.h file imported above
   // this is temporary and we will make them pass through micropython as a next step.
   config.window.size_ms = kFeatureSliceDurationMs;
@@ -128,6 +130,8 @@ STATIC mp_obj_t execute (mp_obj_t input) {
 //                                     size_t* num_samples_read) {
     ndarray_obj_t *frontend_input = MP_OBJ_TO_PTR(input);
 
+    // TODO consider the shape of the frontend_input pcm data do we expect it to be a 1D array?
+
 //    frontend_input.dtype == int16_t
 
 //    const int16_t* frontend_input;
@@ -139,6 +143,12 @@ STATIC mp_obj_t execute (mp_obj_t input) {
 //    }
 
     size_t num_samples_read = 0;
+
+    // we expect a new slice of audio to be passed each time
+    // but FrontendProcessSamples will window to 320 bytes on each subsequent call
+    // so reset back to zero so that the whole fronend_input array is processed each time.
+    
+    state.window.input_used = 0;
 
     struct FrontendOutput frontend_output = FrontendProcessSamples(
         &state, frontend_input->array, frontend_input->len, &num_samples_read);

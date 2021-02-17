@@ -21,5 +21,5 @@
         "stdint.h": "c",
         "stdint-intn.h": "c"
     },
-    "python.pythonPath": "micropython/ports/unix/micropython"
+    "python.pythonPath": "/usr/bin/python"
 }
