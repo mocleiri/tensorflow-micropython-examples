@@ -131,12 +131,21 @@ Specify BUILD_TYPE=debug if you want to be able to debug the resultant code.
 
 ## Build for ESP32
 
+Start the docker image using: 
 ```
-make -f tensorflow/lite/micro/tools/make/Makefile  TARGET=esp32  TOOLCHAIN=xtensa-esp32-elf-gcc CXX_TOOL=xtensa-esp32-elf-g++  CC_TOOL=xtensa-esp32-elf-gcc AR_TOOL=xtensa-esp32-elf-ar
+./build-with-docker-idf.sh
+
+$ cd /src/tensorflow
+
+$ make -f tensorflow/lite/micro/tools/make/Makefile  TARGET=esp32  TARGET_ARCH=xtensa-esp32 TOOLCHAIN=xtensa-esp32-elf-gcc CXX_TOOL=xtensa-esp32-elf-g++  CC_TOOL=xtensa-esp32-elf-gcc AR_TOOL=xtensa-esp32-elf-ar
 
 ```
  
-use 'update-microlite.sh' script to copy the tensorflow static library into the lib directory.
+use 'update-microlite.sh' script to copy the tensorflow static library into the lib directory which is where micropython will pick it up from when linking the esp32 firmware.
+
+```
+copies: tensorflow/lite/micro/tools/make/gen/esp32_xtensa-esp32/lib/libtensorflow-microlite.a /src/lib
+```
 
 # How to Build Micropython
 
