@@ -177,8 +177,12 @@ make -f /src/src/GNUmakefile-unix V=1
 ```
 
 ## Build for ESP32
+
+Be sure to be building inside of the idf docker container:
 ```
-make -f /src/micropython-modules/microlite/GNUmakefile-esp32 V=1 PART_SRC=/src/custom-partitions.csv all
+root@3453c74a93f6:~# cd /src/micropython/ports/esp32
+
+root@3453c74a93f6:/src/micropython/ports/esp32# make -f /src/micropython-modules/GNUmakefile-esp32 V=1 clean all
 
 ```
 
