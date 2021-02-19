@@ -162,7 +162,7 @@ git submodule update --recursive
 
 cd micropython/mpy-cross
 
-make
+root@3453c74a93f6:/src/micropython# make -C mpy-cross V=1 CROSS_COMPILE=xtensa-esp32-elf- clean all
 ```
 
 Make sure to use the correct cross compiler if needed.
