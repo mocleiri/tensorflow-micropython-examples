@@ -21,13 +21,18 @@
 #    - for short WAV files the AMPY tool can be used (e.g. 2 seconds @ 8000/samples).  Ampy throws an exception for long files
 #    - for longer WAV files use the "Get a file" feature of the WebREPL.  
 
+import gc
 import audio_frontend
 from ulab import numpy as np
 import microlite
+
+gc.collect()
+
 import model
 from machine import Pin
 from machine import I2S
-import ucollections
+
+gc.collect()
 
 #======= USER CONFIGURATION =======
 SAMPLE_RATE_IN_HZ = 16000
@@ -247,14 +252,14 @@ def output_callback (microlite_interpreter):
 audio_frontend.configure()
 
 
-interp = microlite.interpreter(model.micro_speech_model,20480, input_callback, output_callback)
+interp = microlite.interpreter(model.micro_speech_model,10 * 1024, input_callback, output_callback)
 
 # allocate sample arrays
 #   memoryview used to reduce heap allocation in while loop
 mic_samples = bytearray(MIC_SAMPLE_BUFFER_SIZE_IN_BYTES)
 mic_samples_mv = memoryview(mic_samples)
 
-one_second_data = np.zeros(16000)
+# one_second_data = np.zeros(16000)
 # trailing_10ms = np.zeros(160)
 
 # ucollections.deque(maxlen=16000)
