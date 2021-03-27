@@ -133,9 +133,12 @@ Specify BUILD_TYPE=debug if you want to be able to debug the resultant code.
 
 Start the docker image using: 
 ```
-./build-with-docker-idf.sh
+./build-with-docker-idf.sh [optional: name of docker image to use]
 
 ```
+
+I'm in the process of upgrading to the latest micropython and the build script can be used with the 4.3 idf upstream image: espressif/idf:release-v4.3.
+
 
 Run the build using the helper script which has the appropriate compile time flags needed when linking into the micropython firmware.  At the moment this script is esp32 specific.
 ```
