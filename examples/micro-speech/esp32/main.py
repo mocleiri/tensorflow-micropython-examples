@@ -22,17 +22,22 @@
 #    - for longer WAV files use the "Get a file" feature of the WebREPL.  
 
 import gc
+import io
 import audio_frontend
 from ulab import numpy as np
 import microlite
 
-gc.collect()
-
-import model
 from machine import Pin
 from machine import I2S
 
-gc.collect()
+
+micro_speech_model = bytearray(18288)
+
+model_file = io.open('model.tflite', 'rb')
+
+model_file.readinto(micro_speech_model)
+
+model_file.close()
 
 #======= USER CONFIGURATION =======
 SAMPLE_RATE_IN_HZ = 16000
@@ -117,9 +122,9 @@ class Slice:
     def __init__(self, segment, start_index):
         # self.segment = segment
         if segment.size() != 480:
-            raise ValueError ("Expected segment to be 480 bytes.")
+            raise ValueError ("Expected segment to be 480 bytes, was %d." % (segment.size()))
 
-        self.spectrogram = audio_frontend.execute(self.segment)
+        self.spectrogram = audio_frontend.execute(segment)
         self.start_index = start_index
 
     def getSpectrogram(self):
@@ -129,11 +134,13 @@ class FeatureData:
 
     def __init__(self):
         self.slices=[]
-        self.last_10ms_audio = np.zeros(160)
+        self.totalSlices = 0
+        
 
-    def addSlice(self, slice, last_10ms_audio):
-        self.last_10ms_audio = np.array(last_10ms_audio, dtype=np.int16)
-
+    def addSlice(self, slice):
+        
+        self.totalSlices = self.totalSlices + 1
+        
         self.slices.append(slice)
 
         spectrogram = slice.getSpectrogram()
@@ -141,14 +148,17 @@ class FeatureData:
         if len (self.slices) > 49:
             self.slices.pop(0)
 
-        # print ("addSlice(): slice length = %d\n" % slice.segment.size())
+        print ("total slices = %d\n" % self.totalSlices)
         # print ("addSlice(): spectrogram length = %d\n" % spectrogram.size())
+        # print (spectrogram)
 
 
     def setInputTensorValues(self, inputTensor):
 
+        print (inputTensor)
+        
         counter = 0
-
+    
         for slice_index in range(len(self.slices)):
 
             slice = self.slices[slice_index]
@@ -161,10 +171,11 @@ class FeatureData:
                 counter = counter + 1
 
 
+        
+        # set 1960 values on input tensor
+        # print ("set %d values on input tensor\n" % (counter))
 
-
-
-def segmentAudio(audio):
+def segmentAudio(featureData, audio, trailing_10ms):
     # In this example we have an array of 1 second of audio data.
     # This is a 16,000 element array.
     # each micro second is 16 elements in this array.
@@ -173,30 +184,32 @@ def segmentAudio(audio):
     # The width of the window for which we capture the spectogram is 30ms (16x30=480).
     # this function will turn the input array into a dictionary of start time to wav data
 
-    featureData = FeatureData()
-
-    input_size = audio.size()
+        
+    input_audio = np.concatenate((trailing_10ms, audio), axis=0)
+    
+    input_size = input_audio.size()
 
     total_segments = input_size / stride_size
 
     start_index = 0
 
-    for segment_index in range (total_segments):
+    for segment_index in range (total_segments-1):
 
         end_index = min (start_index +  window_size, input_size)
 
         print ("segment_index=%d,start_index=%d, end_index=%d, size=%d\n" % (segment_index, start_index, end_index, end_index-start_index))
 
-        slice = Slice (audio[start_index:end_index], start_index)
+        slice = Slice (input_audio[start_index:end_index], start_index)
 
         featureData.addSlice(slice)
 
         start_index = start_index + stride_size
 
-    return featureData
+    # return the trailing 10ms
+    return np.array(input_audio[input_size-160:input_size], dtype=np.int16)
 
 
-currentFeatureData = None
+featureData = FeatureData()
 
 def input_callback (microlite_interpreter):
 
@@ -208,7 +221,7 @@ def input_callback (microlite_interpreter):
 
     inputTensor = microlite_interpreter.getInputTensor(0)
 
-    currentFeatureData.setInputTensorValues(inputTensor)
+    featureData.setInputTensorValues(inputTensor)
 
 
 
@@ -252,12 +265,21 @@ def output_callback (microlite_interpreter):
 audio_frontend.configure()
 
 
-interp = microlite.interpreter(model.micro_speech_model,10 * 1024, input_callback, output_callback)
+
+interp = microlite.interpreter(micro_speech_model,8 * 1024, input_callback, output_callback)
 
 # allocate sample arrays
 #   memoryview used to reduce heap allocation in while loop
-mic_samples = bytearray(MIC_SAMPLE_BUFFER_SIZE_IN_BYTES)
+# 320 x 4
+mic_samples = bytearray(1280)
 mic_samples_mv = memoryview(mic_samples)
+
+int16_samples = bytearray(640)
+int16_samples_mv = memoryview(int16_samples)
+
+trailing_10ms = np.zeros(160, dtype=np.int16)
+
+
 
 # one_second_data = np.zeros(16000)
 # trailing_10ms = np.zeros(160)
@@ -272,17 +294,26 @@ while True:
     try:
         # try to read a block of samples from the I2S microphone
         # readinto() method returns 0 if no DMA buffer is full
-        num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv, timeout=0)
+        num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv)
+        
         if num_bytes_read_from_mic > 0:
             # shift these number of bytes off the front of the one_second_data array
             # append the int16 data
-            print ("read %d bytes into the mic_samples_mv buffer\n" % num_bytes_read_from_mic)
-            # snip upper 16-bits from each 32-bit microphone sample
-            # num_bytes_snipped = snip_16_mono(mic_samples_mv[:num_bytes_read_from_mic], wav_samples_mv)
-            # num_bytes_to_write = min(num_bytes_snipped, NUM_SAMPLE_BYTES_TO_WRITE - num_sample_bytes_written_to_wav)
-            # write samples to WAV file
-            # num_bytes_written = wav.write(wav_samples_mv[:num_bytes_to_write])
-            # num_sample_bytes_written_to_wav += num_bytes_written
+            
+            
+            num_bytes_snipped = snip_16_mono(mic_samples_mv[:num_bytes_read_from_mic], int16_samples_mv)
+            
+            # print ("read %d bytes into the mic_samples_mv buffer\n" % num_bytes_read_from_mic)
+            # print ("read %d bytes into the int16_samples_mv buffer\n" % num_bytes_snipped)
+            audio_samples = np.frombuffer(int16_samples, dtype=np.int16)
+            
+            trailing_10ms = segmentAudio(featureData, audio_samples, trailing_10ms)
+            
+        interp.invoke()
+            
+        foundIndex = maxIndex()
+            
+        print ("found index - %d\n" % foundIndex)
 
     except (KeyboardInterrupt, Exception) as e:
         print('caught exception {} {}'.format(type(e).__name__, e))
@@ -291,3 +322,4 @@ while True:
 audio_in.deinit()
 print('Done')
 print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
+
