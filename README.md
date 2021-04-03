@@ -131,12 +131,31 @@ Specify BUILD_TYPE=debug if you want to be able to debug the resultant code.
 
 ## Build for ESP32
 
+Start the docker image using: 
 ```
-make -f tensorflow/lite/micro/tools/make/Makefile  TARGET=esp32  TOOLCHAIN=xtensa-esp32-elf-gcc CXX_TOOL=xtensa-esp32-elf-g++  CC_TOOL=xtensa-esp32-elf-gcc AR_TOOL=xtensa-esp32-elf-ar
+./build-with-docker-idf.sh [optional: name of docker image to use]
+
+```
+
+I'm in the process of upgrading to the latest micropython and the build script can be used with the 4.3 idf upstream image: espressif/idf:release-v4.3.
+
+
+Run the build using the helper script which has the appropriate compile time flags needed when linking into the micropython firmware.  At the moment this script is esp32 specific.
+```
+$ cd /src
+
+$ ./build-tensorflow-lite-micro.sh clean all
 
 ```
  
-use 'update-microlite.sh' script to copy the tensorflow static library into the lib directory.
+use 'update-microlite.sh' script to copy the tensorflow static library into the lib directory which is where micropython will pick it up from when linking the esp32 firmware.
+
+```
+$ cd /src
+
+$ ./update-microlite.sh
+copies: tensorflow/lite/micro/tools/make/gen/esp32_xtensa-esp32/lib/libtensorflow-microlite.a /src/lib
+```
 
 # How to Build Micropython
 
@@ -146,7 +165,7 @@ git submodule update --recursive
 
 cd micropython/mpy-cross
 
-make
+root@3453c74a93f6:/src/micropython# make -C mpy-cross V=1 CROSS_COMPILE=xtensa-esp32-elf- clean all
 ```
 
 Make sure to use the correct cross compiler if needed.
@@ -168,8 +187,12 @@ make -f /src/src/GNUmakefile-unix V=1
 ```
 
 ## Build for ESP32
+
+Be sure to be building inside of the idf docker container:
 ```
-make -f /src/micropython-modules/microlite/GNUmakefile-esp32 V=1 PART_SRC=/src/custom-partitions.csv all
+root@3453c74a93f6:~# cd /src/micropython/ports/esp32
+
+root@3453c74a93f6:/src/micropython/ports/esp32# make -f /src/micropython-modules/GNUmakefile-esp32 V=1 clean all
 
 ```
 
@@ -184,19 +207,20 @@ ESP32D0WDQ6 4MB Flash
 ```
 
 esptool.py --port COM5 erase_flash
-esptool.py --chip esp32 --port COM5 write_flash -z 0x1000 esp32-20180511-v1.9.4.bin
+esptool.py --chip esp32 --port COM5 write_flash -z 0x1000 ./micropython/ports/esp32/build-GENERIC/firmware.bin
 ```
 
 ![](./images/write-firmware.png)
 
 # Credits
 
-This firmware copied extensively from OpenMV.  Specifically starting from  
+As far as I am aware OpenMV (https://openmv.io/) was the first micropython firmware to support tensorflow.  I copied extensively from their approach to get inference working in the hello world example and also for micro-speech example.
 
+I started from their libtf code for how to interact with the Tensorflow C++ API from micropython:
 
 https://github.com/openmv/tensorflow-lib/blob/343fe84c97f73d2fe17a0ed23540d06c782fafe7/libtf.cc
 and
-https://github.com/openmv/tensorflow-lib/blob/343fe84c97f73d2fe17a0ed23540d06c782fafe7/libtf.h
+https://github.com/openmv/tensorflow-lib/blob/343fe84c97f73d2fe17a0ed23540d06c782fafe7/libtf.h 
 
-And probably will use their approach for the micro speech example:
+The audio-frontend module originated by looking at how openmv connected to the tensorflow microfrontend here:
 https://github.com/openmv/openmv/blob/3d9929eeae563c5b370ac86afa9216df50f0c079/src/omv/ports/stm32/modules/py_micro_speech.c
