@@ -25,8 +25,8 @@ from machine import Pin
 from machine import I2S
 
 #======= USER CONFIGURATION =======
-RECORD_TIME_IN_SECONDS = 5
-SAMPLE_RATE_IN_HZ = 8000
+RECORD_TIME_IN_SECONDS = 2
+SAMPLE_RATE_IN_HZ = 16000
 #======= USER CONFIGURATION =======
 
 WAV_SAMPLE_SIZE_IN_BITS = 16
@@ -34,7 +34,7 @@ WAV_SAMPLE_SIZE_IN_BYTES = WAV_SAMPLE_SIZE_IN_BITS // 8
 MIC_SAMPLE_BUFFER_SIZE_IN_BYTES = 4096
 SDCARD_SAMPLE_BUFFER_SIZE_IN_BYTES = MIC_SAMPLE_BUFFER_SIZE_IN_BYTES // 2 # why divide by 2? only using 16-bits of 32-bit samples
 NUM_SAMPLE_BYTES_TO_WRITE = RECORD_TIME_IN_SECONDS * SAMPLE_RATE_IN_HZ * WAV_SAMPLE_SIZE_IN_BYTES
-NUM_SAMPLES_IN_DMA_BUFFER = 256
+NUM_SAMPLES_IN_DMA_BUFFER = 320
 NUM_CHANNELS = 1
 
 # snip_16_mono():  snip 16-bit samples from a 32-bit mono sample stream
@@ -76,21 +76,23 @@ def create_wav_header(sampleRate, bitsPerSample, num_channels, num_samples):
 # change pins based on how you have wired up the microphone
 bck_pin = Pin(19)
 ws_pin = Pin(18)
-sdin_pin = Pin(5)
+sdin_pin = Pin(23)
 
 audio_in = I2S(
     I2S.NUM0,
     bck=bck_pin, ws=ws_pin, sdin=sdin_pin,
     standard=I2S.PHILIPS,
     mode=I2S.MASTER_RX,
-    dataformat=I2S.B32,
+    dataformat=I2S.B16,
     channelformat=I2S.ONLY_RIGHT,
     samplerate=SAMPLE_RATE_IN_HZ,
-    dmacount=50,
-    dmalen=NUM_SAMPLES_IN_DMA_BUFFER
+    dmacount=25,
+    dmalen=320
 )
 
 wav = open('mic_left_channel_16bits.wav','wb')
+
+pcm = open ('mic_left_channel_16bits.pcm', 'wb')
 
 # create header for WAV file and write to SD card
 wav_header = create_wav_header(
@@ -119,16 +121,20 @@ while num_sample_bytes_written_to_wav < NUM_SAMPLE_BYTES_TO_WRITE:
         num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv, timeout=0)
         if num_bytes_read_from_mic > 0:
             # snip upper 16-bits from each 32-bit microphone sample
-            num_bytes_snipped = snip_16_mono(mic_samples_mv[:num_bytes_read_from_mic], wav_samples_mv)
-            num_bytes_to_write = min(num_bytes_snipped, NUM_SAMPLE_BYTES_TO_WRITE - num_sample_bytes_written_to_wav)
+            
+            
+            # num_bytes_snipped = snip_16_mono(mic_samples_mv[:num_bytes_read_from_mic], wav_samples_mv)
+            # num_bytes_to_write = min(num_bytes_snipped, NUM_SAMPLE_BYTES_TO_WRITE - num_sample_bytes_written_to_wav)
             # write samples to WAV file
-            num_bytes_written = wav.write(wav_samples_mv[:num_bytes_to_write])
+            num_bytes_written = wav.write(mic_samples_mv[:num_bytes_read_from_mic])
+            pcm.write(mic_samples_mv[:num_bytes_read_from_mic])
             num_sample_bytes_written_to_wav += num_bytes_written
     except (KeyboardInterrupt, Exception) as e:
         print('caught exception {} {}'.format(type(e).__name__, e))
         break
 
 wav.close()
+pcm.close()
 audio_in.deinit()
 print('Done')
 print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)

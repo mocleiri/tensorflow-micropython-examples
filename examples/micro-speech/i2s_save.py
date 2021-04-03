@@ -24,8 +24,6 @@
 from machine import Pin
 from machine import I2S
 
-import mfcc
-
 #======= USER CONFIGURATION =======
 RECORD_TIME_IN_SECONDS = 5
 SAMPLE_RATE_IN_HZ = 8000
