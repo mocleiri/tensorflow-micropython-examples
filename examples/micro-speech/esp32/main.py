@@ -30,7 +30,7 @@ import microlite
 import utime
 from machine import Timer
 
-
+import math
 
 from machine import Pin
 from machine import I2S
@@ -67,7 +67,7 @@ audio_in = I2S(
     dataformat=I2S.B16,
     channelformat=I2S.ONLY_RIGHT,
     samplerate=16000,
-    dmacount=20,
+    dmacount=50,
     dmalen=320
 )
 
@@ -91,28 +91,6 @@ kUnknownIndex = 1
 kYesIndex = 2
 kNoIndex = 3
 
-inferenceResult = {0:0, 1:0, 2:0, 3:0}
-
-def maxIndex ():
-
-    maxValue = 0
-    maxIndex = 0
-
-    for index in range (4):
-        value = inferenceResult[index]
-
-        if (value > maxValue):
-            maxValue = value
-            maxIndex = index
-
-    print ("maxIndex=%d,maxValue=%d\n" %(maxIndex, maxValue))
-
-    if maxValue > 180:
-        return maxIndex
-    else:
-        return kUnknownIndex
-
-
 class Score:
 
     def __init__(self, kind, score):
@@ -128,6 +106,8 @@ class Results:
         self.no_data  = []
 
         self.index = 0
+        
+        self.score = Score("unknown", 0)
 
     def _computeAverageTotal (self, array_data):
         total = 0
@@ -141,6 +121,9 @@ class Results:
 
     def computeResults(self):
 
+        if self.index < 3:
+            return None
+        
         topScore = 0
         topScoreKind = None
 
@@ -168,9 +151,26 @@ class Results:
             topScoreKind = "no"
             topScore = no
 
-        return Score (topScoreKind, topScore)
+        if topScore > 200:
+            self.score.kind = topScoreKind
+            self.score.score = topScore
+        else:
+            self.score.kind = "unknown"
+            self.score.score = 0
+        return self.score
 
-
+    def resetScore(self):
+        self.index = 0;
+        
+        for i in range (len(self.silence_data)):
+            self.silence_data.pop(0)
+            self.unknown_data.pop(0)
+            self.yes_data.pop(0)
+            self.no_data.pop(0)
+        
+        self.score.kind = "unknown"
+        self.score.score = 0
+        
     def storeResults(self, silenceScore, unknownScore, yesScore, noScore):
 
         if self.index == 3:
@@ -205,14 +205,14 @@ def output_callback (microlite_interpreter):
     
     
     
-interp = microlite.interpreter(micro_speech_model,8 * 1024, input_callback, output_callback)
+interp = microlite.interpreter(micro_speech_model,10 * 1024, input_callback, output_callback)
 
 featureData = micro_speech.FeatureData(interp)
 
 # allocate sample arrays
 #   memoryview used to reduce heap allocation in while loop
 # 320 x 4
-mic_samples = bytearray(320*15*2)
+mic_samples = bytearray(320*5*2)
 mic_samples_mv = memoryview(mic_samples)
 
 
@@ -235,8 +235,8 @@ def timerCallback(timer):
     
     printPerSecondStats = True
     
-tim0 = Timer(0)
-tim0.init(period=1000, mode=Timer.PERIODIC, callback=timerCallback)
+# tim0 = Timer(0)
+# tim0.init(period=1000, mode=Timer.PERIODIC, callback=timerCallback)
 
 num_sample_bytes_written_to_wav = 0
 
@@ -244,12 +244,16 @@ bytesReadPerSecond = 0
 
 inferences = 0
 
+dump_spectrograms = open ('spectrograms.txt', 'w')
+
 print('Starting')
 # read 32-bit samples from I2S microphone, snip upper 16-bits, write snipped samples to WAV file
 while True:
     try:
         
+        
         gc.collect()
+            
         if printPerSecondStats:
             print ("Total Bytes read last second = %d\n" % (bytesReadPerSecond))
             print ("Total Inferences last second = %d\n" % (inferences))
@@ -259,10 +263,10 @@ while True:
         
         # try to read a block of samples from the I2S microphone
         # readinto() method returns 0 if no DMA buffer is full
-        start = utime.ticks_ms()
+       # start = utime.ticks_ms()
         num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv)
 
-        after_read = utime.ticks_ms()
+     #   after_read = utime.ticks_ms()
         
         bytesReadPerSecond = bytesReadPerSecond + num_bytes_read_from_mic
         
@@ -281,24 +285,24 @@ while True:
 
             trailing_10ms = micro_speech.segmentAudio(featureData, audio_samples, trailing_10ms)
 
-            totalSlices = totalSlices + 8
+            totalSlices = totalSlices + 5
             
-            after_spectogram = utime.ticks_ms()
+         #   after_spectogram = utime.ticks_ms()
             
         interp.invoke()
+        
         
         inferences = inferences + 1
 
         score = results.computeResults()
     
-        if score.kind == "yes":
-            found = "yes"
-            print ("found - %s@%dms\n" % (found, totalSlices*480))
-        elif score.kind == "no":
-            found = "no"
-            print ("found - %s@%dms\n" % (found, totalSlices*480))
+        if score != None:
+            if score.kind == "yes" or score.kind == "no":
+                print ("found - %s@%dms -> %d\n" % (score.kind, totalSlices*480, score.score))               
+                featureData.writeSpectogramValues(score.kind, dump_spectrograms)
+                results.resetScore()
     
-        after_inference = utime.ticks_ms()
+        #after_inference = utime.ticks_ms()
         
         # print ("total loop time = %d\n" %utime.ticks_diff(start, after_inference))
         
@@ -311,7 +315,8 @@ while True:
         break
 
 audio_in.deinit()
-tim0.deinit()
+#tim0.deinit()
+dump_spectrograms.close()
 print('Done')
 print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
 
