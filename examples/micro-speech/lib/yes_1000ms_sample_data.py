@@ -1,7 +1,7 @@
 # Example data copied from upstream
 # used for testing before we had things working on the microcontroller
 
-from ulab import numpy as np
+#from ulab import numpy as np
 
 yes_sample_data = [
     -7,     -12,    -18,    -20,    -20,    -21,    -21,    -25,    -29,
@@ -1784,4 +1784,4 @@ yes_sample_data = [
     -1,     4,      -7,     -8,     1,      8,      19,
 ]
 
-yes_1000ms_array = np.array(yes_sample_data, dtype=np.int16)
+# yes_1000ms_array = np.array(yes_sample_data, dtype=np.int16)

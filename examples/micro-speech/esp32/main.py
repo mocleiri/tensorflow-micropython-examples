@@ -27,6 +27,10 @@ import audio_frontend
 from ulab import numpy as np
 import micro_speech
 import microlite
+import utime
+from machine import Timer
+
+
 
 from machine import Pin
 from machine import I2S
@@ -51,25 +55,6 @@ SDCARD_SAMPLE_BUFFER_SIZE_IN_BYTES = MIC_SAMPLE_BUFFER_SIZE_IN_BYTES // 2 # why 
 NUM_SAMPLES_IN_DMA_BUFFER = 320
 NUM_CHANNELS = 1
 
-# snip_16_mono():  snip 16-bit samples from a 32-bit mono sample stream
-# assumption: I2S configuration for mono microphone.  e.g. I2S channelformat = ONLY_LEFT or ONLY_RIGHT
-# example snip:
-#   samples_in[] =  [0x44, 0x55, 0xAB, 0x77, 0x99, 0xBB, 0x11, 0x22]
-#   samples_out[] = [0xAB, 0x77, 0x11, 0x22]
-#   notes:
-#       samples_in[] arranged in little endian format:
-#           0x77 is the most significant byte of the 32-bit sample
-#           0x44 is the least significant byte of the 32-bit sample
-#
-# returns:  number of bytes snipped
-def snip_16_mono(samples_in, samples_out):
-    num_samples = len(samples_in) // 4
-    for i in range(num_samples):
-        samples_out[2*i] = samples_in[4*i + 2]
-        samples_out[2*i + 1] = samples_in[4*i + 3]
-
-    return num_samples * 2
-
 bck_pin = Pin(19)
 ws_pin = Pin(18)
 sdin_pin = Pin(23)
@@ -81,26 +66,11 @@ audio_in = I2S(
     mode=I2S.MASTER_RX,
     dataformat=I2S.B16,
     channelformat=I2S.ONLY_RIGHT,
-    samplerate=SAMPLE_RATE_IN_HZ,
-    dmacount=50,
+    samplerate=16000,
+    dmacount=20,
     dmalen=320
 )
 
-# wav = open('mic_left_channel_16bits.wav','wb')
-
-# create header for WAV file and write to SD card
-# wav_header = create_wav_header(
-#     SAMPLE_RATE_IN_HZ,
-#     WAV_SAMPLE_SIZE_IN_BITS,
-#     NUM_CHANNELS,
-#     SAMPLE_RATE_IN_HZ * RECORD_TIME_IN_SECONDS
-# )
-# num_bytes_written = wav.write(wav_header)
-
-
-
-
-featureData = micro_speech.FeatureData()
 
 def input_callback (microlite_interpreter):
 
@@ -114,14 +84,14 @@ def input_callback (microlite_interpreter):
 
     featureData.setInputTensorValues(inputTensor)
 
-
+totalSlices = 0
 
 kSilenceIndex = 0
 kUnknownIndex = 1
 kYesIndex = 2
 kNoIndex = 3
 
-inferenceResult = {}
+inferenceResult = {0:0, 1:0, 2:0, 3:0}
 
 def maxIndex ():
 
@@ -135,9 +105,88 @@ def maxIndex ():
             maxValue = value
             maxIndex = index
 
-    # print ("maxIndex=%d,maxValue=%d\n" %(maxIndex, maxValue))
+    print ("maxIndex=%d,maxValue=%d\n" %(maxIndex, maxValue))
 
-    return maxIndex
+    if maxValue > 180:
+        return maxIndex
+    else:
+        return kUnknownIndex
+
+
+class Score:
+
+    def __init__(self, kind, score):
+        self.kind = kind
+        self.score = score
+
+class Results:
+    
+    def __init__(self):
+        self.silence_data = []
+        self.unknown_data = []
+        self.yes_data = []
+        self.no_data  = []
+
+        self.index = 0
+
+    def _computeAverageTotal (self, array_data):
+        total = 0
+
+        array_length = len(array_data)
+
+        for i in range (array_length):
+            total = total + array_data[i]
+
+        return math.floor(total / array_length)
+
+    def computeResults(self):
+
+        topScore = 0
+        topScoreKind = None
+
+        silence = self._computeAverageTotal(self.silence_data)
+
+        if silence > 200:
+            topScoreKind = "silence"
+            topScore = silence
+
+        unknown = self._computeAverageTotal(self.unknown_data)
+
+        if unknown > topScore and unknown > 200:
+            topScoreKind = "unknown"
+            topScore = unknown
+
+        yes = self._computeAverageTotal(self.yes_data)
+
+        if yes > topScore and yes > 200:
+            topScoreKind = "yes"
+            topScore = yes
+
+        no = self._computeAverageTotal(self.no_data)
+
+        if no > topScore and no > 200:
+            topScoreKind = "no"
+            topScore = no
+
+        return Score (topScoreKind, topScore)
+
+
+    def storeResults(self, silenceScore, unknownScore, yesScore, noScore):
+
+        if self.index == 3:
+            self.silence_data.pop(0)
+            self.unknown_data.pop(0)
+            self.yes_data.pop(0)
+            self.no_data.pop(0)
+        else:
+            self.index = self.index + 1
+
+        self.silence_data.append(silenceScore)
+        self.unknown_data.append(unknownScore)
+        self.yes_data.append(yesScore)
+        self.no_data.append(noScore)
+
+results = Results()
 
 def output_callback (microlite_interpreter):
     # print ("output callback")
@@ -146,18 +195,24 @@ def output_callback (microlite_interpreter):
 
     # we expect there to be a category
 
-    for index in range (4):
-        result = outputTensor.getValue(index)
-        # print ("results at %d = result = %d\n" % (index, result))
-        inferenceResult[index] = result
-
-
+    silence = outputTensor.getValue(kSilenceIndex)
+    unknown = outputTensor.getValue(kUnknownIndex)
+    yes     = outputTensor.getValue(kYesIndex)
+    no      = outputTensor.getValue(kNoIndex)
+    
+    results.storeResults(silence, unknown, yes, no)
+    
+    
+    
+    
 interp = microlite.interpreter(micro_speech_model,8 * 1024, input_callback, output_callback)
+
+featureData = micro_speech.FeatureData(interp)
 
 # allocate sample arrays
 #   memoryview used to reduce heap allocation in while loop
 # 320 x 4
-mic_samples = bytearray(320*4)
+mic_samples = bytearray(320*15*2)
 mic_samples_mv = memoryview(mic_samples)
 
 
@@ -173,16 +228,44 @@ trailing_10ms = np.zeros(160, dtype=np.int16)
 
 # ucollections.deque(maxlen=16000)
 
+printPerSecondStats = False
+
+def timerCallback(timer):
+    global printPerSecondStats
+    
+    printPerSecondStats = True
+    
+tim0 = Timer(0)
+tim0.init(period=1000, mode=Timer.PERIODIC, callback=timerCallback)
+
 num_sample_bytes_written_to_wav = 0
+
+bytesReadPerSecond = 0
+
+inferences = 0
 
 print('Starting')
 # read 32-bit samples from I2S microphone, snip upper 16-bits, write snipped samples to WAV file
 while True:
     try:
+        
+        gc.collect()
+        if printPerSecondStats:
+            print ("Total Bytes read last second = %d\n" % (bytesReadPerSecond))
+            print ("Total Inferences last second = %d\n" % (inferences))
+            printPerSecondStats = False
+            bytesReadPerSecond = 0
+            inferences = 0
+        
         # try to read a block of samples from the I2S microphone
         # readinto() method returns 0 if no DMA buffer is full
+        start = utime.ticks_ms()
         num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv)
 
+        after_read = utime.ticks_ms()
+        
+        bytesReadPerSecond = bytesReadPerSecond + num_bytes_read_from_mic
+        
         if num_bytes_read_from_mic > 0:
             # shift these number of bytes off the front of the one_second_data array
             # append the int16 data
@@ -194,20 +277,45 @@ while True:
             # print ("read %d bytes into the int16_samples_mv buffer\n" % num_bytes_snipped)
             audio_samples = np.frombuffer(mic_samples_mv, dtype=np.int16)
 
-            trailing_10ms = segmentAudio(featureData, audio_samples, trailing_10ms)
+            # print ("read %d audio_samples = %d\n" % (num_bytes_read_from_mic, audio_samples.size()))
 
+            trailing_10ms = micro_speech.segmentAudio(featureData, audio_samples, trailing_10ms)
+
+            totalSlices = totalSlices + 8
+            
+            after_spectogram = utime.ticks_ms()
+            
         interp.invoke()
+        
+        inferences = inferences + 1
 
-        foundIndex = maxIndex()
+        score = results.computeResults()
+    
+        if score.kind == "yes":
+            found = "yes"
+            print ("found - %s@%dms\n" % (found, totalSlices*480))
+        elif score.kind == "no":
+            found = "no"
+            print ("found - %s@%dms\n" % (found, totalSlices*480))
+    
+        after_inference = utime.ticks_ms()
+        
+        # print ("total loop time = %d\n" %utime.ticks_diff(start, after_inference))
+        
+        # foundIndex = maxIndex()
 
-        print ("found index - %d\n" % foundIndex)
+        #print ("found index - %d\n" % foundIndex)
 
     except (KeyboardInterrupt, Exception) as e:
         print('caught exception {} {}'.format(type(e).__name__, e))
         break
 
 audio_in.deinit()
+tim0.deinit()
 print('Done')
 print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
+
+
+
 
 

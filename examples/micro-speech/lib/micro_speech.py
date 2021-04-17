@@ -1,3 +1,5 @@
+import math
+
 import audio_frontend
 from ulab import numpy as np
 
@@ -7,7 +9,7 @@ audio_frontend.configure()
 # frequency information. This has to be a power of two, and since we're dealing
 # with 30ms of 16KHz inputs, which means 480 samples, this is the next value.
 kMaxAudioSampleSize = 512
-kAudioSampleFrequency = WAV_SAMPLE_SIZE_IN_BYTES
+kAudioSampleFrequency = 16000
 
 kAudioOneMsSize = 16
 
@@ -38,9 +40,10 @@ class Slice:
 
 class FeatureData:
 
-    def __init__(self):
+    def __init__(self, tf_interp):
         self.slices=[]
         self.totalSlices = 0
+        self.tf_interp = tf_interp
 
     def addSlice(self, slice):
 
@@ -48,11 +51,14 @@ class FeatureData:
 
         self.slices.append(slice)
 
-        spectrogram = slice.getSpectrogram()
-
         if len (self.slices) > 49:
             self.slices.pop(0)
+            
 
+        # self.tf_interp.invoke()
+
+        
+        
         # print ("total slices = %d\n" % self.totalSlices)
         # print ("addSlice(): spectrogram length = %d\n" % spectrogram.size())
         # print (spectrogram)
@@ -68,11 +74,9 @@ class FeatureData:
 
             slice = self.slices[slice_index]
 
-            spectrogram = slice.getSpectrogram()
+            for spectrogram_index in range (slice.spectrogram.size()):
 
-            for spectrogram_index in range (spectrogram.size()):
-
-                inputTensor.setValue(counter, spectrogram[spectrogram_index])
+                inputTensor.setValue(counter, slice.spectrogram[spectrogram_index])
                 counter = counter + 1
 
 
@@ -94,11 +98,11 @@ def segmentAudio(featureData, audio, trailing_10ms):
 
     input_size = input_audio.size()
 
-    total_segments = input_size / stride_size
+    total_segments = math.floor(input_size / stride_size)
 
     start_index = 0
 
-    for segment_index in range (total_segments-1):
+    for segment_index in range (total_segments):
 
         end_index = min (start_index +  window_size, input_size)
 
@@ -112,3 +116,5 @@ def segmentAudio(featureData, audio, trailing_10ms):
 
     # return the trailing 10ms
     return np.array(input_audio[input_size-160:input_size], dtype=np.int16)
+
+
