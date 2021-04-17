@@ -29,6 +29,7 @@ import micro_speech
 import microlite
 import utime
 from machine import Timer
+import uasyncio as asyncio
 
 import math
 
@@ -54,22 +55,6 @@ MIC_SAMPLE_BUFFER_SIZE_IN_BYTES = 4096
 SDCARD_SAMPLE_BUFFER_SIZE_IN_BYTES = MIC_SAMPLE_BUFFER_SIZE_IN_BYTES // 2 # why divide by 2? only using 16-bits of 32-bit samples
 NUM_SAMPLES_IN_DMA_BUFFER = 320
 NUM_CHANNELS = 1
-
-bck_pin = Pin(19)
-ws_pin = Pin(18)
-sdin_pin = Pin(23)
-
-audio_in = I2S(
-    I2S.NUM0,
-    bck=bck_pin, ws=ws_pin, sdin=sdin_pin,
-    standard=I2S.PHILIPS,
-    mode=I2S.MASTER_RX,
-    dataformat=I2S.B16,
-    channelformat=I2S.ONLY_RIGHT,
-    samplerate=16000,
-    dmacount=50,
-    dmalen=320
-)
 
 
 def input_callback (microlite_interpreter):
@@ -211,8 +196,8 @@ featureData = micro_speech.FeatureData(interp)
 
 # allocate sample arrays
 #   memoryview used to reduce heap allocation in while loop
-# 320 x 4
-mic_samples = bytearray(320*5*2)
+# 320 x 4 (x2 because a bytearray is using uint8 bytes but we sample int16 bytes
+mic_samples = bytearray(320*2)
 mic_samples_mv = memoryview(mic_samples)
 
 
@@ -247,80 +232,112 @@ inferences = 0
 dump_spectrograms = open ('spectrograms.txt', 'w')
 
 print('Starting')
-# read 32-bit samples from I2S microphone, snip upper 16-bits, write snipped samples to WAV file
-while True:
-    try:
-        
-        
+
+samplingDelayMs = 50
+
+inferenceDelayMs = 100
+
+async def sampleAudio():
+
+    global trailing_10ms
+    global bytesReadPerSecond
+    global totalSlices
+
+
+    bck_pin = Pin(19)
+    ws_pin = Pin(18)
+    sdin_pin = Pin(23)
+
+    audio_in = I2S(
+        I2S.NUM0,
+        bck=bck_pin, ws=ws_pin, sdin=sdin_pin,
+        standard=I2S.PHILIPS,
+        mode=I2S.MASTER_RX,
+        dataformat=I2S.B16,
+        channelformat=I2S.ONLY_RIGHT,
+        samplerate=16000,
+        dmacount=5,
+        dmalen=320
+    )
+
+    while True:
+        try:
+
+
+            num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv)
+
+            #   after_read = utime.ticks_ms()
+
+            bytesReadPerSecond = bytesReadPerSecond + num_bytes_read_from_mic
+
+            if num_bytes_read_from_mic > 0:
+                # shift these number of bytes off the front of the one_second_data array
+                # append the int16 data
+
+
+                # num_bytes_snipped = snip_16_mono(mic_samples_mv[:num_bytes_read_from_mic], int16_samples_mv)
+
+                # print ("read %d bytes into the mic_samples_mv buffer\n" % num_bytes_read_from_mic)
+                # print ("read %d bytes into the int16_samples_mv buffer\n" % num_bytes_snipped)
+                audio_samples = np.frombuffer(mic_samples_mv, dtype=np.int16)
+
+                # print ("read %d audio_samples = %d\n" % (num_bytes_read_from_mic, audio_samples.size()))
+
+                trailing_10ms = micro_speech.segmentAudio(featureData, audio_samples, trailing_10ms)
+
+                totalSlices = totalSlices + 5
+
+                if printPerSecondStats:
+                    print ("Total Bytes read last second = %d\n" % (bytesReadPerSecond))
+                    print ("Total Inferences last second = %d\n" % (inferences))
+                    printPerSecondStats = False
+                    bytesReadPerSecond = 0
+                    inferences = 0
+
+            # try to read a block of samples from the I2S microphone
+            # readinto() method returns 0 if no DMA buffer is full
+            # start = utime.ticks_ms()
+            #   after_spectogram = utime.ticks_ms()
+            #after_inference = utime.ticks_ms()
+            # print ("total loop time = %d\n" %utime.ticks_diff(start, after_inference))
+            # foundIndex = maxIndex()
+            #print ("found index - %d\n" % foundIndex)
+
+        except (KeyboardInterrupt, Exception) as e:
+            print('caught exception {} {}'.format(type(e).__name__, e))
+            raise
+        finally:
+            audio_in.deinit()
+            #tim0.deinit()
+            dump_spectrograms.close()
+            print('Done')
+            print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
+
+
+
+async def runModel():
+
+    global inferences
+
+    interp.invoke()
+
+    inferences = inferences + 1
+
+    score = results.computeResults()
+
+    if score != None:
+        if score.kind == "yes" or score.kind == "no":
+            print ("found - %s@%dms -> %d\n" % (score.kind, totalSlices*480, score.score))
+            featureData.writeSpectogramValues(score.kind, dump_spectrograms)
+            results.resetScore()
+
+async def main():
+    sample_audio_task = asyncio.create_task(sampleAudio())
+    inference_task = asyncio.create_task(runModel())
+    while True:
         gc.collect()
-            
-        if printPerSecondStats:
-            print ("Total Bytes read last second = %d\n" % (bytesReadPerSecond))
-            print ("Total Inferences last second = %d\n" % (inferences))
-            printPerSecondStats = False
-            bytesReadPerSecond = 0
-            inferences = 0
-        
-        # try to read a block of samples from the I2S microphone
-        # readinto() method returns 0 if no DMA buffer is full
-       # start = utime.ticks_ms()
-        num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv)
+        await asyncio.sleep(1)
 
-     #   after_read = utime.ticks_ms()
-        
-        bytesReadPerSecond = bytesReadPerSecond + num_bytes_read_from_mic
-        
-        if num_bytes_read_from_mic > 0:
-            # shift these number of bytes off the front of the one_second_data array
-            # append the int16 data
-
-
-            # num_bytes_snipped = snip_16_mono(mic_samples_mv[:num_bytes_read_from_mic], int16_samples_mv)
-
-            # print ("read %d bytes into the mic_samples_mv buffer\n" % num_bytes_read_from_mic)
-            # print ("read %d bytes into the int16_samples_mv buffer\n" % num_bytes_snipped)
-            audio_samples = np.frombuffer(mic_samples_mv, dtype=np.int16)
-
-            # print ("read %d audio_samples = %d\n" % (num_bytes_read_from_mic, audio_samples.size()))
-
-            trailing_10ms = micro_speech.segmentAudio(featureData, audio_samples, trailing_10ms)
-
-            totalSlices = totalSlices + 5
-            
-         #   after_spectogram = utime.ticks_ms()
-            
-        interp.invoke()
-        
-        
-        inferences = inferences + 1
-
-        score = results.computeResults()
-    
-        if score != None:
-            if score.kind == "yes" or score.kind == "no":
-                print ("found - %s@%dms -> %d\n" % (score.kind, totalSlices*480, score.score))               
-                featureData.writeSpectogramValues(score.kind, dump_spectrograms)
-                results.resetScore()
-    
-        #after_inference = utime.ticks_ms()
-        
-        # print ("total loop time = %d\n" %utime.ticks_diff(start, after_inference))
-        
-        # foundIndex = maxIndex()
-
-        #print ("found index - %d\n" % foundIndex)
-
-    except (KeyboardInterrupt, Exception) as e:
-        print('caught exception {} {}'.format(type(e).__name__, e))
-        break
-
-audio_in.deinit()
-#tim0.deinit()
-dump_spectrograms.close()
-print('Done')
-print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
-
-
-
+asyncio.run(main())
 
 
