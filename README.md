@@ -192,11 +192,13 @@ Be sure to be building inside of the idf docker container:
 ```
 root@3453c74a93f6:~# cd /src/micropython/ports/esp32
 
-root@3453c74a93f6:/src/micropython/ports/esp32# make -f /src/micropython-modules/GNUmakefile-esp32 V=1 clean all
+root@3453c74a93f6:/src/micropython/ports/esp32# make -f /src/micropython-modules/GNUmakefile-esp32 PART_SRC=/src/custom-partitions.csv V=1 clean all
 
 ```
 
 Note as-is the firmware is too big to fit into the default Micropython partition scheme on a 4MB flash board.  The custom-partitions.csv parition table increases the space for the application and decreases the amount of filesystem available.
+
+At the moment the custom partition table needs to be specified this way.  I haven't found a way to include it deom the esp32 specific makefile.  Also this will change when I upgrade the build to support CMake in Micropython 1.15.
 
 I think there is about 1MB of flash filesystem and 3MB for the boot loader and application partitions.
 
