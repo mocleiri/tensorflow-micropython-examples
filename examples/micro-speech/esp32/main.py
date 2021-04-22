@@ -158,6 +158,8 @@ class Results:
         
     def storeResults(self, silenceScore, unknownScore, yesScore, noScore):
 
+#        print("storeResults: silence=%d, unknown=%d, yes=%d, no=%d\n" %(silenceScore, unknownScore, yesScore, noScore))
+        
         if self.index == 3:
             self.silence_data.pop(0)
             self.unknown_data.pop(0)
@@ -188,24 +190,21 @@ def output_callback (microlite_interpreter):
     results.storeResults(silence, unknown, yes, no)
     
     
-    
-    
 interp = microlite.interpreter(micro_speech_model,10 * 1024, input_callback, output_callback)
 
 featureData = micro_speech.FeatureData(interp)
 
-# allocate sample arrays
-#   memoryview used to reduce heap allocation in while loop
-# 320 x 4 (x2 because a bytearray is using uint8 bytes but we sample int16 bytes
-mic_samples = bytearray(320*2)
-mic_samples_mv = memoryview(mic_samples)
 
 
-#int16_samples = bytearray(640)
-#int16_samples_mv = memoryview(int16_samples)
+inferences = 0
 
-trailing_10ms = np.zeros(160, dtype=np.int16)
+dump_spectrograms = open ('spectrograms.txt', 'w')
 
+print('Starting')
+
+samplingDelayMs = 10
+
+inferenceDelayMs = 500
 
 
 # one_second_data = np.zeros(16000)
@@ -215,56 +214,62 @@ trailing_10ms = np.zeros(160, dtype=np.int16)
 
 printPerSecondStats = False
 
+bck_pin = Pin(19)
+ws_pin = Pin(18)
+sdin_pin = Pin(23)
+
+audio_in = I2S(
+    I2S.NUM0,
+    bck=bck_pin, ws=ws_pin, sdin=sdin_pin,
+    standard=I2S.PHILIPS,
+    mode=I2S.MASTER_RX,
+    dataformat=I2S.B16,
+    channelformat=I2S.ONLY_RIGHT,
+    samplerate=16000,
+    dmacount=4,
+    dmalen=320
+)
+
 def timerCallback(timer):
     global printPerSecondStats
     
     printPerSecondStats = True
-    
-# tim0 = Timer(0)
-# tim0.init(period=1000, mode=Timer.PERIODIC, callback=timerCallback)
 
-num_sample_bytes_written_to_wav = 0
+bytes_processed_since_last_inference = 0
 
-bytesReadPerSecond = 0
-
-inferences = 0
-
-dump_spectrograms = open ('spectrograms.txt', 'w')
-
-print('Starting')
-
-samplingDelayMs = 50
-
-inferenceDelayMs = 100
+#tim0 = Timer(0)
+#tim0.init(period=1000, mode=Timer.PERIODIC, callback=timerCallback)
 
 async def sampleAudio():
 
-    global trailing_10ms
     global bytesReadPerSecond
     global totalSlices
+    global printPerSecondStats
+    global audio_in
+    global bytes_processed_since_last_inference
+     
+        # allocate sample arrays
+    #   memoryview used to reduce heap allocation in while loop
+    # 320 x 4 (x2 because a bytearray is using uint8 bytes but we sample int16 bytes
+    mic_samples = bytearray(320*8*2)
+    mic_samples_mv = memoryview(mic_samples)
 
 
-    bck_pin = Pin(19)
-    ws_pin = Pin(18)
-    sdin_pin = Pin(23)
+    #int16_samples = bytearray(640)
+    #int16_samples_mv = memoryview(int16_samples)
 
-    audio_in = I2S(
-        I2S.NUM0,
-        bck=bck_pin, ws=ws_pin, sdin=sdin_pin,
-        standard=I2S.PHILIPS,
-        mode=I2S.MASTER_RX,
-        dataformat=I2S.B16,
-        channelformat=I2S.ONLY_RIGHT,
-        samplerate=16000,
-        dmacount=5,
-        dmalen=320
-    )
+    trailing_10ms = np.zeros(160, dtype=np.int16)
+    
+    num_sample_bytes_written_to_wav = 0
 
-    while True:
-        try:
+    bytesReadPerSecond = 0
 
-
-            num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv)
+    try:
+        while True:
+        
+            start = utime.ticks_ms()
+        
+            num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv, timeout=25)
 
             #   after_read = utime.ticks_ms()
 
@@ -274,7 +279,7 @@ async def sampleAudio():
                 # shift these number of bytes off the front of the one_second_data array
                 # append the int16 data
 
-
+                bytes_processed_since_last_inference = bytes_processed_since_last_inference + num_bytes_read_from_mic
                 # num_bytes_snipped = snip_16_mono(mic_samples_mv[:num_bytes_read_from_mic], int16_samples_mv)
 
                 # print ("read %d bytes into the mic_samples_mv buffer\n" % num_bytes_read_from_mic)
@@ -286,6 +291,8 @@ async def sampleAudio():
                 trailing_10ms = micro_speech.segmentAudio(featureData, audio_samples, trailing_10ms)
 
                 totalSlices = totalSlices + 5
+                
+                
 
                 if printPerSecondStats:
                     print ("Total Bytes read last second = %d\n" % (bytesReadPerSecond))
@@ -293,7 +300,14 @@ async def sampleAudio():
                     printPerSecondStats = False
                     bytesReadPerSecond = 0
                     inferences = 0
-
+            
+        
+            complete = utime.ticks_ms()
+        
+            # print ("sampling taking %d ms\n" % (utime.ticks_diff(start, complete)))
+        
+            await asyncio.sleep_ms(10)
+            
             # try to read a block of samples from the I2S microphone
             # readinto() method returns 0 if no DMA buffer is full
             # start = utime.ticks_ms()
@@ -303,41 +317,80 @@ async def sampleAudio():
             # foundIndex = maxIndex()
             #print ("found index - %d\n" % foundIndex)
 
-        except (KeyboardInterrupt, Exception) as e:
-            print('caught exception {} {}'.format(type(e).__name__, e))
-            raise
-        finally:
-            audio_in.deinit()
-            #tim0.deinit()
-            dump_spectrograms.close()
-            print('Done')
-            print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
+    except (KeyboardInterrupt, Exception) as e:
+        pass
+#        print('caught exception {} {}'.format(type(e).__name__, e))
+#        raise
+#    finally:
+#        audio_in.deinit()
+        #tim0.deinit()
+#        dump_spectrograms.close()
+#        print('Done')
+#        print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
 
 
+    
+    
+
+  
 
 async def runModel():
 
     global inferences
+    global interp
+    global results
+    global bytes_processed_since_last_inference
+    
+    while True:
 
-    interp.invoke()
+        start = utime.ticks_ms()
+        
+        interp.invoke()
+        
+        complete = utime.ticks_ms()
+        
+        # print ("inference taking %d ms\n" % (utime.ticks_diff(start, complete)))
+        # print ("bytes processed = %d\n" % bytes_processed_since_last_inference)
+        bytes_processed_since_last_inference = 0
+        
+        inferences = inferences + 1
 
-    inferences = inferences + 1
+        score = results.computeResults()
 
-    score = results.computeResults()
-
-    if score != None:
-        if score.kind == "yes" or score.kind == "no":
-            print ("found - %s@%dms -> %d\n" % (score.kind, totalSlices*480, score.score))
-            featureData.writeSpectogramValues(score.kind, dump_spectrograms)
-            results.resetScore()
+        if score != None:
+            if score.kind == "yes" or score.kind == "no":
+                print ("found - %s@%dms -> %d\n" % (score.kind, totalSlices*480, score.score))
+                featureData.writeSpectogramValues(score.kind, dump_spectrograms)
+                results.resetScore()
+                featureData.reset()
+                
+                
+        await asyncio.sleep_ms(120)
+        
+   
+        
 
 async def main():
     sample_audio_task = asyncio.create_task(sampleAudio())
     inference_task = asyncio.create_task(runModel())
     while True:
+      
         gc.collect()
-        await asyncio.sleep(1)
+        await asyncio.sleep_ms(100)
+       
 
-asyncio.run(main())
+try:
+    asyncio.run(main())
+except (KeyboardInterrupt, Exception) as e:
+    print('caught exception {} {}'.format(type(e).__name__, e))
+    raise
+finally:
+    audio_in.deinit()
+ #   tim0.deinit()
+    dump_spectrograms.close()
+    print('Done')
+    #print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
+
+
 
 
