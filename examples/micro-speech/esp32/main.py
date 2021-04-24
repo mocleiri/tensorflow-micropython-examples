@@ -36,6 +36,22 @@ import math
 from machine import Pin
 from machine import I2S
 
+def create_wav_header(sampleRate, bitsPerSample, num_channels, num_samples):
+    datasize = num_samples * num_channels * bitsPerSample // 8
+    o = bytes("RIFF",'ascii')                                                   # (4byte) Marks file as RIFF
+    o += (datasize + 36).to_bytes(4,'little')                                   # (4byte) File size in bytes excluding this and RIFF marker
+    o += bytes("WAVE",'ascii')                                                  # (4byte) File type
+    o += bytes("fmt ",'ascii')                                                  # (4byte) Format Chunk Marker
+    o += (16).to_bytes(4,'little')                                              # (4byte) Length of above format data
+    o += (1).to_bytes(2,'little')                                               # (2byte) Format type (1 - PCM)
+    o += (num_channels).to_bytes(2,'little')                                    # (2byte)
+    o += (sampleRate).to_bytes(4,'little')                                      # (4byte)
+    o += (sampleRate * num_channels * bitsPerSample // 8).to_bytes(4,'little')  # (4byte)
+    o += (num_channels * bitsPerSample // 8).to_bytes(2,'little')               # (2byte)
+    o += (bitsPerSample).to_bytes(2,'little')                                   # (2byte)
+    o += bytes("data",'ascii')                                                  # (4byte) Data Chunk Marker
+    o += (datasize).to_bytes(4,'little')                                        # (4byte) Data size in bytes
+    return o
 
 micro_speech_model = bytearray(18288)
 
@@ -158,7 +174,7 @@ class Results:
         
     def storeResults(self, silenceScore, unknownScore, yesScore, noScore):
 
-#        print("storeResults: silence=%d, unknown=%d, yes=%d, no=%d\n" %(silenceScore, unknownScore, yesScore, noScore))
+        # print("storeResults: silence=%d, unknown=%d, yes=%d, no=%d\n" %(silenceScore, unknownScore, yesScore, noScore))
         
         if self.index == 3:
             self.silence_data.pop(0)
@@ -226,8 +242,8 @@ audio_in = I2S(
     dataformat=I2S.B16,
     channelformat=I2S.ONLY_RIGHT,
     samplerate=16000,
-    dmacount=4,
-    dmalen=320
+    dmacount=9,
+    dmalen=960
 )
 
 def timerCallback(timer):
@@ -251,9 +267,10 @@ async def sampleAudio():
         # allocate sample arrays
     #   memoryview used to reduce heap allocation in while loop
     # 320 x 4 (x2 because a bytearray is using uint8 bytes but we sample int16 bytes
-    mic_samples = bytearray(320*8*2)
+    mic_samples = bytearray(480*18*2)
     mic_samples_mv = memoryview(mic_samples)
 
+    
 
     #int16_samples = bytearray(640)
     #int16_samples_mv = memoryview(int16_samples)
@@ -269,7 +286,7 @@ async def sampleAudio():
         
             start = utime.ticks_ms()
         
-            num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv, timeout=25)
+            num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv, timeout=0)
 
             #   after_read = utime.ticks_ms()
 
@@ -282,7 +299,7 @@ async def sampleAudio():
                 bytes_processed_since_last_inference = bytes_processed_since_last_inference + num_bytes_read_from_mic
                 # num_bytes_snipped = snip_16_mono(mic_samples_mv[:num_bytes_read_from_mic], int16_samples_mv)
 
-                # print ("read %d bytes into the mic_samples_mv buffer\n" % num_bytes_read_from_mic)
+                print ("read %d bytes into the mic_samples_mv buffer\n" % num_bytes_read_from_mic)
                 # print ("read %d bytes into the int16_samples_mv buffer\n" % num_bytes_snipped)
                 audio_samples = np.frombuffer(mic_samples_mv, dtype=np.int16)
 
@@ -365,7 +382,7 @@ async def runModel():
                 featureData.reset()
                 
                 
-        await asyncio.sleep_ms(120)
+        await asyncio.sleep_ms(100)
         
    
         
@@ -376,7 +393,7 @@ async def main():
     while True:
       
         gc.collect()
-        await asyncio.sleep_ms(100)
+        await asyncio.sleep_ms(1)
        
 
 try:
