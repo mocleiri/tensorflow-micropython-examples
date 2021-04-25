@@ -5,6 +5,8 @@ import micro_speech
 from ulab import numpy as np
 import microlite
 import io
+import no_1000ms_sample_data
+import yes_1000ms_sample_data
 
 
 micro_speech_model = bytearray(18288)
@@ -78,8 +80,11 @@ no_pcm_input = no_1000ms_sample_data.no_1000ms_array
 
 print ("length of no input = %d\n" % (len (no_pcm_input)))
 
+noFeatureData = micro_speech.FeatureData(interp)
 
-noFeatureData = segmentAudio(no_pcm_input)
+trailing_10ms = np.zeros(160, dtype=np.int16)
+
+trailing_10ms = micro_speech.segmentAudio(noFeatureData, no_pcm_input, trailing_10ms)
 
 currentFeatureData = noFeatureData
 
@@ -95,7 +100,11 @@ yes_pcm_input = yes_1000ms_sample_data.yes_1000ms_array
 
 print ("length of yes input = %d\n" % (len (yes_pcm_input)))
 
-yesFeatureData = segmentAudio(yes_pcm_input)
+yesFeatureData = micro_speech.FeatureData(interp)
+
+trailing_10ms = np.zeros(160, dtype=np.int16)
+
+micro_speech.segmentAudio(yesFeatureData, yes_pcm_input, trailing_10ms)
 
 currentFeatureData = yesFeatureData
 

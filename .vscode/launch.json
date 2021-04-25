@@ -34,9 +34,9 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/micropython/ports/unix/micropython",
-            "args": ["${workspaceFolder}/examples/micro-speech/main-unix.py"],
+            "args": ["${workspaceFolder}/examples/micro-speech/unix/main.py"],
             "stopAtEntry": true,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/examples/micro-speech/unix",
             "environment": [],
             "externalConsole": false,
             "symbolLoadInfo": {
