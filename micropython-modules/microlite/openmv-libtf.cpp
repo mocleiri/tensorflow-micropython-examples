@@ -122,27 +122,27 @@ extern "C" {
         return 0;
     }
 
-    int libtf_initialize_micro_features()
-    {
-        microlite::MicropythonErrorReporter micro_error_reporter;
-        tflite::ErrorReporter *error_reporter = &micro_error_reporter;
-
-        if (InitializeMicroFeatures(error_reporter) != kTfLiteOk) {
-            return 1;
-        }
-        return 0;
-    }
-
-    int libtf_generate_micro_features(const int16_t* input, int input_size,
-            int output_size, int8_t* output, size_t* num_samples_read)
-    {
-        microlite::MicropythonErrorReporter micro_error_reporter;
-        tflite::ErrorReporter *error_reporter = &micro_error_reporter;
-
-        if (GenerateMicroFeatures(error_reporter, input, input_size,
-                    output_size, output, num_samples_read) != kTfLiteOk) {
-            return 1;
-        }
-        return 0;
-    }
+//    int libtf_initialize_micro_features()
+//    {
+//        microlite::MicropythonErrorReporter micro_error_reporter;
+//        tflite::ErrorReporter *error_reporter = &micro_error_reporter;
+//
+//        if (InitializeMicroFeatures(error_reporter) != kTfLiteOk) {
+//            return 1;
+//        }
+//        return 0;
+//    }
+//
+//    int libtf_generate_micro_features(const int16_t* input, int input_size,
+//            int output_size, int8_t* output, size_t* num_samples_read)
+//    {
+//        microlite::MicropythonErrorReporter micro_error_reporter;
+//        tflite::ErrorReporter *error_reporter = &micro_error_reporter;
+//
+//        if (GenerateMicroFeatures(error_reporter, input, input_size,
+//                    output_size, output, num_samples_read) != kTfLiteOk) {
+//            return 1;
+//        }
+//        return 0;
+//    }
 }
