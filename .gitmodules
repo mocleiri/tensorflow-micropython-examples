@@ -1,7 +1,7 @@
 [submodule "micropython"]
 	path = micropython
 	url = https://github.com/mocleiri/micropython.git
-	branch = master-i2s
+	branch = microlite
 [submodule "tensorflow"]
 	path = tensorflow
 	url = https://github.com/tensorflow/tensorflow.git
