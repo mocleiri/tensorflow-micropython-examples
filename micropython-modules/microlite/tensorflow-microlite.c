@@ -81,14 +81,14 @@ STATIC mp_obj_t tensor_get_value (mp_obj_t self_in, mp_obj_t index_obj) {
 
         int8_t int8_value = tensor->data.int8[index];
 
-        return MP_OBJ_NEW_SMALL_INT(int8_value);
+        return mp_obj_new_int(int8_value);
     }
      else if (tensor->type == kTfLiteUInt8) {
         mp_int_t index = mp_obj_int_get_checked(index_obj);
 
         uint8_t int8_value = tensor->data.uint8[index];
 
-        return MP_OBJ_NEW_SMALL_INT(int8_value);
+        return mp_obj_new_int(int8_value);
     }
     else {
         mp_raise_TypeError("Unsupported Tensor Type");
@@ -111,10 +111,18 @@ STATIC mp_obj_t tensor_set_value (mp_obj_t self_in, mp_obj_t index_obj, mp_obj_t
         tensor->data.f[index] = mp_obj_get_float_to_f(value);
     }
     else if (tensor->type == kTfLiteInt8) {
-        tensor->data.int8[index] = MP_OBJ_SMALL_INT_VALUE(value);
+        mp_int_t int_value = mp_obj_int_get_checked(value);
+
+        int8_t int8_value = (int8_t)int_value;
+
+        tensor->data.int8[index] = int8_value;
     }
     else if (tensor->type == kTfLiteUInt8) {
-        tensor->data.int8[index] = MP_OBJ_SMALL_INT_VALUE(value);
+        mp_int_t int_value = mp_obj_int_get_checked(value);
+
+        uint8_t uint8_value = (uint8_t)int_value;
+
+        tensor->data.uint8[index] = uint8_value;
     }
     else {
         mp_raise_TypeError("Unsupported Tensor Type");

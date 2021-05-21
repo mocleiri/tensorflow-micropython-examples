@@ -153,11 +153,11 @@ STATIC mp_obj_t execute (mp_obj_t input) {
     struct FrontendOutput frontend_output = FrontendProcessSamples(
         &state, frontend_input->array, frontend_input->len, &num_samples_read);
 
-//     mp_printf(MP_PYTHON_PRINTER, "num_samples_read %d\n", num_samples_read);
+    //  mp_printf(MP_PYTHON_PRINTER, "num_samples_read %d\n", num_samples_read);
 
-    ndarray_obj_t *micro_features_output = ndarray_new_linear_array(frontend_output.size, NDARRAY_INT16);
+    ndarray_obj_t *micro_features_output = ndarray_new_linear_array(frontend_output.size, NDARRAY_INT8);
 
-    int16_t *output_array = (int16_t *)micro_features_output->array;
+    int8_t *output_array = (int8_t *)micro_features_output->array;
 
     for (size_t i = 0; i < frontend_output.size; ++i) {
       // These scaling values are derived from those used in input_data.py in the
@@ -188,7 +188,7 @@ STATIC mp_obj_t execute (mp_obj_t input) {
       }
       // I may need to cast this
       // and also make sure the output is of size int16
-      output_array[i] = (int16_t)value;
+      output_array[i] = (int8_t)value;
     }
 
     return MP_OBJ_FROM_PTR(micro_features_output);
