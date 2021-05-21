@@ -5,7 +5,7 @@
 [submodule "tensorflow"]
 	path = tensorflow
 	url = https://github.com/tensorflow/tensorflow.git
-	branch = r2.4
+	branch = r2.5
 [submodule "micropython-ulab"]
 	path = micropython-ulab
 	url = https://github.com/mocleiri/micropython-ulab.git
