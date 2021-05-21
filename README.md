@@ -168,7 +168,7 @@ Be sure to be building inside of the idf docker container:
 ```
 root@3453c74a93f6:~# cd /src/micropython/ports/esp32
 
-root@3453c74a93f6:/src/micropython/ports/esp32# make -b MICROLITE USER_C_MOOULES=/src/micropython-modules/micropython.cmake
+root@3453c74a93f6:/src/micropython/ports/esp32# make BOARD=MICROLITE USER_C_MOOULES=/src/micropython-modules/micropython.cmake
 
 ```
 
@@ -176,6 +176,14 @@ Note as-is the firmware is too big to fit into the default Micropython partition
 
 
 I think there is about 1MB of flash filesystem and 3MB for the boot loader and application partitions.
+
+### Additional Board configurations
+
+The MICROLITE_SPIRAM_16M board definition also exists.  It creates the microlite firmware for boards with SPIRAM and 16 MB of Flash.  There is 3MB allocated to the firmware and 13 MB available for the flash file-system.
+
+```
+$ make BOARD=MICROLITE_SPIRAM_16M USER_C_MODULES=/src/micropython-modules/micropython.cmake
+```
 
 # Flash image
 
