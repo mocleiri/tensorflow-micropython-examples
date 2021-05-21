@@ -3,7 +3,7 @@
 DOCKER_IMAGE=$1
 
 if test -z "$DOCKER_IMAGE"; then
-	DOCKER_IMAGE=mocleiri/esp-idf-4.0.1
+	DOCKER_IMAGE=espressif/idf:release-v4.2
 fi
 
 winpty docker run -i -t -v /$(pwd):/src $DOCKER_IMAGE bash
