@@ -2,6 +2,8 @@
 
 The purpose of this project is to make a custom micropython firmware that installs tensorflow lite for micro controllers and allows for experimentation.
 
+I want to incubate this project here but if it is successful at enabling tensorflow lite for microcontroller models to be run from micropython I will explore how to merge the microlite and audio_frontend modules into the tensorflow for microcontrollers upstream repository.
+
 ## Architecture
 
 | Area        | Are           | 
@@ -16,19 +18,21 @@ At the moment all of the tensor operations are included in tensorflow-microlite.
 
 # Status
 
-Tensorflow for ESP32 and Unix can be built and accessed by the microlite c/c++ module.  Inference is working for the hello-world example
+The hello world example works and micro_speech is almost complete.  When micro_speech is done and the documentation improved version 1.0.0 will be released.
 
-I have ESP32 boards but it should work for other ports as well.
+# Prebuilt Firmware
 
-I am in progress on the micro_speech example.  I am able to read wav data from an INMP441 microphone using miketeachman's i2s module and am working on the audio_frontend needed to convert the wav data into spectogram format needed by the micro_speech model.
+Pre 1.0.0 Firmware is available for ESP32 4MB and ESP32 8MB PSRAM and 16 MB Flash boards here: 
+https://github.com/mocleiri/tensorflow-micropython-firmware/blob/master/firmware/latest/Readme.md
 
 # Roadmap
 
-Inference is working for the hello-world sine example.  
+Inference is working for the hello-world sine example and mostly for the micro_speech example.
 
-1. Implement the other modules:
-2. Working on implementing micro speech.
-3. Find way to externalize tensor op's from firmware
+1. Cleanup micro_speech implementation: https://github.com/mocleiri/tensorflow-micropython-examples/issues/2
+2. Implement the magic wand example: https://github.com/mocleiri/tensorflow-micropython-examples/issues/5
+3. Investigate automatic tensor quantization: https://github.com/mocleiri/tensorflow-micropython-examples/issues/6
+4. Find way to externalize tensor op's from firmware:https://github.com/mocleiri/tensorflow-micropython-examples/issues/7
 
 ## Implement 'micro-speech' example
 
@@ -60,51 +64,26 @@ First the submodules need to be initialized.  We have 3:
 git submodule init --recursive
 ```
 
-Next we need to link the micropython-ulab/code directory under micropython-modules so that the build can find it.
-
-```
-$ cd micropython-modules
-
-$ ln -s ../micropython-ulab/code ulab
-
-```
-
 For building there are two main steps:
 1. Build **tensorflow-microlite.a** which is the tensorflow library from the tensorflow sources using the port specific cross compiler.
 2. Build micropython firmware which builds the microlite, audio_frontend and ulab modules.  At the moment we are also building the i2s module as we are on the miketeachman branch for this purpose to support dma sampling of audio for the microspeech example.
 
-Building can be done using specially prepared docker images for esp32 and unix.  But mostly for the unix build I have been building in Microsoft Visual Studio Code through the linux subsystem for windows (to be documented)
+
+Building for esp32 can be done using the [Espressif idf docker images](https://hub.docker.com/r/espressif/idf):
+1. espressif/idf:v4.0.2
+2. espressif/idf:release-v4.1
+3. espressif/idf:release-v4.2
+4. espressif/idf:release-v4.3
+
+Buiding for the unix port can be done using visual studio in the windows subsystem for linux mode.  The necessary build and debug actions are contained within the repository (Detailed Documentation to follow).
 
 ## Docker Environments
 
-There are two docker images:
-1. build-environment for linux: docker/unix-build/Dockerfile
-2. build-envionrment for esp32: esp-idf version 4.0.1 image, for building esp32.
-
-### Make esp-idf docker image for version 4.0.1
-
-At the moment to build using the esp32 idf version 4 we need to use version 4.0.1 which is just outside of the tags espressif publish in their dockerhub repository.  
-
-I checked and 4.0.2 doesn't work right so you will need to first build a dockerfile from the latest esp-idf source code.
-
-Build base esp-idf 4.0.1 Docker image:
-1. Checkout the latest [esp-idf](https://github.com/espressif/esp-idf) then go into **tools/docker**.
-2. docker build -t espressif-idf-v4.0.1 --build-arg IDF_CHECKOUT_REF=4c81978a3e2220674a432a588292a4c860eef27b .
-
-This is the 4.0.1 version that micropython wants.  I have done the above steps and put the resultant image into dockerhub here:
-https://hub.docker.com/r/mocleiri/esp-idf-4.0.1
-
-Next in order to build the audio_frontend we need to have the xxd library installed.
-
-The docker/esp32-build/Dockerfile can be used to create such an image.
+https://github.com/mocleiri/tensorflow-micropython-examples/blob/master/build-with-docker-idf.sh
 
 ```
-$ docker build -t esp-idf-4.0.1-builder .
+$ build-with-docker-idf.sh espressif/idf:v4.0.2
 ```
-
-### Make unix build environment
-
-The unix build environment needs to be built manually at the moment.
 
 ### Helper Scripts
 
@@ -136,9 +115,6 @@ Start the docker image using:
 ./build-with-docker-idf.sh [optional: name of docker image to use]
 
 ```
-
-I'm in the process of upgrading to the latest micropython and the build script can be used with the 4.3 idf upstream image: espressif/idf:release-v4.3.
-
 
 Run the build using the helper script which has the appropriate compile time flags needed when linking into the micropython firmware.  At the moment this script is esp32 specific.
 ```
@@ -192,13 +168,12 @@ Be sure to be building inside of the idf docker container:
 ```
 root@3453c74a93f6:~# cd /src/micropython/ports/esp32
 
-root@3453c74a93f6:/src/micropython/ports/esp32# make -f /src/micropython-modules/GNUmakefile-esp32 PART_SRC=/src/custom-partitions.csv V=1 clean all
+root@3453c74a93f6:/src/micropython/ports/esp32# make -b MICROLITE USER_C_MOOULES=/src/micropython-modules/micropython.cmake
 
 ```
 
-Note as-is the firmware is too big to fit into the default Micropython partition scheme on a 4MB flash board.  The custom-partitions.csv parition table increases the space for the application and decreases the amount of filesystem available.
+Note as-is the firmware is too big to fit into the default Micropython partition scheme on a 4MB flash board.  There is a custom-partitions.csv parition table increases the space for the application and decreases the amount of filesystem available.  This is the main difference of the MICROLITE board from the GENERIC board.
 
-At the moment the custom partition table needs to be specified this way.  I haven't found a way to include it deom the esp32 specific makefile.  Also this will change when I upgrade the build to support CMake in Micropython 1.15.
 
 I think there is about 1MB of flash filesystem and 3MB for the boot loader and application partitions.
 
