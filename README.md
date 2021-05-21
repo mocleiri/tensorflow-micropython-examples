@@ -2,6 +2,8 @@
 
 The purpose of this project is to make a custom micropython firmware that installs tensorflow lite for micro controllers and allows for experimentation.
 
+I want to incubate this project here but if it is successful at enabling tensorflow lite for microcontroller models to be run from micropython I will explore how to merge the microlite and audio_frontend modules into the tensorflow for microcontrollers upstream repository.
+
 ## Architecture
 
 | Area        | Are           | 
