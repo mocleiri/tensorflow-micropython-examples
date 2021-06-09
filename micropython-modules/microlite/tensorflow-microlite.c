@@ -63,6 +63,21 @@ STATIC void tensor_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kin
     mp_print_str(print, ")\n");
 }
 
+STATIC mp_obj_t tensor_get_tensor_type (mp_obj_t self_in, mp_obj_t index_obj) {
+
+    microlite_tensor_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    TfLiteTensor * tensor = (TfLiteTensor *)self->tf_tensor;
+
+    char *type = TfLiteTypeGetName(tensor->type);
+
+    return mp_obj_new_str(type, strlen(type));
+
+}
+
+MP_DEFINE_CONST_FUN_OBJ_0(microlite_tensor_get_tensor_type, tensor_get_tensor_type);
+
+
 STATIC mp_obj_t tensor_get_value (mp_obj_t self_in, mp_obj_t index_obj) {
 
     microlite_tensor_obj_t *self = MP_OBJ_TO_PTR(self_in);
@@ -189,6 +204,7 @@ MP_DEFINE_CONST_FUN_OBJ_2(microlite_tensor_quantize_int8_to_float, tensor_quanti
 STATIC const mp_rom_map_elem_t tensor_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_getValue), MP_ROM_PTR(&microlite_tensor_get_value) },
     { MP_ROM_QSTR(MP_QSTR_setValue), MP_ROM_PTR(&microlite_tensor_set_value) },
+    { MP_ROM_QSTR(MP_QSTR_getType), MP_ROM_PTR(&microlite_tensor_get_tensor_type) },
     { MP_ROM_QSTR(MP_QSTR_quantizeFloatToInt8), MP_ROM_PTR(&microlite_tensor_quantize_float_to_int8) },
     { MP_ROM_QSTR(MP_QSTR_quantizeInt8ToFloat), MP_ROM_PTR(&microlite_tensor_quantize_int8_to_float) }
 };
