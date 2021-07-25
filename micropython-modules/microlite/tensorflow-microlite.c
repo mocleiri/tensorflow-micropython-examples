@@ -43,6 +43,7 @@
 
 const mp_obj_type_t microlite_model_type;
 const mp_obj_type_t microlite_interpreter_type;
+const mp_obj_type_t microlite_op_resolver_type;
 const mp_obj_type_t microlite_tensor_type;
 
 // - microlite tensor
@@ -232,22 +233,24 @@ STATIC void interpreter_print(const mp_print_t *print, mp_obj_t self_in, mp_prin
 }
 
 STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
-    mp_arg_check_num(n_args, n_kw, 4, 4, false);
+    mp_arg_check_num(n_args, n_kw, 5, 5, false);
 
 //    args:
 //      - model
-
+//      - op_resolver
 //      - size of the tensor area
 //      - input callback function
 //      - output callback function
 
     mp_obj_array_t *model = MP_OBJ_TO_PTR (args[0]);
 
-    int tensor_area_len = mp_obj_get_int(args[1]);
+    microlite_op_resolver_obj_t *op_resolver = MP_OBJ_TO_PTR (args[1]);
 
-    mp_obj_t input_callback_fn = args[2];
+    int tensor_area_len = mp_obj_get_int(args[2]);
 
-    mp_obj_t output_callback_fn = args[3];
+    mp_obj_t input_callback_fn = args[3];
+
+    mp_obj_t output_callback_fn = args[4];
 
     if (input_callback_fn != mp_const_none && !mp_obj_is_callable(input_callback_fn)) {
         mp_raise_ValueError(MP_ERROR_TEXT("Invalid Input Callback Handler"));
@@ -281,7 +284,7 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
 
     mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d\n", self->model_data->len, tensor_area_len);
 
-    libtf_init(self);
+    libtf_init(self, op_resolver->tf_op_resolver);
 
     return MP_OBJ_FROM_PTR(self);
 }
@@ -356,6 +359,99 @@ const mp_obj_type_t microlite_interpreter_type = {
     .print = interpreter_print,
     .make_new = interpreter_make_new,
     .locals_dict = (mp_obj_dict_t*)&interpreter_locals_dict,
+};
+
+STATIC void op_resolver_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
+    (void)kind;
+    microlite_op_resolver_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    if (self.mode == ALL_OPS) {
+        mp_print_str(print, "AllOpResolver(All tensorflow micro ops are loaded and available)");
+    }
+    else if (self.mode == SPECIFIED_OPS) {
+        mp_print_str(print, "MutableOpResolver(Only specified ops are loaded)");
+    }
+    else {
+        mp_raise_ValueError("Unknown mode: ", self.mode);
+    }
+}
+
+STATIC mp_obj_t op_resolver_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
+    enum {
+        ARG_mode,
+        ARG_size // if mode is SPECIFIED_OPS then this is how many ops we will expect
+    };
+
+    static const mp_arg_t allowed_args[] = {
+        { MP_QSTR_mode,     MP_ARG_KW_ONLY | MP_ARG_REQUIRED | MP_ARG_INT,   {.u_int = -1} },
+        { MP_QSTR_size,     MP_ARG_KW_ONLY | MP_ARG_INT,   {.u_int = -1} }
+    };
+
+    mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
+    mp_arg_parse_all(n_args, pos_args, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
+
+    microlite_op_resolver_obj_t *op_resolver = m_new_obj(microlite_op_resolver_obj_t);
+
+    op_resolver->mode = args[ARG_mode].u_int;
+
+    //
+    // ---- Check validity of arguments ----
+    //
+
+    // is Mode valid?
+    if ((op_resolver->mode != (ALL_OPS) &&
+        (op_resolver->mode != (SPECIFIED_OPS))) {
+        mp_raise_ValueError(MP_ERROR_TEXT("invalid mode"));
+    }
+
+    // is Bits valid?
+    if (op_resolver->mode == SPECIFIED_OPS) {
+        op_resolver->number_of_ops = args[ARG_size].u_int;
+
+    }
+    else {
+        // all ops mode
+        op_resolver->number_of_ops = 126; // todo make this match the true number
+
+    }
+    
+    
+    self->base.type = &microlite_op_resolver_type;
+
+    libtf_init(self);
+
+    return MP_OBJ_FROM_PTR(self);
+}
+STATIC void mutable_op_resolver_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
+    (void)kind;
+    microlite_interpreter_obj_t *self = MP_OBJ_TO_PTR(self_in);
+    // It looks like we need to keep an array of the names of the ops that they registered so that we can report here 
+    // which ones were added
+    mp_print_str(print, "MutableOpResolver(In the future we will report which ops are loaded");
+    mp_print_str(print, ")");
+}
+
+// interpreter class
+STATIC const mp_rom_map_elem_t op_resolver_locals_dict_table[] = {
+    { MP_ROM_QSTR(MP_QSTR_invoke), MP_ROM_PTR(&microlite_interpreter_invoke) },
+    { MP_ROM_QSTR(MP_QSTR_getInputTensor), MP_ROM_PTR(&microlite_interpreter_get_input_tensor) },
+    { MP_ROM_QSTR(MP_QSTR_getOutputTensor), MP_ROM_PTR(&microlite_interpreter_get_output_tensor) },
+
+    // Constants
+    { MP_ROM_QSTR(MP_QSTR_ALL_OPS),              MP_ROM_INT(I2S_MODE_MASTER | I2S_MODE_RX) },
+    { MP_ROM_QSTR(MP_QSTR_TX),              MP_ROM_INT(I2S_MODE_MASTER | I2S_MODE_TX) },
+    { MP_ROM_QSTR(MP_QSTR_STEREO),          MP_ROM_INT(STEREO) },
+    { MP_ROM_QSTR(MP_QSTR_MONO),            MP_ROM_INT(MONO) },
+};
+
+STATIC MP_DEFINE_CONST_DICT(op_resolver_locals_dict, op_resolver_locals_dict_table);
+
+const mp_obj_type_t microlite_op_resolver_type = {
+    { &mp_type_type },
+    .name = MP_QSTR_AllOpResolver,
+    .print = all_op_resolver_print,
+    .make_new = all_op_resolver_make_new,
+    .locals_dict = (mp_obj_dict_t*)&op_resolver_locals_dict,
 };
 
 
@@ -456,6 +552,8 @@ STATIC const mp_rom_map_elem_t microlite_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_microlite) },
     { MP_ROM_QSTR(MP_QSTR___version__), MP_ROM_PTR(&microlite_version_string_obj) },
     { MP_ROM_QSTR(MP_QSTR_interpreter), (mp_obj_t)&microlite_interpreter_type },
+    { MP_ROM_QSTR(MP_QSTR_all_op_resolver), (mp_obj_t)&microlite_all_op_resolver_type },
+    { MP_ROM_QSTR(MP_QSTR_mutable_op_resolver), (mp_obj_t)&microlite_mutable_op_resolver_type },
     { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_tensor_type },
     { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_model_type }
 };

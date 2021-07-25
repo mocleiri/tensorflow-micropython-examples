@@ -46,7 +46,16 @@ typedef void (*libtf_input_data_callback_t)(TfLiteTensor *input_tensor); // Actu
 // Callback to use the model output data byte array (laid out in [height][width][channel] order).
 typedef void (*libtf_output_data_callback_t)(TfLiteTensor *output_tensor); // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
 
-int libtf_init(microlite_interpreter_obj_t *microlite_interpretor);
+// used to call the op_resolver.add{op_name} to register the op.
+int libtf_op_resolver_add(mp_obj_t tf_op_resolver, mp_obj_str_t *op_name);
+
+// used to initialize the tflite::OpResolver
+// it can either be all operations or use the mutable op where we register it.
+int libtf_init_op_resolver(microlite_op_resolver_obj_t *microlite_op_resolver);
+
+// used to initialize the tflite::interpreter in C++
+// and to put the pointers into the microlite_interpreter object
+int libtf_init_interpreter(microlite_interpreter_obj_t *microlite_interpretor);
 
 TfLiteTensor *libtf_get_input_tensor(microlite_interpreter_obj_t *microlite_interpretor, mp_uint_t index);
 
