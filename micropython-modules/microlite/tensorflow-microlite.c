@@ -264,17 +264,14 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
 
     microlite_interpreter_obj_t *self = m_new_obj(microlite_interpreter_obj_t);
 
+    self->base.type = &microlite_interpreter_type;
+
     self->input_callback = input_callback_fn;
     self->output_callback = output_callback_fn;
 
     self->inference_count = 0;
 
-    self->base.type = &microlite_interpreter_type;
-
-
-
-    // for now hard code the model to the hello world model
-    // self->model_data = mp_obj_new_bytearray_by_ref(g_model_len, g_model);
+    self->op_resolver = op_resolver;
 
     self->model_data = model;
 
@@ -284,7 +281,7 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
 
     mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d\n", self->model_data->len, tensor_area_len);
 
-    libtf_init(self, op_resolver->tf_op_resolver);
+    libtf_init(self);
 
     return MP_OBJ_FROM_PTR(self);
 }
@@ -411,46 +408,127 @@ STATIC mp_obj_t op_resolver_make_new(const mp_obj_type_t *type, size_t n_args, s
     }
     else {
         // all ops mode
-        op_resolver->number_of_ops = 126; // todo make this match the true number
+        op_resolver->number_of_ops = 128; 
 
     }
     
     
     self->base.type = &microlite_op_resolver_type;
 
-    libtf_init(self);
+    libtf_init_op_resolver(self);
 
     return MP_OBJ_FROM_PTR(self);
 }
-STATIC void mutable_op_resolver_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
-    (void)kind;
-    microlite_interpreter_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    // It looks like we need to keep an array of the names of the ops that they registered so that we can report here 
-    // which ones were added
-    mp_print_str(print, "MutableOpResolver(In the future we will report which ops are loaded");
-    mp_print_str(print, ")");
+
+STATIC int op_resolver_add(mp_obj_t self_in, mp_int_t op) {
+
+    microlite_op_resolver_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    return libtf_op_resolver_add(self, op);
+
 }
+
+MP_DEFINE_CONST_FUN_OBJ_2(microlite_op_resolver_add, op_resolver_add);
 
 // interpreter class
 STATIC const mp_rom_map_elem_t op_resolver_locals_dict_table[] = {
-    { MP_ROM_QSTR(MP_QSTR_invoke), MP_ROM_PTR(&microlite_interpreter_invoke) },
-    { MP_ROM_QSTR(MP_QSTR_getInputTensor), MP_ROM_PTR(&microlite_interpreter_get_input_tensor) },
-    { MP_ROM_QSTR(MP_QSTR_getOutputTensor), MP_ROM_PTR(&microlite_interpreter_get_output_tensor) },
+    { MP_ROM_QSTR(MP_QSTR_addOp), MP_ROM_PTR(&microlite_op_resolver_add) },
 
     // Constants
-    { MP_ROM_QSTR(MP_QSTR_ALL_OPS),              MP_ROM_INT(I2S_MODE_MASTER | I2S_MODE_RX) },
-    { MP_ROM_QSTR(MP_QSTR_TX),              MP_ROM_INT(I2S_MODE_MASTER | I2S_MODE_TX) },
-    { MP_ROM_QSTR(MP_QSTR_STEREO),          MP_ROM_INT(STEREO) },
-    { MP_ROM_QSTR(MP_QSTR_MONO),            MP_ROM_INT(MONO) },
+    { MP_ROM_QSTR(MP_QSTR_ALL_OPS),         MP_ROM_INT(ALL_OPS) },
+    { MP_ROM_QSTR(MP_QSTR_SPECIFIED_OPS),   MP_ROM_INT(SPECIFIED_OPS) },
+    { MP_ROM_QSTR(MP_QSTR_ABS),            MP_ROM_INT(MicroliteOperator_ABS) },
+    { MP_ROM_QSTR(MP_QSTR_ADD),            MP_ROM_INT(MicroliteOperator_ADD) },
+      { MP_ROM_QSTR(MP_QSTR_ADD_N),            MP_ROM_INT(MicroliteOperator_ADD_N) },
+      { MP_ROM_QSTR(MP_QSTR_MAX),            MP_ROM_INT(MicroliteOperator_ARG_MAX) },
+      { MP_ROM_QSTR(MP_QSTR_MIN),            MP_ROM_INT(MicroliteOperator_ARG_MIN) },
+      { MP_ROM_QSTR(MP_QSTR_AVERAGE_POOL_2D),            MP_ROM_INT(MicroliteOperator_AVERAGE_POOL_2D) },
+      { MP_ROM_QSTR(MP_QSTR_BATCH_TO_SPACE_ND),            MP_ROM_INT(MicroliteOperator_BATCH_TO_SPACE_ND) },
+      { MP_ROM_QSTR(MP_QSTR_CAST),            MP_ROM_INT(MicroliteOperator_CAST) },
+      { MP_ROM_QSTR(MP_QSTR_CEIL),            MP_ROM_INT(MicroliteOperator_CEIL) },
+      { MP_ROM_QSTR(MP_QSTR_CIRCULAR_BUFFER),            MP_ROM_INT(MicroliteOperator_CIRCULAR_BUFFER) },
+      { MP_ROM_QSTR(MP_QSTR_CONCATENATION),            MP_ROM_INT(MicroliteOperator_CONCATENATION) },
+        { MP_ROM_QSTR(MP_QSTR_CONV_2D),            MP_ROM_INT(MicroliteOperator_CONV_2D) },
+        { MP_ROM_QSTR(MP_QSTR_COS),            MP_ROM_INT(MicroliteOperator_COS) },
+        { MP_ROM_QSTR(MP_QSTR_CUMSUM),            MP_ROM_INT(MicroliteOperator_CUMSUM) },
+        { MP_ROM_QSTR(MP_QSTR_DEPTH_TO_SPACE),            MP_ROM_INT(MicroliteOperator_DEPTH_TO_SPACE) },
+        { MP_ROM_QSTR(MP_QSTR_DEPTHWISE_CONV_2D),            MP_ROM_INT(MicroliteOperator_DEPTHWISE_CONV_2D) },
+        { MP_ROM_QSTR(MP_QSTR_DEQUANTIZE),            MP_ROM_INT(MicroliteOperator_DEQUANTIZE) },
+        { MP_ROM_QSTR(MP_QSTR_DETECTION_POSTPROCESS),            MP_ROM_INT(MicroliteOperator_DETECTION_POSTPROCESS) },
+        { MP_ROM_QSTR(MP_QSTR_ELU),            MP_ROM_INT(MicroliteOperator_ELU) },
+        { MP_ROM_QSTR(MP_QSTR_EQUAL),            MP_ROM_INT(MicroliteOperator_EQUAL) },
+        { MP_ROM_QSTR(MP_QSTR_ETHOSU),            MP_ROM_INT(MicroliteOperator_ETHOSU) },
+        { MP_ROM_QSTR(MP_QSTR_EXP),            MP_ROM_INT(MicroliteOperator_EXP) },
+        { MP_ROM_QSTR(MP_QSTR_EXPAND_DIMS),            MP_ROM_INT(MicroliteOperator_EXPAND_DIMS) },
+        { MP_ROM_QSTR(MP_QSTR_FILL),            MP_ROM_INT(MicroliteOperator_FILL) },
+        { MP_ROM_QSTR(MP_QSTR_FLOOR),            MP_ROM_INT(MicroliteOperator_FLOOR) },
+        { MP_ROM_QSTR(MP_QSTR_FLOOR_DIV),            MP_ROM_INT(MicroliteOperator_FLOOR_DIV) },
+        { MP_ROM_QSTR(MP_QSTR_FLOOR_MOD),            MP_ROM_INT(MicroliteOperator_FLOOR_MOD) },
+        { MP_ROM_QSTR(MP_QSTR_FULLY_CONNECTED),            MP_ROM_INT(MicroliteOperator_FULLY_CONNECTED) },
+        { MP_ROM_QSTR(MP_QSTR_GATHER),            MP_ROM_INT(MicroliteOperator_GATHER) },
+        { MP_ROM_QSTR(MP_QSTR_GATHER_ND),            MP_ROM_INT(MicroliteOperator_GATHER_ND) },
+        { MP_ROM_QSTR(MP_QSTR_GREATER),            MP_ROM_INT(MicroliteOperator_GREATER) },
+        { MP_ROM_QSTR(MP_QSTR_GREATER_EQUAL),            MP_ROM_INT(MicroliteOperator_GREATER_EQUAL) },
+        { MP_ROM_QSTR(MP_QSTR_HARD_SWISH),            MP_ROM_INT(MicroliteOperator_HARD_SWISH) },
+        { MP_ROM_QSTR(MP_QSTR_IF),            MP_ROM_INT(MicroliteOperator_IF) },
+        { MP_ROM_QSTR(MP_QSTR_L2_NORMALIZATION),            MP_ROM_INT(MicroliteOperator_L2_NORMALIZATION) },
+        { MP_ROM_QSTR(MP_QSTR_L2_POOL_2D),            MP_ROM_INT(MicroliteOperator_L2_POOL_2D) },
+        { MP_ROM_QSTR(MP_QSTR_LEAKY_RELU),            MP_ROM_INT(MicroliteOperator_LEAKY_RELU) },
+        { MP_ROM_QSTR(MP_QSTR_LESS),            MP_ROM_INT(MicroliteOperator_LESS) },
+        { MP_ROM_QSTR(MP_QSTR_LESS_EQUAL),            MP_ROM_INT(MicroliteOperator_LESS_EQUAL) },
+        { MP_ROM_QSTR(MP_QSTR_LOG),            MP_ROM_INT(MicroliteOperator_LOG) },
+        { MP_ROM_QSTR(MP_QSTR_LOGICAL_AND),            MP_ROM_INT(MicroliteOperator_LOGICAL_AND) },
+        { MP_ROM_QSTR(MP_QSTR_LOGICAL_NOT),            MP_ROM_INT(MicroliteOperator_LOGICAL_NOT) },
+        { MP_ROM_QSTR(MP_QSTR_LOGICAL_OR),            MP_ROM_INT(MicroliteOperator_LOGICAL_OR) },
+        { MP_ROM_QSTR(MP_QSTR_LOGISTIC),            MP_ROM_INT(MicroliteOperator_LOGISTIC) },
+        { MP_ROM_QSTR(MP_QSTR_MAXIMUM),            MP_ROM_INT(MicroliteOperator_MAXIMUM) },
+        { MP_ROM_QSTR(MP_QSTR_MAX_POOL_2D),            MP_ROM_INT(MicroliteOperator_MAX_POOL_2D) },
+        { MP_ROM_QSTR(MP_QSTR_MEAN),            MP_ROM_INT(MicroliteOperator_MEAN) },
+        { MP_ROM_QSTR(MP_QSTR_MINIMUM),            MP_ROM_INT(MicroliteOperator_MINIMUM) },
+        { MP_ROM_QSTR(MP_QSTR_MUL),            MP_ROM_INT(MicroliteOperator_MUL) },
+        { MP_ROM_QSTR(MP_QSTR_NEG),            MP_ROM_INT(MicroliteOperator_NEG) },
+        { MP_ROM_QSTR(MP_QSTR_NOT_EQUAL),            MP_ROM_INT(MicroliteOperator_NOT_EQUAL) },
+        { MP_ROM_QSTR(MP_QSTR_PACK),            MP_ROM_INT(MicroliteOperator_PACK) },
+        { MP_ROM_QSTR(MP_QSTR_PAD),            MP_ROM_INT(MicroliteOperator_PAD) },
+        { MP_ROM_QSTR(MP_QSTR_PADV2),            MP_ROM_INT(MicroliteOperator_PADV2) },
+        { MP_ROM_QSTR(MP_QSTR_PRELU),            MP_ROM_INT(MicroliteOperator_PRELU) },
+        { MP_ROM_QSTR(MP_QSTR_QUANTIZE),            MP_ROM_INT(MicroliteOperator_QUANTIZE) },
+        { MP_ROM_QSTR(MP_QSTR_REDUCE_MAX),            MP_ROM_INT(MicroliteOperator_REDUCE_MAX) },
+        { MP_ROM_QSTR(MP_QSTR_RELU),            MP_ROM_INT(MicroliteOperator_RELU) },
+        { MP_ROM_QSTR(MP_QSTR_RELU6),            MP_ROM_INT(MicroliteOperator_RELU6) },
+        { MP_ROM_QSTR(MP_QSTR_RESHAPE),            MP_ROM_INT(MicroliteOperator_RESHAPE) },
+        { MP_ROM_QSTR(MP_QSTR_RESIZE_BILINEAR),            MP_ROM_INT(MicroliteOperator_RESIZE_BILINEAR) },
+        { MP_ROM_QSTR(MP_QSTR_RESIZE_NEAREST_NEIGHBOR),            MP_ROM_INT(MicroliteOperator_RESIZE_NEAREST_NEIGHBOR) },
+        { MP_ROM_QSTR(MP_QSTR_ROUND),            MP_ROM_INT(MicroliteOperator_ROUND) },
+        { MP_ROM_QSTR(MP_QSTR_RSQRT),            MP_ROM_INT(MicroliteOperator_RSQRT) },
+        { MP_ROM_QSTR(MP_QSTR_SHAPE),            MP_ROM_INT(MicroliteOperator_SHAPE) },
+        { MP_ROM_QSTR(MP_QSTR_SIN),            MP_ROM_INT(MicroliteOperator_SIN) },
+        { MP_ROM_QSTR(MP_QSTR_SOFTMAX),            MP_ROM_INT(MicroliteOperator_SOFTMAX) },
+        { MP_ROM_QSTR(MP_QSTR_SPACE_TO_BATCH_ND),            MP_ROM_INT(MicroliteOperator_SPACE_TO_BATCH_ND) },
+        { MP_ROM_QSTR(MP_QSTR_SPACE_TO_DEPTH),            MP_ROM_INT(MicroliteOperator_SPACE_TO_DEPTH) },
+        { MP_ROM_QSTR(MP_QSTR_SPLIT),            MP_ROM_INT(MicroliteOperator_SPLIT) },
+        { MP_ROM_QSTR(MP_QSTR_SPLIT_V),            MP_ROM_INT(MicroliteOperator_SPLIT_V) },
+        { MP_ROM_QSTR(MP_QSTR_SQUEEZE),            MP_ROM_INT(MicroliteOperator_SQUEEZE) },
+        { MP_ROM_QSTR(MP_QSTR_SQRT),            MP_ROM_INT(MicroliteOperator_SQRT) },
+        { MP_ROM_QSTR(MP_QSTR_SQUARE),            MP_ROM_INT(MicroliteOperator_SQUARE) },
+        { MP_ROM_QSTR(MP_QSTR_STRIDED_SLICE),            MP_ROM_INT(MicroliteOperator_STRIDED_SLICE) },
+        { MP_ROM_QSTR(MP_QSTR_SUB),            MP_ROM_INT(MicroliteOperator_SUB) },
+        { MP_ROM_QSTR(MP_QSTR_SVDF),            MP_ROM_INT(MicroliteOperator_SVDF) },
+        { MP_ROM_QSTR(MP_QSTR_TANH),            MP_ROM_INT(MicroliteOperator_TANH) },
+        { MP_ROM_QSTR(MP_QSTR_TRANSPOSE_CONV),            MP_ROM_INT(MicroliteOperator_TRANSPOSE_CONV) },
+        { MP_ROM_QSTR(MP_QSTR_TRANSPOSE),            MP_ROM_INT(MicroliteOperator_TRANSPOSE) },
+        { MP_ROM_QSTR(MP_QSTR_UNPACK),            MP_ROM_INT(MicroliteOperator_UNPACK) },
+        { MP_ROM_QSTR(MP_QSTR_ZEROS_LIKE),            MP_ROM_INT(MicroliteOperator_ZEROS_LIKE) },
+
 };
 
 STATIC MP_DEFINE_CONST_DICT(op_resolver_locals_dict, op_resolver_locals_dict_table);
 
 const mp_obj_type_t microlite_op_resolver_type = {
     { &mp_type_type },
-    .name = MP_QSTR_AllOpResolver,
-    .print = all_op_resolver_print,
-    .make_new = all_op_resolver_make_new,
+    .name = MP_QSTR_OpResolver,
+    .print = op_resolver_print,
+    .make_new = op_resolver_make_new,
     .locals_dict = (mp_obj_dict_t*)&op_resolver_locals_dict,
 };
 
@@ -467,11 +545,11 @@ STATIC void model_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind
 }
 
 STATIC mp_obj_t model_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
-    mp_arg_check_num(n_args, n_kw, 4, 4, false);
+    mp_arg_check_num(n_args, n_kw, 5, 5, false);
 
 //    args:
 //      - model
-
+//      - op_resolver
 //      - size of the tensor area
 //      - input callback function
 //      - output callback function
@@ -500,6 +578,7 @@ STATIC mp_obj_t model_make_new(const mp_obj_type_t *type, size_t n_args, size_t 
     self->input_callback = input_callback_fn;
     self->output_callback = output_callback_fn;
 
+    self->op_resolver = op_resolver;
     self->inference_count = 0;
 
     self->base.type = &microlite_interpreter_type;

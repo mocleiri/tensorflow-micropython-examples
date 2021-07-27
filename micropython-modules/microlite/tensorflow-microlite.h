@@ -153,7 +153,7 @@ typedef struct _microlite_interpreter_obj_t {
     mp_obj_base_t base;
     mp_obj_array_t  *model_data;
     mp_obj_array_t  *tensor_area;
-    microlite_op_resolver_obj_t op_resolver;
+    microlite_op_resolver_obj_t *op_resolver;
     mp_obj_t tf_interpreter;
     mp_obj_t tf_model;
     mp_obj_t tf_error_reporter;

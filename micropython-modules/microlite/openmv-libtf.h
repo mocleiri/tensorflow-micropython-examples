@@ -47,7 +47,7 @@ typedef void (*libtf_input_data_callback_t)(TfLiteTensor *input_tensor); // Actu
 typedef void (*libtf_output_data_callback_t)(TfLiteTensor *output_tensor); // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
 
 // used to call the op_resolver.add{op_name} to register the op.
-int libtf_op_resolver_add(mp_obj_t tf_op_resolver, mp_obj_str_t *op_name);
+int libtf_op_resolver_add(microlite_op_resolver_obj_t *op_resolver, microlite_op_t op_to_add) {
 
 // used to initialize the tflite::OpResolver
 // it can either be all operations or use the mutable op where we register it.
@@ -70,19 +70,6 @@ int libtf_interpreter_outputs(microlite_interpreter_obj_t *microlite_interpretor
 // Errors are printed to stdout.
 int libtf_invoke(microlite_interpreter_obj_t *interpreter); // Callback to use the model output data byte array.
 
-// Returns 0 on success and 1 on failure.
-// Errors are printed to stdout.
-int libtf_initialize_micro_features();
-
-// Returns 0 on success and 1 on failure.
-// Errors are printed to stdout.
-// Converts audio sample data into a more compact form that's
-// appropriate for feeding into a neural network.
-int libtf_generate_micro_features(const int16_t* input, // Audio samples
-                                  int input_size, // Audio samples size
-                                  int output_size, // Slice size
-                                  int8_t* output, // Slice data
-                                  size_t* num_samples_read); // Number of samples used.
 
 #ifdef __cplusplus
 }
