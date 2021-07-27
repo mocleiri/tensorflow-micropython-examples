@@ -137,7 +137,7 @@ enum {
 
 typedef struct _microlite_op_resolver_obj_t {
     mp_obj_base_t base;   
-    microlite_op_mode_t mode; 
+    mp_int_t mode; 
     mp_int_t number_of_ops;
     mp_obj_t tf_op_resolver;
 } microlite_op_resolver_obj_t;

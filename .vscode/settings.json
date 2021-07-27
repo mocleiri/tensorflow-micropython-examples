@@ -19,7 +19,9 @@
         "functional": "cpp",
         "regex": "cpp",
         "stdint.h": "c",
-        "stdint-intn.h": "c"
+        "stdint-intn.h": "c",
+        "openmv-libtf.h": "c",
+        "cstring": "c"
     },
     "python.pythonPath": "/usr/bin/python3"
 }

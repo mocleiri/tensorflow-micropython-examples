@@ -38,8 +38,10 @@
 
 #include "openmv-libtf.h"
 
-#include "tensorflow/lite/version.h"
+// #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/c/common.h"
+
+#include <string.h>
 
 const mp_obj_type_t microlite_model_type;
 const mp_obj_type_t microlite_interpreter_type;
@@ -76,7 +78,7 @@ STATIC mp_obj_t tensor_get_tensor_type (mp_obj_t self_in, mp_obj_t index_obj) {
 
 }
 
-MP_DEFINE_CONST_FUN_OBJ_0(microlite_tensor_get_tensor_type, tensor_get_tensor_type);
+MP_DEFINE_CONST_FUN_OBJ_2(microlite_tensor_get_tensor_type, tensor_get_tensor_type);
 
 
 STATIC mp_obj_t tensor_get_value (mp_obj_t self_in, mp_obj_t index_obj) {
@@ -281,7 +283,7 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
 
     mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d\n", self->model_data->len, tensor_area_len);
 
-    libtf_init(self);
+    libtf_init_interpreter(self);
 
     return MP_OBJ_FROM_PTR(self);
 }
@@ -362,18 +364,19 @@ STATIC void op_resolver_print(const mp_print_t *print, mp_obj_t self_in, mp_prin
     (void)kind;
     microlite_op_resolver_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
-    if (self.mode == ALL_OPS) {
+    if (self->mode == ALL_OPS) {
         mp_print_str(print, "AllOpResolver(All tensorflow micro ops are loaded and available)");
     }
-    else if (self.mode == SPECIFIED_OPS) {
+    else if (self->mode == SPECIFIED_OPS) {
         mp_print_str(print, "MutableOpResolver(Only specified ops are loaded)");
     }
     else {
-        mp_raise_ValueError("Unknown mode: ", self.mode);
+        // mp_raise_ValueError("Unknown mode: ", self->mode);
+        mp_raise_ValueError("Unknown mode!");
     }
 }
 
-STATIC mp_obj_t op_resolver_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
+STATIC mp_obj_t op_resolver_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *input_args) {
     enum {
         ARG_mode,
         ARG_size // if mode is SPECIFIED_OPS then this is how many ops we will expect
@@ -384,8 +387,11 @@ STATIC mp_obj_t op_resolver_make_new(const mp_obj_type_t *type, size_t n_args, s
         { MP_QSTR_size,     MP_ARG_KW_ONLY | MP_ARG_INT,   {.u_int = -1} }
     };
 
+    mp_map_t kw_args;
+    mp_map_init_fixed_table(&kw_args, n_kw, input_args + n_args);
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
-    mp_arg_parse_all(n_args, pos_args, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
+
+    mp_arg_parse_all(n_args, input_args, &kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
     microlite_op_resolver_obj_t *op_resolver = m_new_obj(microlite_op_resolver_obj_t);
 
@@ -397,7 +403,7 @@ STATIC mp_obj_t op_resolver_make_new(const mp_obj_type_t *type, size_t n_args, s
 
     // is Mode valid?
     if ((op_resolver->mode != (ALL_OPS) &&
-        (op_resolver->mode != (SPECIFIED_OPS))) {
+        (op_resolver->mode != (SPECIFIED_OPS)))) {
         mp_raise_ValueError(MP_ERROR_TEXT("invalid mode"));
     }
 
@@ -413,19 +419,22 @@ STATIC mp_obj_t op_resolver_make_new(const mp_obj_type_t *type, size_t n_args, s
     }
     
     
-    self->base.type = &microlite_op_resolver_type;
+    op_resolver->base.type = &microlite_op_resolver_type;
 
-    libtf_init_op_resolver(self);
+    libtf_init_op_resolver(op_resolver);
 
-    return MP_OBJ_FROM_PTR(self);
+    return MP_OBJ_FROM_PTR(op_resolver);
 }
 
-STATIC int op_resolver_add(mp_obj_t self_in, mp_int_t op) {
+STATIC mp_obj_t op_resolver_add(mp_obj_t self_in, mp_obj_t op_obj) {
 
     microlite_op_resolver_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
-    return libtf_op_resolver_add(self, op);
+    mp_int_t op = mp_obj_get_int(op_obj);
 
+    libtf_op_resolver_add(self, op);
+
+    return mp_const_none;
 }
 
 MP_DEFINE_CONST_FUN_OBJ_2(microlite_op_resolver_add, op_resolver_add);
@@ -533,94 +542,11 @@ const mp_obj_type_t microlite_op_resolver_type = {
 };
 
 
-// model class
-STATIC void model_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
-    (void)kind;
-    microlite_model_obj_t *self = MP_OBJ_TO_PTR(self_in);
-    mp_print_str(print, "model(size=");
-
-    mp_print_str(print, mp_obj_new_int(self->model_data->len));
-
-    mp_print_str(print, ")");
-}
-
-STATIC mp_obj_t model_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
-    mp_arg_check_num(n_args, n_kw, 5, 5, false);
-
-//    args:
-//      - model
-//      - op_resolver
-//      - size of the tensor area
-//      - input callback function
-//      - output callback function
-
-    
-    // mp_obj_array_t model = MP_OBJ_FROM_PTR (args[0]);
-
-    int tensor_area_len = mp_obj_get_int(args[1]);
-
-    mp_obj_t input_callback_fn = args[2];
-
-    mp_obj_t output_callback_fn = args[3];
-
-    if (input_callback_fn != mp_const_none && !mp_obj_is_callable(input_callback_fn)) {
-        mp_raise_ValueError(MP_ERROR_TEXT("Invalid Input Callback Handler"));
-    }
-
-    if (output_callback_fn != mp_const_none && !mp_obj_is_callable(output_callback_fn)) {
-        mp_raise_ValueError(MP_ERROR_TEXT("Invalid Output Callback Handler"));
-    }
-
-    // to start with just hard code to the hello-world model
-
-    microlite_interpreter_obj_t *self = m_new_obj(microlite_interpreter_obj_t);
-
-    self->input_callback = input_callback_fn;
-    self->output_callback = output_callback_fn;
-
-    self->op_resolver = op_resolver;
-    self->inference_count = 0;
-
-    self->base.type = &microlite_interpreter_type;
-
-
-
-    // for now hard code the model to the hello world model
-    // self->model_data = mp_obj_new_bytearray_by_ref(g_model_len, g_model);
-    // self->model_data = model;
-
-    byte *tensor_area_buffer = m_new(byte, tensor_area_len);
-
-    self->tensor_area = mp_obj_new_bytearray_by_ref (tensor_area_len, tensor_area_buffer);
-
-    mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d\n", g_model_len, tensor_area_len);
-
-    libtf_init(self);
-
-    return MP_OBJ_FROM_PTR(self);
-}
-// STATIC const mp_rom_map_elem_t model_locals_dict_table[] = {
-//     { MP_ROM_QSTR(MP_QSTR_invoke), MP_ROM_PTR(&microlite_interpreter_invoke) },
-//     { MP_ROM_QSTR(MP_QSTR_getInputTensor), MP_ROM_PTR(&microlite_interpreter_get_input_tensor) },
-//     { MP_ROM_QSTR(MP_QSTR_getOutputTensor), MP_ROM_PTR(&microlite_interpreter_get_output_tensor) },
-// };
-
-// STATIC MP_DEFINE_CONST_DICT(interpreter_locals_dict, interpreter_locals_dict_table);
-
-const mp_obj_type_t microlite_model_type = {
-    { &mp_type_type },
-    .name = MP_QSTR_model,
-    .print = model_print,
-    .make_new = model_make_new,
-    .locals_dict = (mp_obj_dict_t*)&interpreter_locals_dict,
-};
-
-
 // main microlite module
 
 // needs to be manually updated when the firmware is built.
 // see if we can pass through the project git commit when this is run.
-STATIC const MP_DEFINE_STR_OBJ(microlite_version_string_obj, TFLITE_VERSION_STRING);
+STATIC const MP_DEFINE_STR_OBJ(microlite_version_string_obj, "TBD"); // TODO #15 find out where this comes from in tflite-micro  repo
 
 // Define all properties of the module.
 // Table entries are key/value pairs of the attribute name (a string)
@@ -631,10 +557,8 @@ STATIC const mp_rom_map_elem_t microlite_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_microlite) },
     { MP_ROM_QSTR(MP_QSTR___version__), MP_ROM_PTR(&microlite_version_string_obj) },
     { MP_ROM_QSTR(MP_QSTR_interpreter), (mp_obj_t)&microlite_interpreter_type },
-    { MP_ROM_QSTR(MP_QSTR_all_op_resolver), (mp_obj_t)&microlite_all_op_resolver_type },
-    { MP_ROM_QSTR(MP_QSTR_mutable_op_resolver), (mp_obj_t)&microlite_mutable_op_resolver_type },
+    { MP_ROM_QSTR(MP_QSTR_op_resolver), (mp_obj_t)&microlite_op_resolver_type },
     { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_tensor_type },
-    { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_model_type }
 };
 STATIC MP_DEFINE_CONST_DICT(microlite_module_globals, microlite_module_globals_table);
 

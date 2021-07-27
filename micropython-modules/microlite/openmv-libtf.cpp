@@ -7,7 +7,6 @@
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
-#include "tensorflow/lite/version.h"
 #include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.h"
 
 #include "tensorflow-microlite.h"
@@ -60,16 +59,95 @@ extern "C" {
     STATIC microlite::MicropythonErrorReporter micro_error_reporter;
 
     int libtf_init_op_resolver(microlite_op_resolver_obj_t *microlite_op_resolver) {
-        if (microlite_op_resolver->mode == ALL_OPS) {
-             tflite::AllOpsResolver op_resolver = new tflite::AllOpsResolver();   
 
-             microlite_op_resolver->tf_op_resolver = op_resolver;
+        const unsigned int number_of_ops = microlite_op_resolver->number_of_ops;
+
+        tflite::MicroMutableOpResolver<number_of_ops>* op_resolver = new tflite::MicroMutableOpResolver<number_of_ops>(&micro_error_reporter);   
+
+        microlite_op_resolver->tf_op_resolver = (mp_obj_t)op_resolver;
+
+        if (microlite_op_resolver->mode == ALL_OPS) {
+
+            // add all of the ops
+            // copied from the constructor in all_ops_resolver.cc
+            op_resolver->AddAbs();
+  op_resolver->AddAdd();
+  op_resolver->AddAddN();
+  op_resolver->AddArgMax();
+op_resolver->AddArgMin();
+op_resolver->AddAveragePool2D();
+op_resolver->AddBatchToSpaceNd();
+op_resolver->AddCeil();
+op_resolver->AddConcatenation();
+op_resolver->AddConv2D();
+op_resolver->AddCos();
+op_resolver->AddCumSum();
+op_resolver->AddDepthToSpace();
+op_resolver->AddDepthwiseConv2D();
+op_resolver->AddDequantize();
+op_resolver->AddDetectionPostprocess();
+op_resolver->AddElu();
+op_resolver->AddEqual();
+op_resolver->AddEthosU();
+op_resolver->AddExpandDims();
+op_resolver->AddFloor();
+op_resolver->AddFloorDiv();
+op_resolver->AddFloorMod();
+op_resolver->AddFullyConnected();
+op_resolver->AddGreater();
+op_resolver->AddGreaterEqual();
+op_resolver->AddHardSwish();
+op_resolver->AddL2Normalization();
+op_resolver->AddL2Pool2D();
+op_resolver->AddLeakyRelu();
+op_resolver->AddLess();
+op_resolver->AddLessEqual();
+op_resolver->AddLog();
+op_resolver->AddLogicalAnd();
+op_resolver->AddLogicalNot();
+op_resolver->AddLogicalOr();
+op_resolver->AddLogistic();
+op_resolver->AddMaxPool2D();
+op_resolver->AddMaximum();
+op_resolver->AddMean();
+op_resolver->AddMinimum();
+op_resolver->AddMul();
+op_resolver->AddNeg();
+op_resolver->AddNotEqual();
+op_resolver->AddPack();
+op_resolver->AddPad();
+op_resolver->AddPadV2();
+op_resolver->AddPrelu();
+op_resolver->AddQuantize();
+op_resolver->AddReduceMax();
+op_resolver->AddRelu();
+op_resolver->AddRelu6();
+op_resolver->AddReshape();
+op_resolver->AddResizeBilinear();
+op_resolver->AddResizeNearestNeighbor();
+op_resolver->AddRound();
+op_resolver->AddRsqrt();
+op_resolver->AddShape();
+op_resolver->AddSin();
+op_resolver->AddSoftmax();
+op_resolver->AddSpaceToBatchNd();
+op_resolver->AddSpaceToDepth();
+op_resolver->AddSplit();
+op_resolver->AddSplitV();
+op_resolver->AddSqrt();
+op_resolver->AddSquare();
+op_resolver->AddSqueeze();
+op_resolver->AddStridedSlice();
+op_resolver->AddSub();
+op_resolver->AddSvdf();
+op_resolver->AddTanh();
+op_resolver->AddTransposeConv();
+op_resolver->AddTranspose();
+op_resolver->AddUnpack();
 
         }
         else if (microlite_op_resolver->mode == SPECIFIED_OPS) {
-             tflte::MicroMutableOpResolver op_resolver = new tflite::MicroMutableOpResolver<microtlite_op_resolver->number_of_ops>();   
-
-             microlite_op_resolver->tf_op_resolver = op_resolver;
+            // don't do anything
         }
         else {
             micro_error_reporter->Report("Op Resolver mode is invalid!");
@@ -93,97 +171,97 @@ extern "C" {
         return 0;
     }
 
-    int libtf_op_resolver_add(microlite_op_resolver_obj_t *op_resolver, microlite_op_t op_to_add) {
+    int libtf_op_resolver_add(microlite_op_resolver_obj_t *op_resolver, mp_int_t op_to_add) {
         
         if (op_resolver->mode != SPECIFIED_OPS) {
             error_reporter->Report("Wrong mode.  Can only add more ops when in SPECIFIED_OPS mode!");
             return 1;
         }
 
-        tflte::MicroMutableOpResolver *op_resolver = (tflte::MicroMutableOpResolver *)op_resolver->tf_op_resolver;
+        tflte::MicroMutableOpResolver *tf_op_resolver = (tflte::MicroMutableOpResolver *)op_resolver->tf_op_resolver;
 
         TfLiteStatus status;
 
         if (op_to_add == MicroliteOperator_ABS) {
-            status = op_resolver->AddAbs();
+            status = tf_op_resolver->AddAbs();
         }
         else if (op_to_add == MicroliteOperator_ADD) {
-            status = op_resolver->AddAdd();
+            status = tf_op_resolver->AddAdd();
         }
         else if (op_to_add == MicroliteOperator_ADD_N) {
-            status = op_resolver->AddAddN();
+            status = tf_op_resolver->AddAddN();
         }
         else if (op_to_add == MicroliteOperator_ARG_MAX) {
-            status = op_resolver->AddArgMax();
+            status = tf_op_resolver->AddArgMax();
         }
         else if (op_to_add == MicroliteOperator_ARG_MIN) {
-            status = op_resolver->AddArgMin();
+            status = tf_op_resolver->AddArgMin();
         }
         else if (op_to_add == MicroliteOperator_AVERAGE_POOL_2D) {
-            status = op_resolver->AddAveragePool2D();
+            status = tf_op_resolver->AddAveragePool2D();
         }
         else if (op_to_add == MicroliteOperator_BATCH_TO_SPACE_ND) {
-            status = op_resolver->AddBatchToSpaceNd();
+            status = tf_op_resolver->AddBatchToSpaceNd();
         }
         else if (op_to_add == MicroliteOperator_CAST) {
-            status = op_resolver->AddCast();
+            status = tf_op_resolver->AddCast();
         }
         else if (op_to_add == MicroliteOperator_CEIL) {
-            status = op_resolver->AddCeil();
+            status = tf_op_resolver->AddCeil();
         }
         else if (op_to_add == MicroliteOperator_CIRCULAR_BUFFER) {
-            status = op_resolver->AddCircularBuffer(); // custom
+            status = tf_op_resolver->AddCircularBuffer(); // custom
         }
         else if (op_to_add == MicroliteOperator_CONCATENATION) {
-            status = op_resolver->AddConcatenation();
+            status = tf_op_resolver->AddConcatenation();
         }
         else if (op_to_add == MicroliteOperator_CONV_2D) {
-            status = op_resolver->AddConv2D();
+            status = tf_op_resolver->AddConv2D();
         }
         else if (op_to_add == MicroliteOperator_COS) {
-            status = op_resolver->AddCos();
+            status = tf_op_resolver->AddCos();
         }
         else if (op_to_add == MicroliteOperator_CUMSUM) {  
-            status = op_resolver->AddCumSum();
+            status = tf_op_resolver->AddCumSum();
         }
         else if (op_to_add == MicroliteOperator_DEPTH_TO_SPACE) {  
-            status = op_resolver->AddDepthToSpace();
+            status = tf_op_resolver->AddDepthToSpace();
         }
         else if (op_to_add == MicroliteOperator_DEPTHWISE_CONV_2D) {  
-            status = op_resolver->AddDepthwiseConv2D();
+            status = tf_op_resolver->AddDepthwiseConv2D();
         }
         else if (op_to_add == MicroliteOperator_DEQUANTIZE) {  
-            status = op_resolver->AddDequantize();
+            status = tf_op_resolver->AddDequantize();
         }
         else if (op_to_add == MicroliteOperator_DETECTION_POSTPROCESS) {  
-            status = op_resolver->AddDetectionPostprocess();  // custom
+            status = tf_op_resolver->AddDetectionPostprocess();  // custom
         }
         else if (op_to_add == MicroliteOperator_ELU) {  
-            status = op_resolver->AddElu(); 
+            status = tf_op_resolver->AddElu(); 
         }
         else if (op_to_add == MicroliteOperator_EQUAL) {  
-            status = op_resolver->AddEqual(); 
+            status = tf_op_resolver->AddEqual(); 
         }
         else if (op_to_add == MicroliteOperator_ETHOSU) {  
-            status = op_resolver->AddEthosU(); // custom
+            status = tf_op_resolver->AddEthosU(); // custom
         }
         else if (op_to_add == MicroliteOperator_EXP) {  
-            status = op_resolver->AddExp(); 
+            status = tf_op_resolver->AddExp(); 
         }
         else if (op_to_add == MicroliteOperator_EXPAND_DIMS) {  
-            status = op_resolver->AddExpandDims(); 
+            status = tf_op_resolver->AddExpandDims(); 
         }
         else if (op_to_add == MicroliteOperator_FILL) {  
-            status = op_resolver->AddFill(); 
+            status = tf_op_resolver->AddFill(); 
         }
         else if (op_to_add == MicroliteOperator_FLOOR) {  
-            status = op_resolver->AddFloor(); 
+            status = tf_op_resolver->AddFloor(); 
         }
         else if (op_to_add == MicroliteOperator_FLOOR_DIV) {  
-            status = op_resolver->AddFloorDiv(); 
+            status = tf_op_resolver->AddFloorDiv(); 
         }
         else if (op_to_add == MicroliteOperator_FLOOR_MOD) {  
-            status = op_resolver->AddFloorMod(); 
+            status = tf_op_resolver->AddFloorMod(); 
         } 
         else if (op_to_add == MicroliteOperator_FULLY_CONNECTED) {  
             // TODO This function can take a parameter.
@@ -194,169 +272,169 @@ extern "C" {
             //     return AddBuiltin(BuiltinOperator_FULLY_CONNECTED, registration,
             //                       ParseFullyConnected);
             //   }
-            status = op_resolver->AddFullyConnected(); 
+            status = tf_op_resolver->AddFullyConnected(); 
         } 
         else if (op_to_add == MicroliteOperator_GATHER) {  
-            status = op_resolver->AddGather(); 
+            status = tf_op_resolver->AddGather(); 
         } 
         else if (op_to_add == MicroliteOperator_GATHER_ND) {  
-            status = op_resolver->AddGatherNd(); 
+            status = tf_op_resolver->AddGatherNd(); 
         }  
         else if (op_to_add == MicroliteOperator_GREATER) {  
-            status = op_resolver->AddGreater(); 
+            status = tf_op_resolver->AddGreater(); 
         }   
         else if (op_to_add == MicroliteOperator_GREATER_EQUAL) {  
-            status = op_resolver->AddGreaterEqual(); 
+            status = tf_op_resolver->AddGreaterEqual(); 
         }    
         else if (op_to_add == MicroliteOperator_HARD_SWISH) {  
-            status = op_resolver->AddHardSwish(); 
+            status = tf_op_resolver->AddHardSwish(); 
         }   
         else if (op_to_add == MicroliteOperator_IF) {  
-            status = op_resolver->AddIf(); 
+            status = tf_op_resolver->AddIf(); 
         }
         else if (op_to_add == MicroliteOperator_L2_NORMALIZATION) {  
-            status = op_resolver->AddL2Normalization(); 
+            status = tf_op_resolver->AddL2Normalization(); 
         }
         else if (op_to_add == MicroliteOperator_L2_POOL_2D) {  
-            status = op_resolver->AddL2Pool2D(); 
+            status = tf_op_resolver->AddL2Pool2D(); 
         } 
         else if (op_to_add == MicroliteOperator_LEAKY_RELU) {  
-            status = op_resolver->AddLeakyRelu(); 
+            status = tf_op_resolver->AddLeakyRelu(); 
         } 
         else if (op_to_add == MicroliteOperator_LESS) {  
-            status = op_resolver->AddLess(); 
+            status = tf_op_resolver->AddLess(); 
         } 
         else if (op_to_add == MicroliteOperator_LESS_EQUAL) {  
-            status = op_resolver->AddLessEqual(); 
+            status = tf_op_resolver->AddLessEqual(); 
         } 
         else if (op_to_add == MicroliteOperator_LOG) {  
-            status = op_resolver->AddLog(); 
+            status = tf_op_resolver->AddLog(); 
         }
         else if (op_to_add == MicroliteOperator_LOGICAL_AND) {  
-            status = op_resolver->AddLogicalAnd(); 
+            status = tf_op_resolver->AddLogicalAnd(); 
         }
         else if (op_to_add == MicroliteOperator_LOGICAL_NOT) {  
-            status = op_resolver->AddLogicalNot(); 
+            status = tf_op_resolver->AddLogicalNot(); 
         } 
         else if (op_to_add == MicroliteOperator_LOGICAL_OR) {  
-            status = op_resolver->AddLogicalOr(); 
+            status = tf_op_resolver->AddLogicalOr(); 
         }
         else if (op_to_add == MicroliteOperator_LOGISTIC) {  
-            status = op_resolver->AddLogistic(); 
+            status = tf_op_resolver->AddLogistic(); 
         } 
         else if (op_to_add == MicroliteOperator_MAXIMUM) {  
-            status = op_resolver->AddMaximum(); 
+            status = tf_op_resolver->AddMaximum(); 
         }
         else if (op_to_add == MicroliteOperator_MAX_POOL_2D) {  
-            status = op_resolver->AddMaxPool2D(); 
+            status = tf_op_resolver->AddMaxPool2D(); 
         }
         else if (op_to_add == MicroliteOperator_MEAN) {  
-            status = op_resolver->AddMean(); 
+            status = tf_op_resolver->AddMean(); 
         }
         else if (op_to_add == MicroliteOperator_MINIMUM) {  
-            status = op_resolver->AddMinimum(); 
+            status = tf_op_resolver->AddMinimum(); 
         }
         else if (op_to_add == MicroliteOperator_MUL) {  
-            status = op_resolver->AddMul(); 
+            status = tf_op_resolver->AddMul(); 
         }   
         else if (op_to_add == MicroliteOperator_NEG) {  
-            status = op_resolver->AddNeg(); 
+            status = tf_op_resolver->AddNeg(); 
         }
         else if (op_to_add == MicroliteOperator_NOT_EQUAL) {  
-            status = op_resolver->AddNotEqual(); 
+            status = tf_op_resolver->AddNotEqual(); 
         }
         else if (op_to_add == MicroliteOperator_PACK) {  
-            status = op_resolver->AddPack(); 
+            status = tf_op_resolver->AddPack(); 
         }
         else if (op_to_add == MicroliteOperator_PAD) {  
-            status = op_resolver->AddPad(); 
+            status = tf_op_resolver->AddPad(); 
         }
         else if (op_to_add == MicroliteOperator_PADV2) {  
-            status = op_resolver->AddPadV2(); 
+            status = tf_op_resolver->AddPadV2(); 
         }
         else if (op_to_add == MicroliteOperator_PRELU) {  
-            status = op_resolver->AddPrelu(); 
+            status = tf_op_resolver->AddPrelu(); 
         }
         else if (op_to_add == MicroliteOperator_QUANTIZE) {  
-            status = op_resolver->AddQuantize(); 
+            status = tf_op_resolver->AddQuantize(); 
         }
         else if (op_to_add == MicroliteOperator_REDUCE_MAX) {  
-            status = op_resolver->AddReduceMax(); 
+            status = tf_op_resolver->AddReduceMax(); 
         }
         else if (op_to_add == MicroliteOperator_RELU) {  
-            status = op_resolver->AddRelu(); 
+            status = tf_op_resolver->AddRelu(); 
         }
         else if (op_to_add == MicroliteOperator_RELU6) {  
-            status = op_resolver->AddRelu6(); 
+            status = tf_op_resolver->AddRelu6(); 
         }
         else if (op_to_add == MicroliteOperator_RESHAPE) {  
-            status = op_resolver->AddReshape(); 
+            status = tf_op_resolver->AddReshape(); 
         }
         else if (op_to_add == MicroliteOperator_RESIZE_BILINEAR) {  
-            status = op_resolver->AddResizeBilinear(); 
+            status = tf_op_resolver->AddResizeBilinear(); 
         }
         else if (op_to_add == MicroliteOperator_RESIZE_NEAREST_NEIGHBOR) {  
-            status = op_resolver->AddResizeNearestNeighbor(); 
+            status = tf_op_resolver->AddResizeNearestNeighbor(); 
         } 
         else if (op_to_add == MicroliteOperator_ROUND) {  
-            status = op_resolver->AddRound(); 
+            status = tf_op_resolver->AddRound(); 
         } 
         else if (op_to_add == MicroliteOperator_RSQRT) {  
-            status = op_resolver->AddRsqrt(); 
+            status = tf_op_resolver->AddRsqrt(); 
         }
         else if (op_to_add == MicroliteOperator_SHAPE) {  
-            status = op_resolver->AddShape(); 
+            status = tf_op_resolver->AddShape(); 
         }
         else if (op_to_add == MicroliteOperator_SIN) {  
-            status = op_resolver->AddSin(); 
+            status = tf_op_resolver->AddSin(); 
         }
         else if (op_to_add == MicroliteOperator_SOFTMAX) {  
-            status = op_resolver->AddSoftmax(); // takes argument
+            status = tf_op_resolver->AddSoftmax(); // takes argument
         }
         else if (op_to_add == MicroliteOperator_SPACE_TO_BATCH_ND) {  
-            status = op_resolver->AddSpaceToBatchNd(); 
+            status = tf_op_resolver->AddSpaceToBatchNd(); 
         }
         else if (op_to_add == MicroliteOperator_SPACE_TO_DEPTH) {  
-            status = op_resolver->AddSpaceToDepth(); 
+            status = tf_op_resolver->AddSpaceToDepth(); 
         }
         else if (op_to_add == MicroliteOperator_SPLIT) {  
-            status = op_resolver->AddSplit(); 
+            status = tf_op_resolver->AddSplit(); 
         }
         else if (op_to_add == MicroliteOperator_SPLIT_V) {  
-            status = op_resolver->AddSplitV(); 
+            status = tf_op_resolver->AddSplitV(); 
         }
         else if (op_to_add == MicroliteOperator_SQUEEZE) {  
-            status = op_resolver->AddSqueeze(); 
+            status = tf_op_resolver->AddSqueeze(); 
         }
         else if (op_to_add == MicroliteOperator_SQRT) {  
-            status = op_resolver->AddSqrt(); 
+            status = tf_op_resolver->AddSqrt(); 
         }
         else if (op_to_add == MicroliteOperator_SQUARE) {  
-            status = op_resolver->AddSquare(); 
+            status = tf_op_resolver->AddSquare(); 
         }
         else if (op_to_add == MicroliteOperator_STRIDED_SLICE) {  
-            status = op_resolver->AddStridedSlice(); 
+            status = tf_op_resolver->AddStridedSlice(); 
         }
         else if (op_to_add == MicroliteOperator_SUB) {  
-            status = op_resolver->AddSub(); 
+            status = tf_op_resolver->AddSub(); 
         }
         else if (op_to_add == MicroliteOperator_SVDF) {  
-            status = op_resolver->AddSvdf(); 
+            status = tf_op_resolver->AddSvdf(); 
         }
         else if (op_to_add == MicroliteOperator_TANH) {  
-            status = op_resolver->AddTanh(); 
+            status = tf_op_resolver->AddTanh(); 
         }
         else if (op_to_add == MicroliteOperator_TRANSPOSE_CONV) {  
-            status = op_resolver->AddTransposeConv(); 
+            status = tf_op_resolver->AddTransposeConv(); 
         }
         else if (op_to_add == MicroliteOperator_TRANSPOSE) {  
-            status = op_resolver->AddTranspose(); 
+            status = tf_op_resolver->AddTranspose(); 
         }
         else if (op_to_add == MicroliteOperator_UNPACK) {  
-            status = op_resolver->AddUnpack(); 
+            status = tf_op_resolver->AddUnpack(); 
         }
         else if (op_to_add == MicroliteOperator_ZEROS_LIKE) {  
-            status = op_resolver->AddZerosLike(); 
+            status = tf_op_resolver->AddZerosLike(); 
         }
 
         // check on status object

@@ -47,7 +47,7 @@ typedef void (*libtf_input_data_callback_t)(TfLiteTensor *input_tensor); // Actu
 typedef void (*libtf_output_data_callback_t)(TfLiteTensor *output_tensor); // Actual is float32 (not optimal - network should be fixed). Output is [0.0f:+1.0f].
 
 // used to call the op_resolver.add{op_name} to register the op.
-int libtf_op_resolver_add(microlite_op_resolver_obj_t *op_resolver, microlite_op_t op_to_add) {
+int libtf_op_resolver_add(microlite_op_resolver_obj_t *op_resolver, mp_int_t op_to_add);
 
 // used to initialize the tflite::OpResolver
 // it can either be all operations or use the mutable op where we register it.
