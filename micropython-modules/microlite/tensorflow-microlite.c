@@ -277,7 +277,7 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
 
     mp_printf(MP_PYTHON_PRINTER, "interpreter_make_new: model size = %d, tensor area = %d\n", self->model_data->len, tensor_area_len);
 
-    libtf_init(self);
+    libtf_interpreter_init(self);
 
     return MP_OBJ_FROM_PTR(self);
 }
@@ -291,7 +291,7 @@ STATIC mp_obj_t interpreter_get_input_tensor(mp_obj_t self_in, mp_obj_t index_ob
 
     microlite_tensor_obj_t *microlite_tensor = m_new_obj(microlite_tensor_obj_t);
 
-    TfLiteTensor *input_tensor = libtf_get_input_tensor(microlite_interpreter, index);
+    TfLiteTensor *input_tensor = libtf_interpreter_get_input_tensor(microlite_interpreter, index);
 
     microlite_tensor->tf_tensor = input_tensor;
     microlite_tensor->microlite_interpreter = microlite_interpreter;
@@ -310,7 +310,7 @@ STATIC mp_obj_t interpreter_get_output_tensor(mp_obj_t self_in, mp_obj_t index_o
 
     microlite_tensor_obj_t *microlite_tensor = m_new_obj(microlite_tensor_obj_t);
 
-    TfLiteTensor *output_tensor = libtf_get_output_tensor(microlite_interpreter, index);
+    TfLiteTensor *output_tensor = libtf_interpreter_get_output_tensor(microlite_interpreter, index);
 
     microlite_tensor->tf_tensor = output_tensor;
     microlite_tensor->microlite_interpreter = microlite_interpreter;
@@ -325,7 +325,7 @@ STATIC mp_obj_t interpreter_invoke(mp_obj_t self_in) {
     microlite_interpreter_obj_t *self = MP_OBJ_TO_PTR(self_in);
 
     
-    int code = libtf_invoke(self);
+    int code = libtf_interpreter_invoke(self);
 
     self->inference_count += 1;
 
