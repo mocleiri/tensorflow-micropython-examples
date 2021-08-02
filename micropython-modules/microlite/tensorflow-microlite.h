@@ -38,7 +38,6 @@ extern "C" {
 #include "py/objarray.h"
 
 
-
 typedef struct _microlite_model_obj_t {
     mp_obj_base_t base;
     mp_obj_array_t  *model_data;
