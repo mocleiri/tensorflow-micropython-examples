@@ -19,7 +19,8 @@
         "functional": "cpp",
         "regex": "cpp",
         "stdint.h": "c",
-        "stdint-intn.h": "c"
+        "stdint-intn.h": "c",
+        "types.h": "c"
     },
     "python.pythonPath": "/usr/bin/python3"
 }

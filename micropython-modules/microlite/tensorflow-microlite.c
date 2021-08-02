@@ -34,11 +34,8 @@
 
 #include "tensorflow-microlite.h"
 
-#include "hello-world-model.h"
-
 #include "openmv-libtf.h"
 
-#include "tensorflow/lite/version.h"
 #include "tensorflow/lite/c/common.h"
 
 const mp_obj_type_t microlite_interpreter_type;
@@ -74,7 +71,7 @@ STATIC mp_obj_t tensor_get_tensor_type (mp_obj_t self_in, mp_obj_t index_obj) {
 
 }
 
-MP_DEFINE_CONST_FUN_OBJ_0(microlite_tensor_get_tensor_type, tensor_get_tensor_type);
+MP_DEFINE_CONST_FUN_OBJ_2(microlite_tensor_get_tensor_type, tensor_get_tensor_type);
 
 
 STATIC mp_obj_t tensor_get_value (mp_obj_t self_in, mp_obj_t index_obj) {
@@ -362,7 +359,7 @@ const mp_obj_type_t microlite_interpreter_type = {
 
 // needs to be manually updated when the firmware is built.
 // see if we can pass through the project git commit when this is run.
-STATIC const MP_DEFINE_STR_OBJ(microlite_version_string_obj, TFLITE_VERSION_STRING);
+STATIC const MP_DEFINE_STR_OBJ(microlite_version_string_obj, TFLITE_MICRO_VERSION);
 
 // Define all properties of the module.
 // Table entries are key/value pairs of the attribute name (a string)

@@ -32,10 +32,14 @@
 extern "C" {
 #endif
 
+#include <string.h>
+
 #include "py/runtime.h"
 #include "py/obj.h"
 #include "py/objstr.h"
 #include "py/objarray.h"
+
+#define TFLITE_MICRO_VERSION "e87305ee53c124188d0390b1ef8ec0555760d4d6"
 
 
 typedef struct _microlite_model_obj_t {
