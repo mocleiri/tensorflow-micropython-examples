@@ -39,7 +39,8 @@ jobs:
           name: libtensorflow-microlite-esp32
       - name: Validate artifact
         run: |
-          ls * && ls lib/libtensorflow-microlite.a      
+          ls *
+          ls lib/libtensorflow-microlite.a      
       - name: Build Micropython for ESP32
         run: |
           git submodule init
