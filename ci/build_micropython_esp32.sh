@@ -21,18 +21,17 @@ BASE_DIR=/opt/tflite-micro-micropython
 
 cd $BASE_DIR/micropython
 
-make -C mpy-cross V=1 clean All
+pwd
+
+echo "make -C mpy-cross V=1 clean all"
+make -C mpy-cross V=1 clean all
 
 
+echo "cd ports/esp32"
 cd ports/esp32
+
+pwd
 
 make BOARD=MICROLITE USER_C_MOOULES=/src/micropython-modules/micropython.cmake
 
 make BOARD=MICROLITE_SPIRAM_16M USER_C_MOOULES=/src/micropython-modules/micropython.cmake
-
-
-
-
-
-
-
