@@ -46,7 +46,7 @@ jobs:
           git submodule init
           git submodule update --recursive
           docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32.sh
-      -name: Debug post micropython build
+      - name: Debug post micropython build
        run: |
          find -ls micropython/ports/esp32     
       # - name: Archive firmware
