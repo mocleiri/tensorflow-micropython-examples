@@ -18,7 +18,10 @@ At the moment all of the tensor operations are included in tensorflow-microlite.
 
 # Status
 
-The hello world example works and micro_speech is almost complete.  When micro_speech is done and the documentation improved version 1.0.0 will be released.
+Build Type | Status |
+ --------- | ------ |
+ESP32   | [![ESP32](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml) |
+
 
 # Prebuilt Firmware
 
