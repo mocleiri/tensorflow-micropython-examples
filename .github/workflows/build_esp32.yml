@@ -17,11 +17,15 @@ jobs:
           git submodule init
           git submodule update --recursive
           docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_tensorflow_esp32.sh
+      - name: debug post build directory structure
+        run: |
+          ls *
+          ls -l lib
       - name: Archive static library
         uses: actions/upload-artifact@v2
         with:
-          name: libtensorflow-microlite-esp32.a
-          path: lib/libtensorflow-microlite.a
+          name: libtensorflow-microlite-esp32
+          path: lib/*.a
   
   esp32_micropython_build:
     runs-on: ubuntu-latest
