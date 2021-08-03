@@ -18,12 +18,26 @@ At the moment all of the tensor operations are included in tensorflow-microlite.
 
 # Status
 
-The hello world example works and micro_speech is almost complete.  When micro_speech is done and the documentation improved version 1.0.0 will be released.
+Build Type | Status |
+ --------- | ------ |
+ESP32   | [![ESP32](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml) |
+
+
+The latest firmware can be downloaded from the applicable build above.
+1. Click on build status link.
+2. Click on the latest green build
+3. Review the available artifiacts for download
+
+You do need to be careful to get the proper firmware for your board.  If your board is not currently being built please file an issue and it can be added.
+
+## Download Build Artifact Example
+
+![](./images/download-esp32-artifact.png)
+
 
 # Prebuilt Firmware
 
-Pre 1.0.0 Firmware is available for ESP32 4MB and ESP32 8MB PSRAM and 16 MB Flash boards here: 
-https://github.com/mocleiri/tensorflow-micropython-firmware/blob/master/firmware/latest/Readme.md
+Once we get to version 1.0.0 there will be release firmware.  At the moment the best option is to get the firmware built as part of the ci run above.
 
 # Roadmap
 
