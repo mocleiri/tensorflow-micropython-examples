@@ -5,14 +5,45 @@ name: ESP32
 on: [push]
 
 jobs:
-  esp32_build:
+  esp32_tensorflow_build:
     runs-on: ubuntu-latest
 
-    name: ESP32 Continuous Builds
+    name: ESP32 Tensorflow Continous Builds
     steps:
-      - uses: actions/checkout@v2
-      - name: Build ESP32
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build Tensorflow for ESP32
         run: |
           git submodule init
           git submodule update --recursive
-          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_esp32.sh
+          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_tensorflow_esp32.sh
+      - name: Archive static library
+        uses: actions/upload-artifact@v2
+        with:
+          name: libtensorflow-microlite-esp32.a
+          path: lib/libtensorflow-microlite.a
+  
+  esp32_micropython_build:
+    runs-on: ubuntu-latest
+    needs: esp32_tensorflow_build
+    name: ESP32 Micropython Continous Builds
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Download libtensorflow-microlite.a
+        uses: actions/download-artifact@v2
+        with:
+          name: libtensorflow-microlite-esp32.a
+      - name: Validate artifact
+        run: |
+          ls * && ls lib      
+      - name: Build Micropython for ESP32
+        run: |
+          git submodule init
+          git submodule update --recursive
+          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32.sh
+      # - name: Archive firmware
+        # uses: actions/upload-artifact@v2
+        # with:
+          # name: microlite-esp32-firmware.bin
+          # path: lib/libtensorflow-microlite.a
