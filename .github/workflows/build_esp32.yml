@@ -1,0 +1,16 @@
+
+name: ESP32
+
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
+on: [push]
+
+jobs:
+  esp32_build:
+    runs-on: ubuntu-latest
+
+    name: ESP32 Continuous Builds
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build ESP32
+        run: |
+          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_esp32.sh
