@@ -13,5 +13,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build ESP32
         run: |
-          git submodule init --recursive
+          git submodule init
+          git submodule update --recursive
           docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_esp32.sh
