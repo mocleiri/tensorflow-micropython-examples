@@ -39,7 +39,7 @@ jobs:
           name: libtensorflow-microlite-esp32
       - name: Validate artifact
         run: |
-          ls * && ls lib/      
+          ls * && ls lib/libtensorflow-microlite.a      
       - name: Build Micropython for ESP32
         run: |
           git submodule init
@@ -47,7 +47,7 @@ jobs:
           docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32.sh
       -name: Debug post micropython build
        run: |
-         find -ls micropython/ports/esp32 | grep .bin    
+         find -ls micropython/ports/esp32     
       # - name: Archive firmware
         # uses: actions/upload-artifact@v2
         # with:
