@@ -33,7 +33,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 add_library(tensorflow STATIC IMPORTED)
 
 SET_TARGET_PROPERTIES(tensorflow PROPERTIES
-    IMPORTED_LOCATION /src/lib/libtensorflow-microlite.a)
+    IMPORTED_LOCATION /opt/tflite-micro-micropython/lib/libtensorflow-microlite.a)
 
 target_link_libraries(microlite INTERFACE tensorflow)
 
