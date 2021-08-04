@@ -49,4 +49,4 @@ cd ports/esp32
 pwd
 
 echo "Building MICROLITE"
-make BOARD_DIR=$BASE_DIR/boards/esp32 BOARD=MICROLITE USER_C_MODULES=$BASE_DIR/micropython-modules/micropython.cmake
+make BOARD_DIR=$BASE_DIR/boards/esp32/MICROLITE BOARD=MICROLITE USER_C_MODULES=$BASE_DIR/micropython-modules/micropython.cmake
