@@ -22,18 +22,18 @@ BASE_DIR=/opt/tflite-micro-micropython
 cd $BASE_DIR/tensorflow
 
 # need to run the downloads again so the headers are available
-make -f tensorflow/lite/micro/tools/make/Makefile third_party_downloads 
+# make -f tensorflow/lite/micro/tools/make/Makefile third_party_downloads 
 
 # need to download the kissft dependency.
 # make -f tensorflow/lite/micro/tools/make/Makefile generate_hello_world_make_project
 
 
-cd $BASE_DIR/micropython-modules/audio_frontend
+#cd $BASE_DIR/micropython-modules/audio_frontend
 
 # at the moment micropython esp32 port doesn't work with .cc extension c++ files only .cpp
 # so copy to rename the line ending
-cp $BASE_DIR/tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft.cc fft.cpp
-cp $BASE_DIR/tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft_util.cc fft_util.cpp
+#cp $BASE_DIR/tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft.cc fft.cpp
+#cp $BASE_DIR/tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft_util.cc fft_util.cpp
 
 cd $BASE_DIR/micropython
 
@@ -50,6 +50,3 @@ pwd
 
 echo "Building MICROLITE"
 make BOARD=MICROLITE USER_C_MODULES=$BASE_DIR/micropython-modules/micropython.cmake
-
-echo "Building MICROLITE_SPIRAM_16M"
-make BOARD=MICROLITE_SPIRAM_16M USER_C_MODULES=$BASE_DIR/micropython-modules/micropython.cmake

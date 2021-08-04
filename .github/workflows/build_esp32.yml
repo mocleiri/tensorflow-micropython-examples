@@ -16,13 +16,20 @@ jobs:
           git submodule init
           git submodule update --recursive
           docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_tensorflow_esp32.sh
-      - name: Build Tensorflow Micropython Firmware for ESP32
+      - name: Prepare to Build Tensorflow Micropython Firmware for ESP32
         run: |
           cd micropython
           git submodule update --init lib/axtls
           git submodule update --init lib/berkeley-db-1.xx
           cd ..
-          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32.sh
+          cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft.cc micropython-modules/audio_frontend/fft.cpp
+          cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft_util.cc micropython-modules/audio_frontend/fft_util.cpp
+      - name: Build standard non-psram 4MB Flash firmware
+        run: |
+          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32_microlite.sh
+       - name: Build with psram support and 16MB Flash firmware
+        run: |
+          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32_microlite_spiram_16m.sh
       - name: Archive ESP32-MICROLITE firmware
         uses: actions/upload-artifact@v2
         with:
