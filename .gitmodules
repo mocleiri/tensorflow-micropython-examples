@@ -1,12 +1,12 @@
 [submodule "micropython"]
 	path = micropython
-	url = https://github.com/mocleiri/micropython.git
-	branch = microlite
+	url = https://github.com/micropython/micropython.git
+	branch = master
 [submodule "tensorflow"]
 	path = tensorflow
 	url = https://github.com/tensorflow/tflite-micro.git
 	branch = main
 [submodule "micropython-ulab"]
 	path = micropython-ulab
-	url = https://github.com/mocleiri/micropython-ulab.git
-	branch = mtf-latest
+	url = https://github.com/v923z/micropython-ulab.git
+	branch = master

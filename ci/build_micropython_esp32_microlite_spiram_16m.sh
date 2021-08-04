@@ -42,11 +42,11 @@ pwd
 echo "make -C mpy-cross V=1 clean all"
 make -C mpy-cross V=1 clean all
 
-
-echo "cd ports/esp32"
-cd ports/esp32
+echo "cd $BASE_DIR/boards/esp32/MICROLITE_SPIRAM_16M"
+cd $BASE_DIR/boards/esp32/MICROLITE_SPIRAM_16M
 
 pwd
 
 echo "Building MICROLITE_SPIRAM_16M"
-make BOARD=MICROLITE_SPIRAM_16M USER_C_MODULES=$BASE_DIR/micropython-modules/micropython.cmake
+rm -rf builds
+idf.py clean build
