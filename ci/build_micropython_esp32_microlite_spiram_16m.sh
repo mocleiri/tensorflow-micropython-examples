@@ -49,4 +49,4 @@ cd ports/esp32
 pwd
 
 echo "Building MICROLITE_SPIRAM_16M"
-make BOARD_DIR=$BASE_DIR/boards/esp32/MICROLITE_SPIRAM_16M BBOARD=MICROLITE_SPIRAM_16M USER_C_MODULES=$BASE_DIR/micropython-modules/micropython.cmake
+make BOARD_DIR=$BASE_DIR/boards/esp32/MICROLITE_SPIRAM_16M BOARD=MICROLITE_SPIRAM_16M USER_C_MODULES=$BASE_DIR/micropython-modules/micropython.cmake
