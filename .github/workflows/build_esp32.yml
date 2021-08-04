@@ -5,7 +5,7 @@ name: ESP32
 on: [push, pull_request]
 
 jobs:
-  esp32_tensorflow_build:
+  tensorflow_micropython_esp32_build:
     runs-on: ubuntu-latest
 
     steps:
