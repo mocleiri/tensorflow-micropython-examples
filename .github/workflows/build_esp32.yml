@@ -27,14 +27,14 @@ jobs:
       - name: Build standard non-psram 4MB Flash firmware
         run: |
           docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32_microlite.sh
-      - name: Build with psram support and 16MB Flash firmware
-        run: |
-          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32_microlite_spiram_16m.sh
       - name: Archive ESP32-MICROLITE firmware
         uses: actions/upload-artifact@v2
         with:
           name: microlite-esp32-firmware
           path: boards/esp32/MICROLITE/build/micropython.bin
+      - name: Build with psram support and 16MB Flash firmware
+        run: |
+          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32_microlite_spiram_16m.sh      
       - name: Archive ESP32-MICROLITE-SPIRAM-16M firmware
         uses: actions/upload-artifact@v2
         with:
