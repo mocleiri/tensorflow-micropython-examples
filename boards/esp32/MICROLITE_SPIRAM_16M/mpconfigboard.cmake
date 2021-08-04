@@ -1,10 +1,10 @@
 set(SDKCONFIG_DEFAULTS
-    boards/sdkconfig.base
-    boards/sdkconfig.ble
-    boards/sdkconfig.240mhz
-    boards/sdkconfig.spiram
-    boards/MICROLITE_SPIRAM_16M/sdkconfig.16m
-    boards/MICROLITE_SPIRAM_16M/sdkconfig-16m.partition
+    ${MICROPY_PORT_DIR}/boards/sdkconfig.base
+    ${MICROPY_PORT_DIR}/boards/sdkconfig.ble
+    ${MICROPY_PORT_DIR}/boards/sdkconfig.240mhz
+    ${MICROPY_PORT_DIR}/boards/sdkconfig.spiram
+    ${MICROPY_BOARD_DIR}/sdkconfig.16m
+    ${MICROPY_BOARD_DIR}/sdkconfig-16m.partition
 
 )
 if(NOT MICROPY_FROZEN_MANIFEST)
