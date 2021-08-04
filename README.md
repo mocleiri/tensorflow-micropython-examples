@@ -203,10 +203,15 @@ $ make BOARD=MICROLITE_SPIRAM_16M USER_C_MODULES=/src/micropython-modules/microp
 
 ESP32D0WDQ6 4MB Flash
 
-```
+Download the firmware from the latest ci build.
 
-esptool.py --port COM5 erase_flash
-esptool.py --chip esp32 --port COM5 write_flash -z 0x1000 ./micropython/ports/esp32/build-GENERIC/firmware.bin
+The zip file contains:
+1. The bootloader
+2. The partition table
+3. The firmware
+
+```
+ esptool.py -p COM5 -b 460800 --before default_reset --after hard_reset --chip esp32 write_flash --flash_mode dio --flash_size detect --flash_freq 40m 0x1000 bootloader/bootloader.bin 0x8000 partition_table/partition-table.bin 0x10000 micropython.bin
 ```
 
 ![](./images/write-firmware.png)
