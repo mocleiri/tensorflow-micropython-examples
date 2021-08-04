@@ -43,10 +43,11 @@ echo "make -C mpy-cross V=1 clean all"
 make -C mpy-cross V=1 clean all
 
 
-echo "cd ports/esp32"
-cd ports/esp32
+echo "cd $BASE_DIR/boards/esp32/MICROLITE"
+cd $BASE_DIR/boards/esp32/MICROLITE
 
 pwd
 
 echo "Building MICROLITE"
-make BOARD_DIR=$BASE_DIR/boards/esp32/MICROLITE BOARD=MICROLITE USER_C_MODULES=$BASE_DIR/micropython-modules/micropython.cmake
+rm -rf builds
+idf.py clean build

@@ -33,10 +33,10 @@ jobs:
       - name: Archive ESP32-MICROLITE firmware
         uses: actions/upload-artifact@v2
         with:
-          name: microlite-esp32-firmware.bin
-          path: micropython/ports/esp32/build-MICROLITE/firmware.bin
+          name: microlite-esp32-firmware
+          path: boards/esp32/MICROLITE/build/micropython.bin
       - name: Archive ESP32-MICROLITE-SPIRAM-16M firmware
         uses: actions/upload-artifact@v2
         with:
-          name: microlite-spiram-16m-esp32-firmware.bin
-          path: micropython/ports/esp32/build-MICROLITE_SPIRAM_16M/firmware.bin
+          name: microlite-spiram-16m-esp32-firmware
+          path: boards/esp32/MICROLITE_SPIRAM_16M/build/micropython.bin
