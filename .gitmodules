@@ -1,7 +1,7 @@
 [submodule "micropython"]
 	path = micropython
 	url = https://github.com/mocleiri/micropython.git
-	branch = microlite
+	branch = external-tree-modules
 [submodule "tensorflow"]
 	path = tensorflow
 	url = https://github.com/tensorflow/tflite-micro.git
