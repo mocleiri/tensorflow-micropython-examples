@@ -8,29 +8,29 @@ audio_frontend.configure()
 # The size of the input time series data we pass to the FFT to produce the
 # frequency information. This has to be a power of two, and since we're dealing
 # with 30ms of 16KHz inputs, which means 480 samples, this is the next value.
-kMaxAudioSampleSize = 512
-kAudioSampleFrequency = 16000
+kMaxAudioSampleSize = const (512)
+kAudioSampleFrequency = const (16000)
 
-kAudioOneMsSize = 16
+kAudioOneMsSize = const (16)
 
 # The following values are derived from values used during model training.
 # If you change the way you preprocess the input, update all these constants.
-kFeatureSliceSize = 40
-kFeatureSliceCount = 49
-kFeatureElementCount = (kFeatureSliceSize * kFeatureSliceCount)
-kFeatureSliceStrideMs = 20
-kFeatureSliceDurationMs = 30
+kFeatureSliceSize = const (40)
+kFeatureSliceCount = const (49)
+kFeatureElementCount = const(kFeatureSliceSize * kFeatureSliceCount)
+kFeatureSliceStrideMs = const (20)
+kFeatureSliceDurationMs = const (30)
 
-stride_size = kFeatureSliceStrideMs * kAudioOneMsSize
+stride_size = const (kFeatureSliceStrideMs * kAudioOneMsSize)
 
-window_size = kFeatureSliceDurationMs * kAudioOneMsSize
+window_size = const (kFeatureSliceDurationMs * kAudioOneMsSize)
 
 class Slice:
 
     def __init__(self, segment, start_index):
         # self.segment = segment
-        if segment.size() != 480:
-            raise ValueError ("Expected segment to be 480 bytes, was %d." % (segment.size()))
+        if segment.size != 480:
+            raise ValueError ("Expected segment to be 480 bytes, was %d." % (segment.size))
 
         self.spectrogram = audio_frontend.execute(segment)
         
@@ -63,7 +63,7 @@ class FeatureData:
         
         
         # print ("total slices = %d\n" % self.totalSlices)
-        # print ("addSlice(): spectrogram length = %d\n" % spectrogram.size())
+        # print ("addSlice(): spectrogram length = %d\n" % spectrogram.size)
         # print (spectrogram)
 
 
@@ -84,7 +84,7 @@ class FeatureData:
 
             slice = self.slices[slice_index]
 
-            for spectrogram_index in range (slice.spectrogram.size()):
+            for spectrogram_index in range (slice.spectrogram.size):
 
                 inputTensor.setValue(counter, slice.spectrogram[spectrogram_index])
                 counter = counter + 1
@@ -105,7 +105,7 @@ class FeatureData:
 
             slice = self.slices[slice_index]
 
-            size = slice.spectrogram.size()
+            size = slice.spectrogram.size
             
             for spectrogram_index in range (size):
                                     
@@ -125,7 +125,7 @@ def segmentAudio(featureData, audio, trailing_10ms):
 
     input_audio = np.concatenate((trailing_10ms, audio), axis=0)
 
-    input_size = input_audio.size()
+    input_size = input_audio.size
 
     total_segments = math.floor(input_size / stride_size)
 
@@ -145,4 +145,5 @@ def segmentAudio(featureData, audio, trailing_10ms):
 
     # return the trailing 10ms
     return np.array(input_audio[input_size-160:input_size], dtype=np.int16)
+
 
