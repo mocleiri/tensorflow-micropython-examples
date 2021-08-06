@@ -6,8 +6,8 @@ on:
   push:
   pull_request:
     paths-ignore:
-      - examples/**
-      - README.md
+      - 'examples/**'
+      - 'README.md'
 
 jobs:
   tensorflow_micropython_esp32_build:
