@@ -13,9 +13,13 @@
 # limitations under the License.
 # ==============================================================================
 #
-# Tests the microcontroller code for esp32 platform
-
+#
 set -e
+
+# probably I should fold this into the docker container but at the moment we are using the
+# espressif idf container using the regular gcc compiler and this installs the ffi.h header which is
+# needed by modffi.c
+# apt-get update && apt-get install -y libffi-dev pkg-config
 
 BASE_DIR=/opt/tflite-micro-micropython
 
@@ -27,11 +31,12 @@ echo "make -C mpy-cross V=1 clean all"
 make -C mpy-cross V=1 clean all
 
 
-echo "cd $BASE_DIR/boards/esp32/MICROLITE"
-cd $BASE_DIR/boards/esp32/MICROLITE
+cd ports/unix
 
 pwd
 
-echo "Building MICROLITE"
-rm -rf builds
-idf.py clean build
+echo "Building unix micropython"
+rm -r micropython
+make submodules
+make deplibs
+make -f $BASE_DIR/micropython-modules/GNUmakefile-unix V=1

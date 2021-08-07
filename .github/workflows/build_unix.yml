@@ -1,0 +1,43 @@
+
+name: UNIX
+
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
+on:
+  push:
+  pull_request:
+    paths-ignore:
+      - 'examples/**'
+      - 'README.md'
+
+jobs:
+  tensorflow_micropython_unix_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build Tensorflow static library for Unix
+        run: |
+          git submodule init
+          git submodule update --recursive
+          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_tensorflow_unix.sh
+      - name: Prepare to Build Tensorflow Micropython Firmware for unix
+        run: |
+          cd micropython
+          git submodule update --init lib/axtls
+          git submodule update --init lib/berkeley-db-1.xx
+          cd ..
+          cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft.cc micropython-modules/audio_frontend/fft.cpp
+          cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft_util.cc micropython-modules/audio_frontend/fft_util.cpp
+          cd micropython-modules
+          ln -s ../micropython-ulab/code ul
+          cd ..
+      - name: Build micropython unix port
+        run: |
+          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_unix.sh
+      - name: Archive Unix MICROLITE micropython interpreter
+        uses: actions/upload-artifact@v2
+        with:
+          name: microlite-unix-micropython
+          path: |
+            micropython/ports/unix/micropython
