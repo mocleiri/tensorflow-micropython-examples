@@ -8,6 +8,8 @@ on:
     paths-ignore:
       - 'examples/**'
       - 'README.md'
+      - 'ci/*esp32*.sh'
+      - '.github/workflows/build_esp32.yml'
 
 jobs:
   tensorflow_micropython_unix_build:
