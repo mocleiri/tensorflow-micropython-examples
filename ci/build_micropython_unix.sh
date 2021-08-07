@@ -36,7 +36,7 @@ cd ports/unix
 pwd
 
 echo "Building unix micropython"
-rm -r micropython
+rm -f micropython
 make submodules
 make deplibs
 make -f $BASE_DIR/micropython-modules/GNUmakefile-unix V=1
