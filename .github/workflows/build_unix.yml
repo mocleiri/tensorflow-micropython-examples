@@ -22,20 +22,21 @@ jobs:
         run: |
           git submodule init
           git submodule update --recursive
+          chmod +x ci/build_tensorflow_unix.sh
           docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_tensorflow_unix.sh
       - name: Prepare to Build Tensorflow Micropython Firmware for unix
         run: |
-          cd micropython
-          git submodule update --init lib/axtls
-          git submodule update --init lib/berkeley-db-1.xx
-          cd ..
           cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft.cc micropython-modules/audio_frontend/fft.cpp
-          cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft_util.cc micropython-modules/audio_frontend/fft_util.cpp
-          cd micropython-modules
+                    cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft_util.cc micropython-modules/audio_frontend/fft_util.cpp
+          cd micropython/ports/unix
+          make submodules
+          make deplibs
+          cd ../../../micropython-modules
           ln -s ../micropython-ulab/code ul
           cd ..
       - name: Build micropython unix port
         run: |
+          chmod +x ci/build_micropython_unix.sh
           docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_unix.sh
       - name: Archive Unix MICROLITE micropython interpreter
         uses: actions/upload-artifact@v2
