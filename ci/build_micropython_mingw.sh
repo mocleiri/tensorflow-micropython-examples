@@ -37,6 +37,4 @@ pwd
 
 echo "Building unix micropython"
 rm -f micropython
-make submodules
-make deplibs
 make -f $BASE_DIR/micropython-modules/GNUmakefile-mingw V=1
