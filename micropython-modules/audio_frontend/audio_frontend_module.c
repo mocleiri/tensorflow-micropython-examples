@@ -60,7 +60,7 @@ static const int kAudioSampleFrequency = 16000;
 // If you change the way you preprocess the input, update all these constants.
 static const int kFeatureSliceSize = 40;
 static const int kFeatureSliceCount = 49;
-static const int kFeatureElementCount = (kFeatureSliceSize * kFeatureSliceCount);
+static const int kFeatureElementCount =  40*49; // (kFeatureSliceSize * kFeatureSliceCount);
 static const int kFeatureSliceStrideMs = 20;
 static const int kFeatureSliceDurationMs = 30;
 

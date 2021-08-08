@@ -19,19 +19,18 @@ set -e
 
 BASE_DIR=/opt/tflite-micro-micropython
 
-cd $BASE_DIR/micropython
+cd $BASE_DIR/tensorflow
 
-pwd
+make -f tensorflow/lite/micro/tools/make/Makefile clean
 
-echo "make -C mpy-cross V=1 clean all"
-make -C mpy-cross V=1 clean all
+rm -rf tensorflow/lite/micro/tools/make/downloads
+
+make -f tensorflow/lite/micro/tools/make/Makefile BUILD_TYPE=debug
+
+cp  tensorflow/lite/micro/tools/make/gen/linux_x86_64_debug/lib/libtensorflow-microlite.a $BASE_DIR/lib
+
+echo "ls $BASE_DIR/lib"
+ls $BASE_DIR/lib
 
 
-echo "cd $BASE_DIR/boards/esp32/MICROLITE"
-cd $BASE_DIR/boards/esp32/MICROLITE
 
-pwd
-
-echo "Building MICROLITE"
-rm -rf builds
-idf.py clean build
