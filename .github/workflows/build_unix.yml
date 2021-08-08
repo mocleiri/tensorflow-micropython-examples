@@ -10,7 +10,8 @@ on:
       - 'README.md'
       - 'ci/*esp32*.sh'
       - '.github/workflows/build_esp32.yml'
-
+      - 'ci/*mingw*.sh'
+      - '.github/workflows/build_mingw.yml'
 jobs:
   tensorflow_micropython_unix_build:
     runs-on: ubuntu-latest
