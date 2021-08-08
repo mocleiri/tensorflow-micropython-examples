@@ -11,7 +11,7 @@ on:
       - 'ci/*esp32*.sh'
       - '.github/workflows/build_esp32.yml'
       - 'ci/*unix*.sh'
-       - '.github/workflows/build_unix.yml'
+      - '.github/workflows/build_unix.yml'
 
 jobs:
   tensorflow_micropython_windows_build:
