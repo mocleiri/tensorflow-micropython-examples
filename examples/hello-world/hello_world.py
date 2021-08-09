@@ -1,7 +1,7 @@
 # Microlite implementation of the tensorflow hello-world example
 # https://github.com/tensorflow/tensorflow/tree/master/tensorflow/lite/micro/examples/hello_world
 import microlite
-import model
+import io
 
 counter = 1
 
@@ -13,12 +13,6 @@ current_input = None
 def input_callback (microlite_interpreter):
 
     global current_input
-
-    # print ("input callback")
-    # can't print the tensor directly because it is not an mp_obj_t
-    # we probably need to define a container object that will hold the TfLiteTensor pointer
-    # we may be able to put the pointer directly as a field in the interpreter class
-    # print (input_tensor)
 
     inputTensor = microlite_interpreter.getInputTensor(0)
 
@@ -46,17 +40,22 @@ def output_callback (microlite_interpreter):
     # print (outputTensor)
 
     y_quantized = outputTensor.getValue(0)
-    
+
     y = outputTensor.quantizeInt8ToFloat(y_quantized)
 
     print ("%f,%f" % (current_input,y))
 
+hello_world_model = bytearray(2488)
 
-def run():
-    global counter
-    interp = microlite.interpreter(model.hello_world_model,2048, input_callback, output_callback)
+model_file = io.open('model.tflite', 'rb')
 
-    print ("time step,y")
-    for c in range(1000):
-        interp.invoke()
-        counter = counter + 1
+model_file.readinto(hello_world_model)
+
+model_file.close()
+
+interp = microlite.interpreter(hello_world_model,2048, input_callback, output_callback)
+
+print ("time step,y")
+for c in range(1000):
+    interp.invoke()
+    counter = counter + 1
