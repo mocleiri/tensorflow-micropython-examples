@@ -19,7 +19,7 @@ set -e
 # probably I should fold this into the docker container but at the moment we are using the
 # espressif idf container using the regular gcc compiler and this installs the ffi.h header which is
 # needed by modffi.c
-apt-get update && apt-get install -y libffi-dev pkg-config
+apt-get update && apt-get install -y libffi-dev pkg-config gcc-mingw-w64 g++-mingw-w64
 
 BASE_DIR=/opt/tflite-micro-micropython
 
