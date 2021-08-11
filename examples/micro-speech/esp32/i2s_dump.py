@@ -79,15 +79,15 @@ ws_pin = Pin(18)
 sdin_pin = Pin(23)
 
 audio_in = I2S(
-    I2S.NUM0,
-    bck=bck_pin, ws=ws_pin, sdin=sdin_pin,
-    standard=I2S.PHILIPS,
-    mode=I2S.MASTER_RX,
-    dataformat=I2S.B16,
-    channelformat=I2S.ONLY_RIGHT,
-    samplerate=SAMPLE_RATE_IN_HZ,
-    dmacount=9,
-    dmalen=960
+    0,
+    sck=bck_pin,
+    ws=ws_pin,
+    sd=sdin_pin,
+    mode=I2S.RX,
+    bits=16,
+    format=I2S.MONO,
+    rate=16000,
+    ibuf=9600
 )
 
 wav = open('mic_left_channel_16bits.wav','wb')

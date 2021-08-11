@@ -33,9 +33,9 @@ class Slice:
             raise ValueError ("Expected segment to be 480 bytes, was %d." % (segment.size))
 
         self.spectrogram = audio_frontend.execute(segment)
-        
+
         # print (self.spectrogram)
-        
+
         self.start_index = start_index
 
     def getSpectrogram(self):
@@ -56,12 +56,12 @@ class FeatureData:
 
         if len (self.slices) > 49:
             self.slices.pop(0)
-            
+
 
         # self.tf_interp.invoke()
 
-        
-        
+
+
         # print ("total slices = %d\n" % self.totalSlices)
         # print ("addSlice(): spectrogram length = %d\n" % spectrogram.size)
         # print (spectrogram)
@@ -71,8 +71,8 @@ class FeatureData:
 
         self.slices=[]
         self.totalSlices = 0
-            
-            
+
+
 
     def setInputTensorValues(self, inputTensor):
 
@@ -100,17 +100,17 @@ class FeatureData:
         counter = 0
 
         file.write ("%s spectogram = [ " % (kind))
-        
+
         for slice_index in range(len(self.slices)):
 
             slice = self.slices[slice_index]
 
             size = slice.spectrogram.size
-            
+
             for spectrogram_index in range (size):
-                                    
+
                 file.write ("%d, " % (slice.spectrogram[spectrogram_index]))
-                
+
         file.write (" ]\n")
 
 def segmentAudio(featureData, audio, trailing_10ms):

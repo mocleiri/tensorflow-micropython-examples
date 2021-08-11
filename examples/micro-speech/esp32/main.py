@@ -32,16 +32,7 @@ model_file.readinto(micro_speech_model)
 
 model_file.close()
 
-#======= USER CONFIGURATION =======
-SAMPLE_RATE_IN_HZ = 16000
-#======= USER CONFIGURATION =======
 
-WAV_SAMPLE_SIZE_IN_BITS = 16
-WAV_SAMPLE_SIZE_IN_BYTES = WAV_SAMPLE_SIZE_IN_BITS // 8
-MIC_SAMPLE_BUFFER_SIZE_IN_BYTES = 4096
-SDCARD_SAMPLE_BUFFER_SIZE_IN_BYTES = MIC_SAMPLE_BUFFER_SIZE_IN_BYTES // 2 # why divide by 2? only using 16-bits of 32-bit samples
-NUM_SAMPLES_IN_DMA_BUFFER = 320
-NUM_CHANNELS = 1
 
 
 def input_callback (microlite_interpreter):
@@ -58,13 +49,13 @@ def input_callback (microlite_interpreter):
 
 totalSlices = 0
 
-kSilenceIndex = 0
-kUnknownIndex = 1
-kYesIndex = 2
-kNoIndex = 3
+kSilenceIndex = const (0)
+kUnknownIndex = const (1)
+kYesIndex = const (2)
+kNoIndex = const (3)
 
-scoreThreshold = 200
-startValue = 0
+scoreThreshold = const (200)
+startValue = const (0)
 
 class Score:
 
@@ -211,9 +202,9 @@ print('Starting')
 
 pgm_start = utime.ticks_ms()
 
-samplingDelayMs = 10
+samplingDelayMs = const(10)
 
-inferenceDelayMs = 500
+inferenceDelayMs = const (500)
 
 
 # one_second_data = np.zeros(16000)
@@ -238,26 +229,26 @@ def processAudio(i2s):
 
 		start = utime.ticks_ms()
 
-		#print ("num_read = %d\n" % num_read)
+		# print ("num_read = %d\n" % num_read)
 		# num_bytes_snipped = snip_16_mono(mic_samples_mv[:num_bytes_read_from_mic], int16_samples_mv)
 
-		#print ("read %d bytes into the mic_samples_mv buffer\n" % num_bytes_read_from_mic)
-		#print ("read %d bytes into the int16_samples_mv buffer\n" % num_bytes_snipped)
+		# print ("read %d bytes into the mic_samples_mv buffer\n" % num_bytes_read_from_mic)
+		# print ("read %d bytes into the int16_samples_mv buffer\n" % num_bytes_snipped)
 		audio_samples = np.frombuffer(mic_samples_mv[:num_read], dtype=np.int16)
 
-		# print ("read %d audio_samples = %d\n" % (num_bytes_read_from_mic, audio_samples.size()))
+		# print ("read %d audio_samples = %d\n" % (num_bytes_read_from_mic, audio_samples.size))
 
 		trailing_10ms = micro_speech.segmentAudio(featureData, audio_samples, trailing_10ms)
 
-		totalSlices = totalSlices + 1
+		# totalSlices = totalSlices + 1
 
-		if totalSlices > 7:
-			inferenceNeeded = True
-			totalSlices = 0
+		#if totalSlices > 7:
+		#   inferenceNeeded = True
+		#  totalSlices = 0
 
 		complete = utime.ticks_ms()
 
-		#print ("audio sampling taking %d ms\n" % (utime.ticks_diff(start, complete)))
+		# print ("audio sampling taking %d ms\n" % (utime.ticks_diff(start, complete)))
 
 		num_read = audio_in.readinto(mic_samples_mv)
 
@@ -281,10 +272,10 @@ audio_in = I2S(
 	bits=16,
 	format=I2S.MONO,
 	rate=16000,
-	bufferlen=320*5*4
+	ibuf=9600
 )
 
-mic_samples = bytearray(320*2)
+mic_samples = bytearray(3200)
 mic_samples_mv = memoryview(mic_samples)
 
 trailing_10ms = np.zeros(160, dtype=np.int16)
@@ -318,8 +309,8 @@ def runModel():
 	global bytes_processed_since_last_inference
 	global time_of_last_inference
 
-	if inferenceNeeded == False:
-		return
+	#    if inferenceNeeded == False:
+	#        return
 
 
 	start = utime.ticks_ms()
@@ -329,7 +320,7 @@ def runModel():
 	complete = utime.ticks_ms()
 
 	# print ("inference taking %d ms\n" % (utime.ticks_diff(start, complete)))
-	diff_ms = utime.ticks_diff(time_of_last_inference, start)
+	# diff_ms = utime.ticks_diff(time_of_last_inference, start)
 	#print ("time since last inference = %d ms\n" % (diff_ms))
 	#print ("bytes processed = %d\n" % bytes_processed_since_last_inference)
 	#print ("audio sampling rate=%d\n" % ((bytes_processed_since_last_inference/diff_ms)*16))
@@ -343,10 +334,10 @@ def runModel():
 
 	if score != None:
 		if score.kind == "yes" or score.kind == "no":
-			print ("found - %s@%dms -> %d\n" % (score.kind, utime.ticks_diff(time_of_last_inference, pgm_start), score.score))
+			print ("found - %s at %d seconds -> %d\n" % (score.kind, utime.ticks_diff(time_of_last_inference, pgm_start)/1000, score.score))
 			#featureData.writeSpectogramValues(score.kind, dump_spectrograms)
 			results.resetScore()
-			# featureData.reset()
+			featureData.reset()
 try:
 
 	while True:
@@ -362,4 +353,5 @@ finally:
 	#  dump_spectrograms.close()
 	print('Done')
 	#print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
+
 
