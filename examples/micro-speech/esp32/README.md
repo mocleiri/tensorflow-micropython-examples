@@ -15,10 +15,10 @@ The blue wire pulls L/R low and activates the left
 channel.
 
 ## ESP32 Pinout
-![](../../images/esp32-micro-speech-board-setup.png)
+![](../../../images/esp32-micro-speech-board-setup.png)
 
 ## INMP441 Pinout
-![](../../images/esp32-micro-speech-inmp441-setup.png)
+![](../../../images/esp32-micro-speech-inmp441-setup.png)
 
 ## I2S Configuration Block
 
