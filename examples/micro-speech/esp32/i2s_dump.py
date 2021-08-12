@@ -74,8 +74,11 @@ def create_wav_header(sampleRate, bitsPerSample, num_channels, num_samples):
     return o
 
 # change pins based on how you have wired up the microphone
+# Green Wire
 bck_pin = Pin(19)
+# Yellow Wire
 ws_pin = Pin(18)
+# Purple Wire
 sdin_pin = Pin(23)
 
 audio_in = I2S(0,
