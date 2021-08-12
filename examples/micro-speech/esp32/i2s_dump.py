@@ -78,21 +78,18 @@ bck_pin = Pin(19)
 ws_pin = Pin(18)
 sdin_pin = Pin(23)
 
-audio_in = I2S(
-    0,
-    sck=bck_pin,
-    ws=ws_pin,
-    sd=sdin_pin,
-    mode=I2S.RX,
-    bits=16,
-    format=I2S.MONO,
-    rate=16000,
-    ibuf=9600
-)
+audio_in = I2S(0,
+               sck=bck_pin,
+               ws=ws_pin,
+               sd=sdin_pin,
+               mode=I2S.RX,
+               bits=16,
+               format=I2S.MONO,
+               rate=16000,
+               ibuf=16000
+               )
 
 wav = open('mic_left_channel_16bits.wav','wb')
-
-pcm = open ('mic_left_channel_16bits.pcm', 'wb')
 
 # create header for WAV file and write to SD card
 wav_header = create_wav_header(
@@ -107,40 +104,36 @@ num_bytes_written = wav.write(wav_header)
 #   memoryview used to reduce heap allocation in while loop
 
 # 2 second buffer
-mic_samples = bytearray(64000)
+mic_samples = bytearray(6400)
 mic_samples_mv = memoryview(mic_samples)
-
-num_samples_read = 0
-
-wav_samples = bytearray(SDCARD_SAMPLE_BUFFER_SIZE_IN_BYTES)
-wav_samples_mv = memoryview(wav_samples)
 
 num_sample_bytes_written_to_wav = 0
 
 print('Starting')
 # read 32-bit samples from I2S microphone, snip upper 16-bits, write snipped samples to WAV file
-while num_samples_read < 64000:
+while num_sample_bytes_written_to_wav < 64000:
     try:
         # try to read a block of samples from the I2S microphone
         # readinto() method returns 0 if no DMA buffer is full
         num_bytes_read_from_mic = audio_in.readinto(mic_samples_mv)
+
         if num_bytes_read_from_mic > 0:
             # snip upper 16-bits from each 32-bit microphone sample
 
             print('%d sample bytes read from i2s' % num_bytes_read_from_mic)
-            
+
             # num_bytes_snipped = snip_16_mono(mic_samples_mv[:num_bytes_read_from_mic], wav_samples_mv)
             # num_bytes_to_write = min(num_bytes_snipped, NUM_SAMPLE_BYTES_TO_WRITE - num_sample_bytes_written_to_wav)
             # write samples to WAV file
-            num_bytes_written = wav.write(mic_samples_mv)
-            pcm.write(mic_samples_mv[:num_bytes_read_from_mic])
+            num_bytes_written = wav.write(mic_samples_mv[:num_bytes_read_from_mic])
+
             num_sample_bytes_written_to_wav += num_bytes_written
     except (KeyboardInterrupt, Exception) as e:
         print('caught exception {} {}'.format(type(e).__name__, e))
         break
 
 wav.close()
-pcm.close()
+
 audio_in.deinit()
 
 print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
@@ -148,3 +141,4 @@ print('%d sample bytes written to WAV file' % num_sample_bytes_written_to_wav)
 # now make the spectrograms
 
 print('Done')
+
