@@ -47,3 +47,25 @@ Classify Person Image
 setup 9612 bytes on the inputTensor.
 'not a person' = -113, 'person' = 113
 ```  
+
+#  Running on ESP32 port
+
+**NOTE: The person detection model is 300 kb so you need to use a board with SPI RAM**
+
+
+Download the latest build of the micropython microlite spiram board for the esp32 port:
+1. Click on "Actions" tab.
+2. Click on "Select Workflow" button.
+3. Choose "ESP32"
+4. Click on the commit message name for the most recent successful build
+5. Click on microlite-spiram-16m-esp32-firmware in the "Artifacts" area to download a zip file containing the 
+   esp32 firmware you can now flash.  
+   
+After flashing upload these files from here onto the board:
+1. no_person_image_data.dat
+2. person_image_data.dat
+3. person_detect_model.tflite
+4. person_detection.py
+
+Then import person_detection to run the example:
+![ESP32 Running Person Detection](../../images/person-detection-esp32-running.png)
