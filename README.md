@@ -21,6 +21,7 @@ At the moment all of the tensor operations are included in tensorflow-microlite.
 Build Type | Status |
  --------- | ------ |
 ESP32   | [![ESP32](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml) |
+UNIX   | [![UNIX](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml) |
 
 
 The latest firmware can be downloaded from the applicable build above.
