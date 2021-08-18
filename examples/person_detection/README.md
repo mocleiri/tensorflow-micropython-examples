@@ -1,5 +1,12 @@
 Micropython implementation of the Person Detection Example
 
+# Model Architecture
+
+![](images/model_architecture.png)
+
+# Model Properties
+![](images/model_properties.png)
+
 # Upstream example
 https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/examples/person_detection/README.md
 

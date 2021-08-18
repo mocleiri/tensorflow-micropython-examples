@@ -8,15 +8,17 @@ I want to incubate this project here but if it is successful at enabling tensorf
 
 | Area        | Are           | 
 | ------------- |:-------------:| 
-| tensorflow-microlite.a | This is the tensorflow lite library with all operations to start with |
-| micropython-modules/microlite | Micropython 'microlite' module that interconnects micropython to tensorflow lite |
-| micropython-modules/audio_frontend | Wrapper for tensorflow experimental microfrontend audio processor needed by the micro_speech example to convert wav data into spectrogram data for processing by the model. |
+| tensorflow-microlite.a | This is the tensorflow lite micro library with all operations to start with |
+| micropython-modules/microlite | Micropython 'microlite' module that interconnects micropython to tensorflow lite micropython c++ api |
+| micropython-modules/audio_frontend | Micropython Wrapper for tensorflow experimental microfrontend audio processor needed by the micro_speech example to convert wav data into spectrogram data for processing by the model. |
 | micropython-modules/ulab | We have a submodule dependency on [ulab](https://github.com/v923z/micropython-ulab).  |
 
 At the moment all of the tensor operations are included in tensorflow-microlite.a but in the future we will try to externalize them so they can be brought on the file system with the model being run.
 
+Because we have all of the operations there is a cost in the size of the image generated.
 
-# Status
+
+# Port Status
 
 Build Type | Status |
  --------- | ------ |
@@ -24,49 +26,89 @@ ESP32   | [![ESP32](https://github.com/mocleiri/tensorflow-micropython-examples/
 UNIX   | [![UNIX](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml) |
 
 
-The latest firmware can be downloaded from the applicable build above.
+# Prebuilt Firmware
+
+The latest firmware can be downloaded from the applicable build above (in the Status section).
 1. Click on build status link.
 2. Click on the latest green build
 3. Review the available artifiacts for download
 
 You do need to be careful to get the proper firmware for your board.  If your board is not currently being built please file an issue and it can be added.
 
-## Download Build Artifact Example
-
 ![](./images/download-esp32-artifact.png)
 
+# Examples
 
-# Prebuilt Firmware
+## Hello World
 
-Once we get to version 1.0.0 there will be release firmware.  At the moment the best option is to get the firmware built as part of the ci run above.
+Give a model an x value and it will give a y value.  The chart of such points is an approximate sine wave:
+![](./images/hello-world-output-chart.png)
+
+Status:
+* Works on unix port and esp32 port.
+
+[Hello-World Documentation](examples/hello-world/README.md)
+
+## Micro Speech 
+
+Process:
+1. Sample Audio
+2. Convert to spectrogram
+3. Set 1960 bytes on input tensor corresponding to 1 second worth of spectrogram.
+4. Run inference on model 3-4 times per second and average scores.
+5. Scores over 200 indicate a match
+
+Status:
+* Works on unix port with files.
+* Works on esp32 no-spi ram board with machine.I2S.
+
+[Micro Speech Documentation](examples/micro-speech/README.md)
+
+## Person Detection
+
+Process:
+1. Capture Images
+2. Convert to 96x96 pixel int8 greyscale images
+3. Set on input later of model
+4. Run inference on image
+5. if person > no person it thinks the image is a person
+6. if no person > person it thinks the image contains no person
+
+Status:
+* Works on unix port and esp32 port using files.
+
+[Person Detection Documentation](examples/person_detection/README.md)
+
+## Magic Wand
+
+[TODO #5](https://github.com/mocleiri/tensorflow-micropython-examples/issues/5)
 
 # Roadmap
 
-Inference is working for the hello-world sine example and mostly for the micro_speech example.
+Almost all of the examples work now.
 
-1. Cleanup micro_speech implementation: https://github.com/mocleiri/tensorflow-micropython-examples/issues/2
-2. Implement the magic wand example: https://github.com/mocleiri/tensorflow-micropython-examples/issues/5
-3. Investigate automatic tensor quantization: https://github.com/mocleiri/tensorflow-micropython-examples/issues/6
-4. Find way to externalize tensor op's from firmware:https://github.com/mocleiri/tensorflow-micropython-examples/issues/7
-
-## Implement 'micro-speech' example
-
-
-This firmware is based on https://github.com/miketeachman/micropython/tree/esp32-i2s which adds an i2s module which is needed for sampling audio for this example.
-
-Plan to copy the openmv py_micro_speech.c file which converts the audio sample into the correct input tensor values.
+| # | Description | Issue |
+| --- | --- | --- |
+| 1. | Adjust microlite api to match tflite python api (at least a subset).  We don't really need the callback approach anymore. |  https://github.com/mocleiri/tensorflow-micropython-examples/issues/10 |
+| 2. | Cleanup micro_speech implementation | |
+| 3. | Implement the magic wand example | https://github.com/mocleiri/tensorflow-micropython-examples/issues/5 |
+| 4. | Investigate automatic tensor quantization | https://github.com/mocleiri/tensorflow-micropython-examples/issues/6 |
+| 5. | Find way to externalize tensor op's from firmware | https://github.com/mocleiri/tensorflow-micropython-examples/issues/7 |
 
 # About Tensorflow
 
-At the moment we are using the r2.4 branch in tensorflow and then using the user implementation Makefile to build the full tensorflow lite for microcontroller library.
+At the moment we are using the main branch in the tensorflow lite micro repository.
 
-Later we will try to move the ops out into something that can be wrapped as a native micropython module and added via being on the file system.
+This is the c++ api version of tensorflow lite designed to run on microcontrollers.
+
+At the moment we are building everything and linking it into the micropython firmware.
+
+The next steps are to try and find ways to use build switches or native modules to support
+smaller firmware sizes.
 
 # About Micropython
 
-For the micros-speech example we are using a custom version of micropython with miketeachman's i2s module added for esp32 plus a few other changes related to getting the build to work right.
-
-Probably if you don't need that then you could build from either the last release or master instead.
+We are building from micropython master.  
 
 # How to Build
 
@@ -92,7 +134,9 @@ The zip file contains:
 
 # Credits
 
-As far as I am aware OpenMV (https://openmv.io/) was the first micropython firmware to support tensorflow.  I copied extensively from their approach to get inference working in the hello world example and also for micro-speech example.
+As far as I am aware OpenMV (https://openmv.io/) was the first micropython firmware to support tensorflow.  
+
+I copied extensively from their approach to get inference working in the hello world example and also for micro-speech example.
 
 I started from their libtf code for how to interact with the Tensorflow C++ API from micropython:
 

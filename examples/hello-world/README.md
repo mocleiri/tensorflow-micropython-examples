@@ -13,7 +13,9 @@ the output tensor.  At the moment there are equivelant methods but you need to i
 I may be able to [automatically quantitize](https://github.com/mocleiri/tensorflow-micropython-examples/issues/6) because we can know the tensor type and the current 
 micropython type. 
 
+# Model Architecture
 
+![](images/model_architecture.png)
 
 ## Unix Port
 
