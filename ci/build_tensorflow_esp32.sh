@@ -24,13 +24,13 @@ BASE_DIR=/opt/tflite-micro-micropython
 cd $BASE_DIR/tensorflow
 
 make -f tensorflow/lite/micro/tools/make/Makefile \
-CXXFLAGS="-std=c++11 -O3 -DNDEBUG -fstrict-volatile-bitfields -mlongcalls -nostdlib -fno-rtti -fno-exceptions -fno-threadsafe-statics -fno-unwind-tables -ffunction-sections -fdata-sections -fmessage-length=0 -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -Werror -Wsign-compare -Wdouble-promotion -Wshadow -Wunused-variable -Wmissing-field-initializers -Wunused-function -Wswitch -Wvla -Wall -Wextra -Wstrict-aliasing -Wno-unused-parameter -DESP -Wno-return-type -Wno-strict-aliasing -Wno-ignored-qualifiers -Wno-return-type  -Wno-strict-aliasing" \
+CXXFLAGS="-std=c++11 -O3 -DNDEBUG -Wno-error=maybe-uninitialized  -fstrict-volatile-bitfields -mlongcalls -nostdlib -fno-rtti -fno-exceptions -fno-threadsafe-statics -fno-unwind-tables -ffunction-sections -fdata-sections -fmessage-length=0 -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -Werror -Wsign-compare -Wdouble-promotion -Wshadow -Wunused-variable -Wmissing-field-initializers -Wunused-function -Wswitch -Wvla -Wall -Wextra -Wstrict-aliasing -Wno-unused-parameter -DESP -Wno-return-type -Wno-strict-aliasing -Wno-ignored-qualifiers -Wno-return-type  -Wno-strict-aliasing" \
 TARGET_TOOLCHAIN_PREFIX=xtensa-esp32-elf- TARGET=esp TARGET_ARCH=xtensa-esp32 KERNEL_OPTIMIZATION_LEVEL=-O3 clean
 
 rm -rf tensorflow/lite/micro/tools/make/downloads
 
 make -f tensorflow/lite/micro/tools/make/Makefile \
-CXXFLAGS="-std=c++11 -O3 -DNDEBUG -fstrict-volatile-bitfields -mlongcalls -nostdlib -fno-rtti -fno-exceptions -fno-threadsafe-statics -fno-unwind-tables -ffunction-sections -fdata-sections -fmessage-length=0 -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -Werror -Wsign-compare -Wdouble-promotion -Wshadow -Wunused-variable -Wmissing-field-initializers -Wunused-function -Wswitch -Wvla -Wall -Wextra -Wstrict-aliasing -Wno-unused-parameter -DESP -Wno-return-type -Wno-strict-aliasing -Wno-ignored-qualifiers -Wno-return-type  -Wno-strict-aliasing" \
+CXXFLAGS="-std=c++11 -O3 -DNDEBUG -Wno-error=maybe-uninitialized -fstrict-volatile-bitfields -mlongcalls -nostdlib -fno-rtti -fno-exceptions -fno-threadsafe-statics -fno-unwind-tables -ffunction-sections -fdata-sections -fmessage-length=0 -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -Werror -Wsign-compare -Wdouble-promotion -Wshadow -Wunused-variable -Wmissing-field-initializers -Wunused-function -Wswitch -Wvla -Wall -Wextra -Wstrict-aliasing -Wno-unused-parameter -DESP -Wno-return-type -Wno-strict-aliasing -Wno-ignored-qualifiers -Wno-return-type  -Wno-strict-aliasing" \
 TARGET_TOOLCHAIN_PREFIX=xtensa-esp32-elf- TARGET=esp TARGET_ARCH=xtensa-esp32 KERNEL_OPTIMIZATION_LEVEL=-O3
 
 echo "cp tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/lib/libtensorflow-microlite.a $BASE_DIR/lib"
