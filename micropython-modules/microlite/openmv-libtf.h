@@ -14,7 +14,7 @@
 extern "C" {
 #endif
 
-
+#include "libtf-op-resolvers.h"
 #include "tensorflow/lite/c/common.h"
 
 #include "py/runtime.h"

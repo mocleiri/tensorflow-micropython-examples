@@ -3,7 +3,6 @@
  * This work is licensed under the MIT license, see the file LICENSE for details.
  */
 
-#include "tensorflow/lite/micro/all_ops_resolver.h"
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
@@ -59,6 +58,7 @@ extern "C" {
     //      return 0;
     //  }
 
+    STATIC tflite::MicroMutableOpResolver<MICROLITE_TOTAL_OPS> tf_op_resolver;
 
     int libtf_interpreter_init(microlite_interpreter_obj_t *microlite_interpreter) {
 
@@ -77,6 +77,8 @@ extern "C" {
         //  }
 
 
+        libtf_op_resolver_init(&tf_op_resolver);
+
         microlite_interpreter->tf_error_reporter = (mp_obj_t)error_reporter;
         microlite_interpreter->tf_model = (mp_obj_t)model;
 
@@ -87,7 +89,7 @@ extern "C" {
 
         tflite::AllOpsResolver resolver;
         tflite::MicroInterpreter *interpreter = new tflite::MicroInterpreter(model, 
-                                             resolver, 
+                                             tf_op_resolver,
                                              (uint8_t*)microlite_interpreter->tensor_area->items, 
                                              microlite_interpreter->tensor_area->len, 
                                              error_reporter);
