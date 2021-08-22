@@ -26,6 +26,10 @@
 #ifndef __LIB_TF_OB_RESOLVERS_H_
 #define __LIB_TF_OB_RESOLVERS_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 
 #ifndef MICROLITE_TOTAL_COUNTER
@@ -908,5 +912,9 @@ const int MICROLITE_TOTAL_OPS = MICROLITE_TOTAL;
 #endif
 
 int libtf_op_resolver_init(void *op_resolver);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif // __LIB_TF_OB_RESOLVERS_H_
