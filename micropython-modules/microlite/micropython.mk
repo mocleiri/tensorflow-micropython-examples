@@ -29,6 +29,7 @@ MICROLITE_MOD_DIR := $(USERMOD_DIR)
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tensorflow-microlite.c
 
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/openmv-libtf.cpp
+SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/libtf-op-resolvers.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/micropython-error-reporter.cpp
 
 

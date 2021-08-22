@@ -36,29 +36,29 @@ make -f tensorflow/lite/micro/tools/make/Makefile \
 CXXFLAGS="-std=c++11 -O3 -DNDEBUG -Wno-error=maybe-uninitialized -fstrict-volatile-bitfields -mlongcalls -nostdlib -fno-rtti -fno-exceptions -fno-threadsafe-statics -fno-unwind-tables -ffunction-sections -fdata-sections -fmessage-length=0 -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -Werror -Wsign-compare -Wdouble-promotion -Wshadow -Wunused-variable -Wmissing-field-initializers -Wunused-function -Wswitch -Wvla -Wall -Wextra -Wstrict-aliasing -Wno-unused-parameter -DESP -Wno-return-type -Wno-strict-aliasing -Wno-ignored-qualifiers -Wno-return-type  -Wno-strict-aliasing" \
 TARGET_TOOLCHAIN_PREFIX=xtensa-esp32-elf- TARGET=esp TARGET_ARCH=xtensa-esp32 KERNEL_OPTIMIZATION_LEVEL=-O3
 
-mkdir -p tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/obj/microlite-ops
+#mkdir -p tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/obj/microlite-ops
+#
+## add our op-resolver into the obj directory
+#xtensa-esp32-elf-g++ -std=c++11 -O3 -DNDEBUG -Wno-error=maybe-uninitialized -fstrict-volatile-bitfields -mlongcalls \
+#-nostdlib -fno-rtti -fno-exceptions -fno-threadsafe-statics -fno-unwind-tables -ffunction-sections -fdata-sections \
+#-fmessage-length=0 -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -Werror -Wsign-compare -Wdouble-promotion \
+#-Wshadow -Wunused-variable -Wmissing-field-initializers -Wunused-function -Wswitch -Wvla -Wall -Wextra \
+#-Wstrict-aliasing -Wno-unused-parameter -DESP -Wno-return-type -Wno-strict-aliasing -Wno-ignored-qualifiers \
+#-Wno-return-type  -Wno-strict-aliasing -Wno-error=unused-but-set-variable  -O3 -I. \
+#-Itensorflow/lite/micro/tools/make/downloads/gemmlowp \
+#-Itensorflow/lite/micro/tools/make/downloads/flatbuffers/include \
+#-Itensorflow/lite/micro/tools/make/downloads/ruy \
+#-Itensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/genfiles/ \
+#-Itensorflow/lite/micro/tools/make/downloads/kissfft -I$BASE_DIR/micropython-modules/microlite/ \
+#-c $BASE_DIR/micropython-modules/microlite/libtf-op-resolvers.cpp \
+#-o tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/obj/microlite-ops/libtf-op-resolvers.o
+#
+## rebuild the archive.
+#find tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/obj/ -iname *.o | xargs xtensa-esp32-elf-ar -r $BASE_DIR/lib/libtensorflow-microlite.a
 
-# add our op-resolver into the obj directory
-xtensa-esp32-elf-g++ -std=c++11 -O3 -DNDEBUG -Wno-error=maybe-uninitialized -fstrict-volatile-bitfields -mlongcalls \
--nostdlib -fno-rtti -fno-exceptions -fno-threadsafe-statics -fno-unwind-tables -ffunction-sections -fdata-sections \
--fmessage-length=0 -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -Werror -Wsign-compare -Wdouble-promotion \
--Wshadow -Wunused-variable -Wmissing-field-initializers -Wunused-function -Wswitch -Wvla -Wall -Wextra \
--Wstrict-aliasing -Wno-unused-parameter -DESP -Wno-return-type -Wno-strict-aliasing -Wno-ignored-qualifiers \
--Wno-return-type  -Wno-strict-aliasing -Wno-error=unused-but-set-variable  -O3 -I. \
--Itensorflow/lite/micro/tools/make/downloads/gemmlowp \
--Itensorflow/lite/micro/tools/make/downloads/flatbuffers/include \
--Itensorflow/lite/micro/tools/make/downloads/ruy \
--Itensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/genfiles/ \
--Itensorflow/lite/micro/tools/make/downloads/kissfft -I$BASE_DIR/micropython-modules/microlite/ \
--c $BASE_DIR/micropython-modules/microlite/libtf-op-resolvers.cc \
--o tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/obj/microlite-ops/libtf-op-resolvers.o
 
-# rebuild the archive.
-find tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/obj/ -iname *.o | xargs xtensa-esp32-elf-ar -r $BASE_DIR/lib/libtensorflow-microlite.a
-
-
-#echo "cp tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/lib/libtensorflow-microlite.a $BASE_DIR/lib"
-#cp tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/lib/libtensorflow-microlite.a $BASE_DIR/lib
+echo "cp tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/lib/libtensorflow-microlite.a $BASE_DIR/lib"
+cp tensorflow/lite/micro/tools/make/gen/esp_xtensa-esp32_default/lib/libtensorflow-microlite.a $BASE_DIR/lib
 
 echo "ls $BASE_DIR/lib"
 ls $BASE_DIR/lib

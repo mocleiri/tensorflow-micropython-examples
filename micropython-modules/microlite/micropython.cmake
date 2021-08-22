@@ -42,6 +42,7 @@ target_sources(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/tensorflow-microlite.c
 
     ${CMAKE_CURRENT_LIST_DIR}/openmv-libtf.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/libtf-op-resolvers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/micropython-error-reporter.cpp
 )
 
