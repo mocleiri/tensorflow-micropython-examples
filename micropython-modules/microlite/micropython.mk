@@ -44,6 +44,7 @@ SRC_USERMOD += $(MICROLITE_MOD_DIR)/audio_frontend.c
 
 
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/openmv-libtf.cpp
+SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/libtf-op-resolvers.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/micropython-error-reporter.cpp
 
 ifeq ($(BOARD), NUCLEO_H743ZI2_MICROLITE)
