@@ -30,8 +30,6 @@
 extern "C" {
 #endif
 
-#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
-
 #ifndef MICROLITE_TOTAL_COUNTER
 #define MICROLITE_TOTAL_COUNTER __COUNTER__
 #endif

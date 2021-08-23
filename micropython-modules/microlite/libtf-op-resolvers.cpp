@@ -25,7 +25,7 @@
  */
 
 #include "libtf-op-resolvers.h"
-
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 static int setup = 0;
 
 int libtf_op_resolver_init(void *op_resolver) {
