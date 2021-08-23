@@ -224,6 +224,7 @@ endif
 CFLAGS_USERMOD += -Wno-error=implicit-function-declaration
 
 CXXFLAGS_USERMOD += -Wno-error=sign-compare
+CXXFLAGS_USERMOD += -Wno-error=unused-but-set-variable
 CXXFLAGS_USERMOD += -Wno-error=float-conversion
 
 #CXXFLAGS_USERMOD += -g
