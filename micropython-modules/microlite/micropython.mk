@@ -57,6 +57,7 @@ CFLAGS_USERMOD += -g
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow/tensorflow/lite/micro/tools/make/downloads/flatbuffers/include
 CXXFLAGS_USERMOD += -Wno-error=sign-compare
+CXXFLAGS_USERMOD += -Wno-error=unused-but-set-variable
 CXXFLAGS_USERMOD += -g
 
 # unix port

@@ -64,6 +64,7 @@ target_compile_options(microlite INTERFACE
     -Wno-error=pointer-arith
     -Wno-error=unused-const-variable
     -Wno-error=sign-compare
+    -Wno-error=unused-but-set-variable
 )
 
 target_link_libraries(usermod INTERFACE microlite)
