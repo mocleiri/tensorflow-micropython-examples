@@ -23,5 +23,6 @@ jobs:
         run: |
           git submodule init
           git submodule update --recursive
+          chmod +x ./ci/build_tensorflow_cortex_m_generic.sh
           ./ci/build_tensorflow_cortex_m_generic.sh
 
