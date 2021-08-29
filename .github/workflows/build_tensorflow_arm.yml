@@ -37,10 +37,10 @@ jobs:
         with:
           name: libtensorflow-microlite-cortex-m4-cmsis-fp
           path: |
-            - tensorflow/tensorflow/lite/micro/tools/make/gen/cortex_m_generic_cortex-m4+fp_default/*/libtensorflow-microlite.a
+            - tensorflow/lite/micro/tools/make/gen/cortex_m_generic_cortex-m4+fp_default/*/libtensorflow-microlite.a
       - name: Archive Cortex-M7 CMSIS FP libtensorflow-microlite.a
         uses: actions/upload-artifact@v2
         with:
           name: libtensorflow-microlite-cortex-m7-cmsis-fp
           path: |
-            - tensorflow/tensorflow/lite/micro/tools/make/gen/cortex_m_generic_cortex-m7+fp_default/*/libtensorflow-microlite.a
+            - tensorflow/lite/micro/tools/make/gen/cortex_m_generic_cortex-m7+fp_default/*/libtensorflow-microlite.a
