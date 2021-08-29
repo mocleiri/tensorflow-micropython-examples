@@ -1,0 +1,27 @@
+
+name: ARM Tensorflow Micro
+
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
+on:
+  push:
+  pull_request:
+    paths-ignore:
+      - 'examples/**'
+      - 'README.md'
+      - 'ci/*unix*.sh'
+      - '.github/workflows/build_unix.yml'
+      - '.github/workflows/build_esp32.yml'
+
+jobs:
+  tensorflow_arm_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build Tensorflow static library for ARM
+        run: |
+          git submodule init
+          git submodule update --recursive
+          ./ci/build_tensorflow_cortex_m_generic.sh
+
