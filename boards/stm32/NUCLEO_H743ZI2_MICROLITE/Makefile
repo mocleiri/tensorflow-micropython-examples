@@ -7,7 +7,7 @@
 BOARD ?= NUCLEO_H743ZI2_MICROLITE
 
 # Location of MicroPython repository.
-MICROPY_TOP ?= $(abspath ../../lib/micropython)
+MICROPY_TOP ?= $(abspath ../../../micropython)
 
 ################################################################################
 # Define your targets here.
