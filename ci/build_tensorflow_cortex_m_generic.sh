@@ -36,7 +36,8 @@ readable_run make -f tensorflow/lite/micro/tools/make/Makefile clean
 
 # Build for Cortex-M4 (FPU) with CMSIS
 readable_run make -j$(nproc) -f tensorflow/lite/micro/tools/make/Makefile \
-       OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m4+fp" microlite
+       ADDITIONAL_DEFINES="-mfloat-abi=hard" OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m4+fp" microlite
 
 # Build for Cortex-M7 (FPU) with CMSIS
-readable_run make -j$(nproc) -f tensorflow/lite/micro/tools/make/Makefile OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m7+fp" microlite
+readable_run make -j$(nproc) -f tensorflow/lite/micro/tools/make/Makefile \
+ADDITIONAL_DEFINES="-mfloat-abi=hard" OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m7+fp" microlite
