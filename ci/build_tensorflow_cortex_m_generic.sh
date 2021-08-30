@@ -39,4 +39,9 @@ readable_run make -j$(nproc) -f tensorflow/lite/micro/tools/make/Makefile \
        OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m4+fp" microlite
 
 # Build for Cortex-M7 (FPU) with CMSIS
-readable_run make -j$(nproc) -f tensorflow/lite/micro/tools/make/Makefile OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m7+fp" microlite
+readable_run make -j$(nproc) -f tensorflow/lite/micro/tools/make/Makefile \
+CXXFLAGS="-DTF_LITE_STATIC_MEMORY -std=c++11 -Wno-error=incompatible-pointer-types -Wall -Wpointer-arith -Werror -Wdouble-promotion -Wfloat-conversion -std=gnu99 -nostdlib -DTF_LITE_STATIC_MEMORY=1 \
+ -Wno-error=discarded-qualifiers -Wno-error=unused-variable -Wno-error=int-conversion -DSTM32H743xx -DUSE_FULL_LL_DRIVER -mthumb -mfpu=fpv5-d16 -mfloat-abi=hard \
+ -mtune=cortex-m7 -mcpu=cortex-m7 -Os -DNDEBUG -DSTM32_HAL_H='<stm32h7xx_hal.h>' -DMBOOT_VTOR=0x08000000 -DMICROPY_HW_VTOR=0x08000000 \
+ -fdata-sections -ffunction-sections -Os -MD " \
+OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m7+fp" microlite
