@@ -411,6 +411,16 @@ STATIC mp_obj_t op_resolver_make_new(const mp_obj_type_t *type, size_t n_args, s
     if (op_resolver->mode == SPECIFIED_OPS) {
         op_resolver->number_of_ops = args[ARG_size].u_int;
 
+         // check that the number is less than the hard limit in the firmware
+
+        if (op_resolver->number_of_ops >= MAX_TFLITE_OPS) {
+            mp_printf(MP_PYTHON_PRINTER, "microlite firmware only supports %d tflite ops max. You tried to register %d ops\n", 
+            MAX_TFLITE_OPS, op_resolver->number_of_ops);
+
+            mp_raise_ValueError("error");
+        }
+
+
     }
     else {
         // all ops mode

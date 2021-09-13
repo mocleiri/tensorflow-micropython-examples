@@ -60,98 +60,25 @@ extern "C" {
 
     int libtf_init_op_resolver(microlite_op_resolver_obj_t *microlite_op_resolver) {
 
-        const unsigned int number_of_ops = microlite_op_resolver->number_of_ops;
-
-        tflite::MicroMutableOpResolver<number_of_ops>* op_resolver = new tflite::MicroMutableOpResolver<number_of_ops>(&micro_error_reporter);   
-
-        microlite_op_resolver->tf_op_resolver = (mp_obj_t)op_resolver;
-
         if (microlite_op_resolver->mode == ALL_OPS) {
 
-            // add all of the ops
-            // copied from the constructor in all_ops_resolver.cc
-            op_resolver->AddAbs();
-  op_resolver->AddAdd();
-  op_resolver->AddAddN();
-  op_resolver->AddArgMax();
-op_resolver->AddArgMin();
-op_resolver->AddAveragePool2D();
-op_resolver->AddBatchToSpaceNd();
-op_resolver->AddCeil();
-op_resolver->AddConcatenation();
-op_resolver->AddConv2D();
-op_resolver->AddCos();
-op_resolver->AddCumSum();
-op_resolver->AddDepthToSpace();
-op_resolver->AddDepthwiseConv2D();
-op_resolver->AddDequantize();
-op_resolver->AddDetectionPostprocess();
-op_resolver->AddElu();
-op_resolver->AddEqual();
-op_resolver->AddEthosU();
-op_resolver->AddExpandDims();
-op_resolver->AddFloor();
-op_resolver->AddFloorDiv();
-op_resolver->AddFloorMod();
-op_resolver->AddFullyConnected();
-op_resolver->AddGreater();
-op_resolver->AddGreaterEqual();
-op_resolver->AddHardSwish();
-op_resolver->AddL2Normalization();
-op_resolver->AddL2Pool2D();
-op_resolver->AddLeakyRelu();
-op_resolver->AddLess();
-op_resolver->AddLessEqual();
-op_resolver->AddLog();
-op_resolver->AddLogicalAnd();
-op_resolver->AddLogicalNot();
-op_resolver->AddLogicalOr();
-op_resolver->AddLogistic();
-op_resolver->AddMaxPool2D();
-op_resolver->AddMaximum();
-op_resolver->AddMean();
-op_resolver->AddMinimum();
-op_resolver->AddMul();
-op_resolver->AddNeg();
-op_resolver->AddNotEqual();
-op_resolver->AddPack();
-op_resolver->AddPad();
-op_resolver->AddPadV2();
-op_resolver->AddPrelu();
-op_resolver->AddQuantize();
-op_resolver->AddReduceMax();
-op_resolver->AddRelu();
-op_resolver->AddRelu6();
-op_resolver->AddReshape();
-op_resolver->AddResizeBilinear();
-op_resolver->AddResizeNearestNeighbor();
-op_resolver->AddRound();
-op_resolver->AddRsqrt();
-op_resolver->AddShape();
-op_resolver->AddSin();
-op_resolver->AddSoftmax();
-op_resolver->AddSpaceToBatchNd();
-op_resolver->AddSpaceToDepth();
-op_resolver->AddSplit();
-op_resolver->AddSplitV();
-op_resolver->AddSqrt();
-op_resolver->AddSquare();
-op_resolver->AddSqueeze();
-op_resolver->AddStridedSlice();
-op_resolver->AddSub();
-op_resolver->AddSvdf();
-op_resolver->AddTanh();
-op_resolver->AddTransposeConv();
-op_resolver->AddTranspose();
-op_resolver->AddUnpack();
+            tflite::AllOpsResolver* op_resolver = new tflite::AllOpsResolver();   
+
+            microlite_op_resolver->tf_op_resolver = (mp_obj_t)op_resolver;
+            
 
         }
         else if (microlite_op_resolver->mode == SPECIFIED_OPS) {
             // don't do anything
+            tflite::MicroMutableOpResolver<MAX_TFLITE_OPS>* op_resolver = new tflite::MicroMutableOpResolver<MAX_TFLITE_OPS>(&micro_error_reporter);   
+
+            microlite_op_resolver->tf_op_resolver = (mp_obj_t)op_resolver;
         }
         else {
-            micro_error_reporter->Report("Op Resolver mode is invalid!");
+            micro_error_reporter.Report("Op Resolver mode is invalid!");
         }
+
+        return 0;
     }
 
     int libtf_init_interpreter(microlite_interpreter_obj_t *microlite_interpretor) {
@@ -174,11 +101,11 @@ op_resolver->AddUnpack();
     int libtf_op_resolver_add(microlite_op_resolver_obj_t *op_resolver, mp_int_t op_to_add) {
         
         if (op_resolver->mode != SPECIFIED_OPS) {
-            error_reporter->Report("Wrong mode.  Can only add more ops when in SPECIFIED_OPS mode!");
+            micro_error_reporter.Report("Wrong mode.  Can only add more ops when in SPECIFIED_OPS mode!");
             return 1;
         }
 
-        tflte::MicroMutableOpResolver *tf_op_resolver = (tflte::MicroMutableOpResolver *)op_resolver->tf_op_resolver;
+        tflite::MicroMutableOpResolver<MAX_TFLITE_OPS> *tf_op_resolver = (tflite::MicroMutableOpResolver<MAX_TFLITE_OPS> *)op_resolver->tf_op_resolver;
 
         TfLiteStatus status;
 
@@ -437,8 +364,13 @@ op_resolver->AddUnpack();
             status = tf_op_resolver->AddZerosLike(); 
         }
 
-        // check on status object
-        return 0;
+        if (status == kTfLiteOk) {
+            return 0;
+        }
+        else {
+            // TODO logout the actual status code
+            return 1;
+        }
     }
 
 
@@ -449,9 +381,10 @@ op_resolver->AddUnpack();
 
         const tflite::Model *model = (const tflite::Model *)microlite_interpretor->tf_model;
 
-        tflite::MicroOpResolver *resolver = (tflite::MicroOpResolver *)microlite_interpreter->tf_op_resolver;
+        tflite::MicroOpResolver *resolver = (tflite::MicroOpResolver *)microlite_interpretor->op_resolver->tf_op_resolver;
+
         tflite::MicroInterpreter interpreter(model, 
-                                             resolver, 
+                                             *resolver, 
                                              (unsigned char*)microlite_interpretor->tensor_area->items, 
                                              microlite_interpretor->tensor_area->len, 
                                              error_reporter);

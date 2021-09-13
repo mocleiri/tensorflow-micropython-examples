@@ -38,6 +38,11 @@ extern "C" {
 #include "py/objarray.h"
 
 /*
+ * Maximum number of ops allowed when using the mutable op resolver
+ */
+#define MAX_TFLITE_OPS 10
+
+/*
  The BuiltinOperator enum from schema_generated.h which 
  is c++ only.
 
@@ -141,6 +146,10 @@ typedef struct _microlite_op_resolver_obj_t {
     mp_int_t number_of_ops;
     mp_obj_t tf_op_resolver;
 } microlite_op_resolver_obj_t;
+
+typedef struct _microlite_op_obj_t {
+    mp_obj_base_t base;
+} microlite_op_obj_t;
 
 typedef struct _microlite_model_obj_t {
     mp_obj_base_t base;
