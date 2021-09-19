@@ -17,8 +17,8 @@ all: firmware
 ################################################################################
 # Items below this line do not generally need to be changed.
 
-BOARD_DIR = $(abspath .)
-BUILD = $(abspath build)
+BOARD_DIR ?= $(abspath .)
+BUILD = $(BOARD_DIR)/build
 
 include $(MICROPY_TOP)/py/mkenv.mk
 include $(MICROPY_TOP)/py/mkrules.mk

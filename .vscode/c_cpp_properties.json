@@ -18,6 +18,27 @@
                     "${workspaceFolder}/micropython",
                     "${workspaceFolder}/tensorflow"
                 ]
+            },
+            "configurationProvider": "ms-vscode.makefile-tools"
+        },
+        {
+            "name": "stm32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [],
+            "compilerPath": "/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/",
+            "cStandard": "gnu99",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-arm",
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/src",
+                    "${workspaceFolder}/lib",
+                    "${workspaceFolder}/micropython-modules",
+                    "${workspaceFolder}/micropython",
+                    "${workspaceFolder}/tensorflow"
+                ]
             }
         }
     ],

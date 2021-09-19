@@ -22,5 +22,15 @@
         "stdint-intn.h": "c",
         "types.h": "c"
     },
-    "python.pythonPath": "/usr/bin/python3"
+    "python.pythonPath": "/usr/bin/python3",
+    "makefile.configurations": [
+            {
+                "name": "firmware",
+                "makeArgs": ["MICROPY_TOP=/home/mike/git/tensorflow-micropython-examples/micropython", 
+                    "BOARD_DIR=/home/mike/git/tensorflow-micropython-examples/boards/stm32/NUCLEO_H743ZI2_MICROLITE",
+                    "V=2"]
+            }
+    ],
+    "makefile.makefilePath": "./boards/stm32/NUCLEO_H743ZI2_MICROLITE/Makefile",
+    "makefile.preConfigureScript": "./boards/stm32/NUCLEO_H743ZI2_MICROLITE/vs-code-preconfigure.sh"
 }
