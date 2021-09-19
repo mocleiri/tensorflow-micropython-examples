@@ -16,6 +16,30 @@
 
 extern "C" {
 
+    STATIC microlite::MicropythonErrorReporter micro_error_reporter;
+    STATIC tflite::AllOpsResolver resolver;
+
+    static int libtf_align_tensor_arena(unsigned char **tensor_arena, unsigned int *tensor_arena_size)
+    {
+         tflite::ErrorReporter *error_reporter = &micro_error_reporter;
+
+         error_reporter->Report("Performing Alignment");
+         unsigned int alignment = ((unsigned int) (*tensor_arena)) % 16;
+
+         if (alignment) {
+
+             unsigned int fix = 16 - alignment;
+
+             if ((*tensor_arena_size) < fix) {
+                 return 1;
+             }
+
+             (*tensor_arena) += fix;
+             (*tensor_arena_size) -= fix;
+         }
+
+         return 0;
+     }
 /*
  Return the index'th tensor
  */
@@ -35,8 +59,7 @@ extern "C" {
     }
 
 
-    STATIC microlite::MicropythonErrorReporter micro_error_reporter;
-    STATIC tflite::AllOpsResolver resolver;
+
 
     int libtf_interpreter_init(microlite_interpreter_obj_t *microlite_interpreter) {
 
@@ -44,10 +67,16 @@ extern "C" {
 
         const tflite::Model *model = tflite::GetModel(microlite_interpreter->model_data->items);
 
-        if (model->version() != TFLITE_SCHEMA_VERSION) {
-            error_reporter->Report("Model provided is schema version is not equal to supported version!");
-            return 1;
-        }
+//        if (model->version() != TFLITE_SCHEMA_VERSION) {
+//            error_reporter->Report("Model provided is schema version is not equal to supported version!");
+//            return 1;
+//        }
+
+        if (libtf_align_tensor_arena((unsigned char **)&microlite_interpreter->tensor_area->items, (unsigned int*)&microlite_interpreter->tensor_area->len)) {
+             error_reporter->Report("Align failed!");
+             return 1;
+         }
+
 
         microlite_interpreter->tf_error_reporter = (mp_obj_t)error_reporter;
         microlite_interpreter->tf_model = (mp_obj_t)model;

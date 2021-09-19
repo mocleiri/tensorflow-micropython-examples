@@ -39,6 +39,22 @@ readable_run make -f tensorflow/lite/micro/tools/make/Makefile clean
 #       OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m4+fp" microlite
 
 # Build for Cortex-M7 (FPU) with CMSIS
+
+# readable_run make -j$(nproc) -f tensorflow/lite/micro/tools/make/Makefile \
+# CXXFLAGS="-std=c++11 -fno-rtti -fno-exceptions -fno-threadsafe-statics -Werror -fno-unwind-tables -ffunction-sections \
+# -fdata-sections -fmessage-length=0 -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -Wsign-compare -Wdouble-promotion \
+# -Wshadow -Wunused-variable -Wmissing-field-initializers -Wunused-function -Wswitch -Wvla -Wall -Wextra \
+#  -Wstrict-aliasing -Wno-unused-parameter -DCORTEX_M_GENERIC -DCMSIS_NN -mcpu=cortex-m4 -mfpu=auto \
+#   -DTF_LITE_MCU_DEBUG_LOG -mthumb -mfloat-abi=hard -funsigned-char -mlittle-endian -Wno-implicit-fallthrough \
+#    -Wno-unused-variable -Wno-type-limits -Wno-unused-private-field -fomit-frame-pointer -MD -DCPU_M4=1 \
+#    -D__FPU_PRESENT=1 -Wno-strict-aliasing -Os -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON \
+#    -Wno-error=incompatible-pointer-types -Wall -Wpointer-arith -Werror -Wdouble-promotion -Wfloat-conversion -nostdlib \
+#     -Wno-error=discarded-qualifiers -Wno-error=unused-variable \
+#  -Wno-error=int-conversion -DSTM32H743xx -DUSE_FULL_LL_DRIVER -mthumb -mfpu=fpv5-d16 -mfloat-abi=hard \
+#  -mtune=cortex-m7 -mcpu=cortex-m7 -Os -DNDEBUG -DSTM32_HAL_H='<stm32h7xx_hal.h>' -DMBOOT_VTOR=0x08000000 \
+#  -DMICROPY_HW_VTOR=0x08000000 \
+#  -fdata-sections -ffunction-sections  -Wno-error=float-conversion  -Os -MD " \
+# OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m7+fp" microlite
 readable_run make -j$(nproc) -f tensorflow/lite/micro/tools/make/Makefile \
 CXXFLAGS="-std=c++11 -fno-rtti -fno-exceptions -fno-threadsafe-statics -Werror -fno-unwind-tables -ffunction-sections \
 -fdata-sections -fmessage-length=0 -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON -Wsign-compare -Wdouble-promotion \
@@ -46,11 +62,11 @@ CXXFLAGS="-std=c++11 -fno-rtti -fno-exceptions -fno-threadsafe-statics -Werror -
  -Wstrict-aliasing -Wno-unused-parameter -DCORTEX_M_GENERIC -DCMSIS_NN -mcpu=cortex-m4 -mfpu=auto \
   -DTF_LITE_MCU_DEBUG_LOG -mthumb -mfloat-abi=hard -funsigned-char -mlittle-endian -Wno-implicit-fallthrough \
    -Wno-unused-variable -Wno-type-limits -Wno-unused-private-field -fomit-frame-pointer -MD -DCPU_M4=1 \
-   -D__FPU_PRESENT=1 -Wno-strict-aliasing -Os -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON \
+   -D__FPU_PRESENT=1 -Wno-strict-aliasing -DTF_LITE_STATIC_MEMORY -DTF_LITE_DISABLE_X86_NEON \
    -Wno-error=incompatible-pointer-types -Wall -Wpointer-arith -Werror -Wdouble-promotion -Wfloat-conversion -nostdlib \
     -Wno-error=discarded-qualifiers -Wno-error=unused-variable \
  -Wno-error=int-conversion -DSTM32H743xx -DUSE_FULL_LL_DRIVER -mthumb -mfpu=fpv5-d16 -mfloat-abi=hard \
- -mtune=cortex-m7 -mcpu=cortex-m7 -Os -DNDEBUG -DSTM32_HAL_H='<stm32h7xx_hal.h>' -DMBOOT_VTOR=0x08000000 \
+ -mtune=cortex-m7 -mcpu=cortex-m7 -g -DDEBUG -DSTM32_HAL_H='<stm32h7xx_hal.h>' -DMBOOT_VTOR=0x08000000 \
  -DMICROPY_HW_VTOR=0x08000000 \
- -fdata-sections -ffunction-sections  -Wno-error=float-conversion  -Os -MD " \
-OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m7+fp" microlite
+ -fdata-sections -ffunction-sections  -Wno-error=float-conversion   -MD " \
+OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m7+fp"  BUILD_TYPE="debug" microlite

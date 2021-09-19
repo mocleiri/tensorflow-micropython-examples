@@ -1,7 +1,7 @@
 #include "boards/NUCLEO_H743ZI/mpconfigboard.h"
 
 #undef MICROPY_HW_BOARD_NAME
-#define MICROPY_HW_BOARD_NAME       "NUCLEO_H743ZI2"
+#define MICROPY_HW_BOARD_NAME       "NUCLEO_H743ZI2 MICROLITE"
 
 // The board has an external 32kHz crystal attached
 #undef MICROPY_HW_RTC_USE_LSE
