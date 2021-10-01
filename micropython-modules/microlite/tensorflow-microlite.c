@@ -271,7 +271,12 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
 
     self->model_data = model;
 
-    byte *tensor_area_buffer = m_new(byte, tensor_area_len);
+// 
+
+// add extra space to allow for alinment
+    tensor_area_len  += 16;
+
+    uint8_t *tensor_area_buffer = m_new(uint8_t, tensor_area_len);
 
     self->tensor_area = mp_obj_new_bytearray_by_ref (tensor_area_len, tensor_area_buffer);
 

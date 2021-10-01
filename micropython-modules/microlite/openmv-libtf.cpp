@@ -19,27 +19,7 @@ extern "C" {
     STATIC microlite::MicropythonErrorReporter micro_error_reporter;
     STATIC tflite::AllOpsResolver resolver;
 
-    static int libtf_align_tensor_arena(unsigned char **tensor_arena, unsigned int *tensor_arena_size)
-    {
-         tflite::ErrorReporter *error_reporter = &micro_error_reporter;
-
-         error_reporter->Report("Performing Alignment");
-         unsigned int alignment = ((unsigned int) (*tensor_arena)) % 16;
-
-         if (alignment) {
-
-             unsigned int fix = 16 - alignment;
-
-             if ((*tensor_arena_size) < fix) {
-                 return 1;
-             }
-
-             (*tensor_arena) += fix;
-             (*tensor_arena_size) -= fix;
-         }
-
-         return 0;
-     }
+    
 /*
  Return the index'th tensor
  */
@@ -58,7 +38,27 @@ extern "C" {
         return interpreter->output((size_t)index);
     }
 
+    // static int libtf_align_tensor_arena(uint8_t **tensor_arena, size_t *tensor_arena_size)
+    // {
+    //      tflite::ErrorReporter *error_reporter = &micro_error_reporter;
 
+    //      error_reporter->Report("Performing Alignment");
+    //      uint8_t alignment = ((uint8_t) (*tensor_arena)) % 16;
+
+    //      if (alignment) {
+
+    //          unsigned int fix = 16 - alignment;
+
+    //          if ((*tensor_arena_size) < fix) {
+    //              return 1;
+    //          }
+
+    //          (*tensor_arena) += fix;
+    //          (*tensor_arena_size) -= fix;
+    //      }
+
+    //      return 0;
+    //  }
 
 
     int libtf_interpreter_init(microlite_interpreter_obj_t *microlite_interpreter) {
@@ -72,15 +72,19 @@ extern "C" {
 //            return 1;
 //        }
 
-        if (libtf_align_tensor_arena((unsigned char **)&microlite_interpreter->tensor_area->items, (unsigned int*)&microlite_interpreter->tensor_area->len)) {
-             error_reporter->Report("Align failed!");
-             return 1;
-         }
+        // if (libtf_align_tensor_arena((uint8_t **)microlite_interpreter->tensor_area->items, &microlite_interpreter->tensor_area->len)) {
+        //      error_reporter->Report("Align failed!");
+        //      return 1;
+        //  }
 
 
         microlite_interpreter->tf_error_reporter = (mp_obj_t)error_reporter;
         microlite_interpreter->tf_model = (mp_obj_t)model;
 
+
+        // tflite::MicroAllocator *allocator = tflite::MicroAllocator::Create(
+        //     (uint8_t*)microlite_interpreter->tensor_area->items, 
+        //     microlite_interpreter->tensor_area->len, error_reporter);
 
         tflite::MicroInterpreter *interpreter = new tflite::MicroInterpreter(model, 
                                              resolver, 

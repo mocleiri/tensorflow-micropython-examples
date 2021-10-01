@@ -6,42 +6,21 @@
     "configurations": [
         {
             "cwd": "${workspaceFolder}",
-            "executable": "/mnt/c/Users/micha/git/tensorflow-micropython-examples/boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.elf",
+            "executable": "boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.elf",
             "name": "Debug STM32H743ZI2",
             "armToolchainPath": "/opt/gcc-arm-none-eabi-10-2020-q4-major/bin",
             "request": "attach",
-            "runToMain": true,
+            "stopAtConnect": true,
             "type": "cortex-debug",
             "servertype": "external",
-            "device": "STM32H743ZITx",
+            "device": "STM32H743ZI2Tx",
             "demangle": true,
-            "svdFile": "/mnt/c/Users/micha/git/tensorflow-micropython-examples/boards/stm32/NUCLEO_H743ZI2_MICROLITE/STM32H743x.svd",
-            "gdbTarget": "172.20.64.1:3333",
-            "sourceFileMap": {"/home/mike/git": ""}
-        },
-        {
-        "type": "cppdbg",
-        "request": "launch",
-        "name": "Remote Debug STM32H743ZI2",
-        "program": "/mnt/c/Users/micha/git/tensorflow-micropython-examples/boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.elf",
-        "args":[],
-        "stopAtEntry": true,
-        "cwd": "${workspaceFolder}",
-        "environment": [],
-        "externalConsole": false,
-        "armToolchainPath": "/opt/gcc-arm-none-eabi-10-2020-q4-major/bin",
-        "symbolLoadInfo": {
-            "loadAll": true,
-            "exceptionList": ""
-        },           
-        "MIMode": "gdb",
-        "setupCommands": [
-            {
-                "description": "Set Remote Target To 172,20.64.1",
-                "text": "target remote 172.20.64.1:3333",
-                "ignoreFailures": true
+            "svdFile": "boards/stm32/NUCLEO_H743ZI2_MICROLITE/STM32H743x.svd",
+            "gdbTarget": "172.21.192.1:3333",
+            "symbolLoadInfo": {
+                "loadAll": true,
+                "exceptionList": ""
             }
-        ]
         },
         {
             "name": "(gdb) Micropython - hello world",

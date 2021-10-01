@@ -34,7 +34,7 @@ SRC_USERMOD += $(MICROLITE_MOD_DIR)/../../micropython/shared/libc/__errno.c
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/openmv-libtf.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/micropython-error-reporter.cpp
 
-LDFLAGS_USERMOD += -L $(USERMOD_DIR)/../../lib -ltensorflow-microlite
+LDFLAGS_USERMOD += -L /home/mike/git/tensorflow-micropython-examples/lib -ltensorflow-microlite
 # needed with c++
 LDFLAGS_USERMOD += -lstdc++_nano -lm
 #LDFLAGS_USERMOD += -lstdc++_nano -lm

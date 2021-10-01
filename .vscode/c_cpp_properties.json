@@ -1,6 +1,76 @@
 {
     "configurations": [
         {
+            "name": "stm32",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "TF_LITE_STATIC_MEMORY=1",
+                "FFCONF_H=\"lib/oofatfs/ffconf.h\"",
+                "MICROPY_VFS_FAT=1",
+                "MICROPY_PY_USSL=1",
+                "MICROPY_SSL_MBEDTLS=1",
+                "MICROPY_PY_LWIP=1",
+                "MBEDTLS_CONFIG_FILE='\"mbedtls/mbedtls_config.h\"'",
+                "MODULE_AUDIO_FRONTEND_ENABLED=1",
+                "MODULE_MICROLITE_ENABLED=1 ",
+                "MODULE_ULAB_ENABLED=1 ",
+                "STM32H743xx",
+                "USE_FULL_LL_DRIVER",
+                "NDEBUG",
+                "STM32_HAL_H='<stm32h7xx_hal.h>' ",
+                "MBOOT_VTOR=0x08000000 ",
+                "MICROPY_HW_VTOR=0x08000000 ",
+                "MICROPY_FLOAT_IMPL=MICROPY_FLOAT_IMPL_DOUBLE",
+                "MICROPY_MODULE_FROZEN_STR ",
+                "MICROPY_QSTR_EXTRA_POOL=mp_qstr_frozen_const_pool ",
+                "MICROPY_MODULE_FROZEN_MPY",
+                "MICROPY_ROM_TEXT_COMPRESSION=1"
+            ],
+            "compilerPath": "/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-gcc",
+            "cStandard": "gnu99",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "gcc-arm",
+            "compilerArgs": [
+                "-Wall",
+                "-Wpointer-arith",
+                "-Werror",
+                "-Wdouble-promotion", 
+                "-Wfloat-conversion", 
+                "-std=gnu99",
+                "-nostdlib",
+                "-Wno-error=float-conversion", 
+                "-Wno-error=nonnull", 
+                "-Wno-error=double-promotion", 
+                "-Wno-error=pointer-arith",
+                "-Wno-error=unused-const-variable",
+                "-Wno-error=discarded-qualifiers",
+                "-Wno-error=unused-variable",
+                "-Wno-error=int-conversion",
+                "-Wno-error=incompatible-pointer-types",
+                "-g",
+                "-fdata-sections",
+                "-ffunction-sections",
+                "-mthumb",
+                " -mfpu=fpv5-d16",
+                " -mfloat-abi=hard ",
+                "-mtune=cortex-m7",
+                " -mcpu=cortex-m7",
+                "-Os",
+                "-MD"
+            ],
+            "browse": {
+                "path": [
+                    "${workspaceFolder}/src",
+                    "${workspaceFolder}/lib",
+                    "${workspaceFolder}/micropython-modules",
+                    "${workspaceFolder}/micropython",
+                    "${workspaceFolder}/tensorflow"
+                ]
+            }
+        },
+        {
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**"
@@ -20,27 +90,9 @@
                 ]
             },
             "configurationProvider": "ms-vscode.makefile-tools"
-        },
-        {
-            "name": "stm32",
-            "includePath": [
-                "${workspaceFolder}/**"
-            ],
-            "defines": [],
-            "compilerPath": "/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/",
-            "cStandard": "gnu99",
-            "cppStandard": "c++11",
-            "intelliSenseMode": "gcc-arm",
-            "browse": {
-                "path": [
-                    "${workspaceFolder}/src",
-                    "${workspaceFolder}/lib",
-                    "${workspaceFolder}/micropython-modules",
-                    "${workspaceFolder}/micropython",
-                    "${workspaceFolder}/tensorflow"
-                ]
-            }
         }
+        
+        
     ],
     "version": 4
 }

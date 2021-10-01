@@ -20,7 +20,17 @@
         "regex": "cpp",
         "stdint.h": "c",
         "stdint-intn.h": "c",
-        "types.h": "c"
+        "types.h": "c",
+        "array": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "compare": "cpp",
+        "memory_resource": "cpp",
+        "ranges": "cpp",
+        "scoped_allocator": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp",
+        "utility": "cpp"
     },
     "python.pythonPath": "/usr/bin/python3",
     "makefile.configurations": [
@@ -28,9 +38,17 @@
                 "name": "firmware",
                 "makeArgs": ["MICROPY_TOP=/home/mike/git/tensorflow-micropython-examples/micropython", 
                     "BOARD_DIR=/home/mike/git/tensorflow-micropython-examples/boards/stm32/NUCLEO_H743ZI2_MICROLITE",
+                    "CROSS_COMPILE=/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-",
                     "V=2"]
             }
     ],
     "makefile.makefilePath": "./boards/stm32/NUCLEO_H743ZI2_MICROLITE/Makefile",
-    "makefile.preConfigureScript": "./boards/stm32/NUCLEO_H743ZI2_MICROLITE/vs-code-preconfigure.sh"
+    "makefile.preConfigureScript": "./boards/stm32/NUCLEO_H743ZI2_MICROLITE/vs-code-preconfigure.sh",
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/mike/git/tensorflow-micropython-examples/boards/stm32/NUCLEO_H743ZI2_MICROLITE/build",
+            "binaryPath": "/home/mike/git/tensorflow-micropython-examples/boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.elf",
+            "binaryArgs": []
+        }
+    ]
 }

@@ -37,21 +37,17 @@ int fputs ( const char * str, FILE * stream ) {
 //size_t gc_nbytes(const void *ptr);
 //void *gc_realloc(void *ptr, size_t n_bytes, bool allow_move);
 void *malloc (size_t size) {
-    byte *data = m_new(byte, size);
-
-//    self->tensor_area = mp_obj_new_bytearray_by_ref (tensor_area_len, tensor_area_buffer);
-    return data;
+    return m_malloc(size);
 }
 
 void *calloc (size_t num, size_t size) {
-    return malloc (num*size);
+    return m_malloc (num*size);
 }
 
 void* realloc (void* ptr, size_t size) {
-// should be improved
-    return malloc (size);
+    return m_realloc(ptr, size);
 }
 void free (void* ptr) {
-
+    m_free(ptr);
 }
 
