@@ -35,6 +35,24 @@ SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/openmv-libtf.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/micropython-error-reporter.cpp
 
 LDFLAGS_USERMOD += -L /home/mike/git/tensorflow-micropython-examples/lib -ltensorflow-microlite
+
+# may need to incorporate from: https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/tools/project_generation/Makefile
+# This will generate for cortex_m_generic and all of the files
+# python3 ./tensorflow/lite/micro/tools/project_generatio
+#n/create_tflm_tree.py --makefile_options="TARGET=cortex_m_generic TARGET_ARCH=project_generation OPTIMI
+#ZED_KERNEL_DIR=cmsis_nn" --examples micro_speech --rename-cc-to-cpp /opt/tflite-micro/micropython-modul
+#es/microlite/tflm
+
+
+# TARGET=cortex_m_generic
+# OPTIMIZED_KERNEL_DIR=cmsis_nn
+# TARGET_ARCH="cortex-m7+fp
+# option from micropython
+# -mfpu=fpv5-d16 -mfloat-abi=hard
+
+$(shell PYTHON ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
+--makefile_options="TARGET=cortex_m_generic TARGET_ARCH=project_generation OPTIMIZED_KERNEL_DIR=cmsis_nn" \
+--examples micro_speech --rename-cc-to-cpp tflm)
 # needed with c++
 LDFLAGS_USERMOD += -lstdc++_nano -lm
 #LDFLAGS_USERMOD += -lstdc++_nano -lm
@@ -61,9 +79,7 @@ CFLAGS_USERMOD += -Wno-error=incompatible-pointer-types
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow/tensorflow/lite/micro/tools/make/downloads/flatbuffers/include
 CXXFLAGS_USERMOD += -Wno-error=sign-compare
-
-CFLAGS_USERMOD += -g
-CXXFLAGS_USERMOD += -g
+#CXXFLAGS_USERMOD += -g
 
 # unix port
 CXXFLAGS_USERMOD += -Wno-error=deprecated-declarations
