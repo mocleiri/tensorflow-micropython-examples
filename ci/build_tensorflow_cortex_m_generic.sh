@@ -66,7 +66,7 @@ CXXFLAGS="-std=c++11 -fno-rtti -fno-exceptions -fno-threadsafe-statics -Werror -
    -Wno-error=incompatible-pointer-types -Wall -Wpointer-arith -Werror -Wdouble-promotion -Wfloat-conversion -nostdlib \
     -Wno-error=discarded-qualifiers -Wno-error=unused-variable \
  -Wno-error=int-conversion -DSTM32H743xx -DUSE_FULL_LL_DRIVER -mthumb -mfpu=fpv5-d16 -mfloat-abi=hard \
- -mtune=cortex-m7 -mcpu=cortex-m7 -g -Og -DSTM32_HAL_H='<stm32h7xx_hal.h>' -DMBOOT_VTOR=0x08000000 \
+ -mtune=cortex-m7 -mcpu=cortex-m7 -g3 -O0 -DSTM32_HAL_H='<stm32h7xx_hal.h>' -DMBOOT_VTOR=0x08000000 \
  -DMICROPY_HW_VTOR=0x08000000 \
  -fdata-sections -ffunction-sections  -Wno-error=float-conversion   -MD " \
 OPTIMIZED_KERNEL_DIR=${OPTIMIZED_KERNEL_DIR} TARGET=${TARGET} TARGET_ARCH="cortex-m7+fp"  BUILD_TYPE="debug" microlite

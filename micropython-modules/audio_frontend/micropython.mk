@@ -76,6 +76,8 @@ CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow
 
 CXXFLAGS_USERMOD += -DTF_LITE_STATIC_MEMORY=1
 
+CXXFLAGS_USERMOD += -Wfloat-conversion
+
 # unix port
 CFLAGS_USERMOD += -Wno-error=unused-const-variable
 

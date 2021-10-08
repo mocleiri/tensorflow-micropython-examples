@@ -28,7 +28,7 @@ MICROLITE_MOD_DIR := $(USERMOD_DIR)
 # Add all C files to SRC_USERMOD.
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tensorflow-microlite.c
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/bare-metal-gc-heap.c
-SRC_USERMOD += $(MICROLITE_MOD_DIR)/../../micropython/shared/libc/__errno.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/../../micropython/shared/libc/__errno.c
 #SRC_USERMOD += $(MICROLITE_MOD_DIR)/../../micropython/shared/libc/string0.c
 
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/openmv-libtf.cpp

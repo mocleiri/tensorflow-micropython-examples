@@ -49,7 +49,7 @@
                 "-Wno-error=unused-variable",
                 "-Wno-error=int-conversion",
                 "-Wno-error=incompatible-pointer-types",
-                "-g",
+                "-g3",
                 "-fdata-sections",
                 "-ffunction-sections",
                 "-mthumb",
@@ -57,7 +57,7 @@
                 " -mfloat-abi=hard ",
                 "-mtune=cortex-m7",
                 " -mcpu=cortex-m7",
-                "-Os",
+                "-O0",
                 "-MD"
             ],
             "browse": {
