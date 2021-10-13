@@ -1,6 +1,6 @@
 include boards/NUCLEO_H743ZI/mpconfigboard.mk
 
-USER_C_MODULES=../../../micropython-modules
+USER_C_MODULES=../../../micropython-woaf-modules
 
 
 SRC_C += shared/libc/printf.c

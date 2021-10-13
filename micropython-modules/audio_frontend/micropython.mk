@@ -68,6 +68,7 @@ CFLAGS_USERMOD += -Wno-error=float-conversion
 CFLAGS_USERMOD += -Wno-error=nonnull
 CFLAGS_USERMOD += -Wno-error=double-promotion
 CFLAGS_USERMOD += -Wno-error=pointer-arith
+CFLAGS_USERMOD += -Wfloat-conversion
 
 CXXFLAGS_USERMOD += -I$(AUDIO_FRONTEND_MOD_DIR)
 CXXFLAGS_USERMOD += -I$(TENSORFLOW)/tensorflow/lite/micro/tools/make/downloads/kissfft
