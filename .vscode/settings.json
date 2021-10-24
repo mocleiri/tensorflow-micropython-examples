@@ -30,7 +30,13 @@
         "scoped_allocator": "cpp",
         "tuple": "cpp",
         "type_traits": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "arm_nnsupportfunctions.h": "c",
+        "arm_nnfunctions.h": "c",
+        "arm_nn_math_types.h": "c",
+        "cmsis_compiler.h": "c",
+        "cmsis_gcc.h": "c",
+        "gchelper.h": "c"
     },
     "python.pythonPath": "/usr/bin/python3",
     "makefile.configurations": [
@@ -50,5 +56,6 @@
             "binaryPath": "/home/mike/git/tensorflow-micropython-examples/boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.elf",
             "binaryArgs": []
         }
-    ]
+    ],
+    "cortex-debug.variableUseNaturalFormat": false
 }

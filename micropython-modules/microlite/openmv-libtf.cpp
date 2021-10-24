@@ -7,7 +7,6 @@
 #include "tensorflow/lite/micro/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
-#include "tensorflow/lite/micro/examples/micro_speech/micro_features/micro_features_generator.h"
 
 #include "tensorflow-microlite.h"
 #include "openmv-libtf.h"
@@ -88,7 +87,7 @@ extern "C" {
 
         tflite::MicroInterpreter *interpreter = new tflite::MicroInterpreter(model, 
                                              resolver, 
-                                             (unsigned char*)microlite_interpreter->tensor_area->items, 
+                                             (uint8_t*)microlite_interpreter->tensor_area->items, 
                                              microlite_interpreter->tensor_area->len, 
                                              error_reporter);
 
@@ -106,8 +105,6 @@ extern "C" {
     {
         
         tflite::ErrorReporter *error_reporter = (tflite::ErrorReporter *)microlite_interpreter->tf_error_reporter;
-
-        const tflite::Model *model = (const tflite::Model *)microlite_interpreter->tf_model;
 
         tflite::MicroInterpreter *interpreter = (tflite::MicroInterpreter *)microlite_interpreter->tf_interpreter;
 

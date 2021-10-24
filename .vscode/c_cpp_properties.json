@@ -3,7 +3,9 @@
         {
             "name": "stm32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/micropython/**",
+                "${workspaceFolder}/micropython-modules/**",
+                "${workspaceFolder}/boards/**"
             ],
             "defines": [
                 "TF_LITE_STATIC_MEMORY=1",
@@ -26,7 +28,8 @@
                 "MICROPY_MODULE_FROZEN_STR ",
                 "MICROPY_QSTR_EXTRA_POOL=mp_qstr_frozen_const_pool ",
                 "MICROPY_MODULE_FROZEN_MPY",
-                "MICROPY_ROM_TEXT_COMPRESSION=1"
+                "MICROPY_ROM_TEXT_COMPRESSION=1",
+                "CMSIS_NN"
             ],
             "compilerPath": "/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-gcc",
             "cStandard": "gnu99",
@@ -65,8 +68,8 @@
                     "${workspaceFolder}/src",
                     "${workspaceFolder}/lib",
                     "${workspaceFolder}/micropython-modules",
-                    "${workspaceFolder}/micropython",
-                    "${workspaceFolder}/tensorflow"
+                    "${workspaceFolder}/micropython-modules/microlite/tflm",
+                    "${workspaceFolder}/micropython"
                 ]
             }
         },

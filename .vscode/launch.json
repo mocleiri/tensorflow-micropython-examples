@@ -10,7 +10,7 @@
             "name": "Debug STM32H743ZI2",
             "armToolchainPath": "/opt/gcc-arm-none-eabi-10-2020-q4-major/bin",
             "request": "attach",
-            "stopAtConnect": true,
+            "runToMain": true,
             "type": "cortex-debug",
             "servertype": "external",
             "device": "STM32H743ZI2Tx",
