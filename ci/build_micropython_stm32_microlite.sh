@@ -21,16 +21,35 @@ BASE_DIR=/opt/tflite-micro-micropython
 
 cd $BASE_DIR/tensorflow
 
-make -f tensorflow/lite/micro/tools/make/Makefile clean
-
-rm -rf tensorflow/lite/micro/tools/make/downloads
-
-make -f tensorflow/lite/micro/tools/make/Makefile BUILD_TYPE=debug
-
-cp  tensorflow/lite/micro/tools/make/gen/linux_x86_64_debug/lib/libtensorflow-microlite.a $BASE_DIR/lib
-
-echo "ls $BASE_DIR/lib"
-ls $BASE_DIR/lib
+# get the dependencies needed by
+make -f tensorflow/lite/micro/tools/make/Makefile third_party_downloads
 
 
+mkdir $BASE_DIR/c-modules
 
+cd $BASE_DIR/c-modules
+
+ln -s ../micropython-ulab/code ulab
+ln -s ../micropython-modules/microlite microlite
+
+cd $BASE_DIR/micropython/ports/stm32
+
+pwd
+
+make V=1 submodules
+
+
+cd $BASE_DIR/micropython
+
+echo "make -C mpy-cross V=1 clean all"
+make -C mpy-cross V=1 clean all
+
+
+echo "cd $BASE_DIR/boards/esp32/MICROLITE"
+cd $BASE_DIR/boards/stm32/NUCLEO_H743ZI2_MICROLITE
+
+pwd
+
+echo "Building NUCLEO_H743ZI2_MICROLITE"
+rm -rf build
+make V=1
