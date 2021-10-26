@@ -25,7 +25,6 @@ echo "Regenerating microlite/tfm directory"
 rm -rf $BASE_DIR/micropython-modules/microlite/tflm
 
 python3 ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
---makefile_options="TARGET_TOOLCHAIN_PREFIX=xtensa-esp32-elf- TARGET=esp TARGET_ARCH=xtensa-esp32" \
 --examples micro_speech --rename-cc-to-cpp $BASE_DIR/micropython-modules/microlite/tflm
 
 
