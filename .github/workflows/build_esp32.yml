@@ -57,9 +57,7 @@ jobs:
       - name: Setup Build for Tensorflow
         if: steps.cache-tflm.outputs.cache-hit != 'true'
         run: |
-          source ./ci/setup_esp32.sh && ci_setup_microlite
-      - name: Build standard non-psram 4MB Flash firmware
-        run: |
+
           source ./esp-idf/export.sh
 
           pip3 install Pillow
@@ -73,6 +71,9 @@ jobs:
           python3 ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
           --makefile_options="TARGET_TOOLCHAIN_PREFIX=xtensa-esp32-elf- TARGET=esp TARGET_ARCH=xtensa-esp32" \
           --examples micro_speech --rename-cc-to-cpp ../micropython-modules/microlite/tflm
+      - name: Build standard non-psram 4MB Flash firmware
+        run: |
+          source ./esp-idf/export.sh
 
           cd ../micropython
 

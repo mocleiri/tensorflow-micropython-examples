@@ -211,6 +211,7 @@ target_compile_options(microlite INTERFACE
     -Wno-error=sign-compare
     -fno-rtti
     -fno-exceptions
+    -O3
 )
 
 target_link_libraries(usermod INTERFACE microlite)
