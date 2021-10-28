@@ -2,6 +2,6 @@
 
 function ci_setup_microlite {
     . ./esp-idf/export.sh
-    pip install pillow
+    python3 -m pip install --upgrade Pillow
 
 }
