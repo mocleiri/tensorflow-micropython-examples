@@ -27,10 +27,12 @@ jobs:
           git submodule update --init lib/berkeley-db-1.xx
           cd ..
       - name: Setup IDF
-        run: source ./micropython/tools/ci.sh && ci_esp32_idf43_setup
-      - name: Build standard non-psram 4MB Flash firmware
+        run: source ./micropython/tools/ci.sh && ci_esp32_idf44_setup
+      - name: Setup Build for Tensorflow
         run: |
           source ./ci/setup_esp32.sh && ci_setup_microlite
+      - name: Build standard non-psram 4MB Flash firmware
+        run: |
           ./ci/build_micropython_esp32_microlite.sh
       - name: Archive ESP32-MICROLITE firmware
         uses: actions/upload-artifact@v2
