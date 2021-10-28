@@ -27,13 +27,13 @@ jobs:
           git submodule update --init lib/berkeley-db-1.xx
           cd ..
       - name: Cache esp-idf
-          id: cache-esp-idf
-          uses: actions/cache@v2
-          env:
-            cache-name: cache-esp-idf
-          with:
-            path: ./esp-idf
-            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.esp-idf-commit }}
+        id: cache-esp-idf
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-esp-idf
+        with:
+          path: ./esp-idf
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.esp-idf-commit }}
       - name: Setup IDF
         if: steps.cache-esp-idf.outputs.cache-hit != 'true'
         run: |
@@ -41,13 +41,13 @@ jobs:
           IDF_COMMIT=$(git --git-dir esp-idf/.git log -n 1 --format=%n)
           echo "esp-idf-commit=$IDF_COMMIT" >> $GITHUB_ENV
       - name: Cache tflm
-          id: cache-tflm
-          uses: actions/cache@v2
-          env:
-            cache-name: cache-tflm
-          with:
-            path: ./micropython-modules/microlite/tflm
-            key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
+        id: cache-tflm
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-tflm
+        with:
+          path: ./micropython-modules/microlite/tflm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
       - name: Setup Build for Tensorflow
         if: steps.cache-tflm.outputs.cache-hit != 'true'
         run: |
