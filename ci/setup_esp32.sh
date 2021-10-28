@@ -2,6 +2,7 @@
 
 function ci_setup_microlite {
     . ./esp-idf/export.sh
-    python3 -m pip install --upgrade Pillow
+    pip3 install Pillow
+    pip3 install Wave
 
 }
