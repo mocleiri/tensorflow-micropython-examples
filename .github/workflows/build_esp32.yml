@@ -26,6 +26,13 @@ jobs:
           git submodule update --init lib/axtls
           git submodule update --init lib/berkeley-db-1.xx
           cd ..
+      - name: Get Cache Keys
+        run: |
+#          later get this like this: git ls-remote --heads https://github.com/espressif/esp-idf
+          IDF_COMMIT=142bb32c50fa9875b8b69fa539a2d59559460d72
+          echo "esp-idf-commit=$IDF_COMMIT" >> $GITHUB_ENV
+          TFLM_COMMIT=$(git --git-dir tensorflow/.git log -n 1 --format=%n)
+          echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
       - name: Cache esp-idf
         id: cache-esp-idf
         uses: actions/cache@v2
@@ -38,8 +45,6 @@ jobs:
         if: steps.cache-esp-idf.outputs.cache-hit != 'true'
         run: |
           source ./micropython/tools/ci.sh && ci_esp32_idf44_setup
-          IDF_COMMIT=$(git --git-dir esp-idf/.git log -n 1 --format=%n)
-          echo "esp-idf-commit=$IDF_COMMIT" >> $GITHUB_ENV
       - name: Cache tflm
         id: cache-tflm
         uses: actions/cache@v2
@@ -52,9 +57,6 @@ jobs:
         if: steps.cache-tflm.outputs.cache-hit != 'true'
         run: |
           source ./ci/setup_esp32.sh && ci_setup_microlite
-          TFLM_COMMIT=$(git --git-dir tensorflow/.git log -n 1 --format=%n)
-          echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
-
       - name: Build standard non-psram 4MB Flash firmware
         run: |
           ./ci/build_micropython_esp32_microlite.sh
