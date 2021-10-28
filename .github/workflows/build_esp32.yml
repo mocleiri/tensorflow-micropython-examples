@@ -75,7 +75,7 @@ jobs:
         run: |
           source ./esp-idf/export.sh
 
-          cd ../micropython
+          cd ./micropython
 
           pwd
 
