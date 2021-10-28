@@ -62,6 +62,9 @@ jobs:
         run: |
           source ./esp-idf/export.sh
 
+          pip3 install Pillow
+          pip3 install Wave
+
           echo "Regenerating microlite/tfm directory"
           rm -rf ./micropython-modules/microlite/tflm
 
