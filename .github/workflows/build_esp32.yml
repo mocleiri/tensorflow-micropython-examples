@@ -60,7 +60,33 @@ jobs:
           source ./ci/setup_esp32.sh && ci_setup_microlite
       - name: Build standard non-psram 4MB Flash firmware
         run: |
-          ./ci/build_micropython_esp32_microlite.sh
+          source ./esp-idf/export.sh
+
+          echo "Regenerating microlite/tfm directory"
+          rm -rf ./micropython-modules/microlite/tflm
+
+          cd ./tensorflow
+
+          python3 ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
+          --makefile_options="TARGET_TOOLCHAIN_PREFIX=xtensa-esp32-elf- TARGET=esp TARGET_ARCH=xtensa-esp32" \
+          --examples micro_speech --rename-cc-to-cpp ../micropython-modules/microlite/tflm
+
+          cd ../micropython
+
+          pwd
+
+          echo "make -C mpy-cross V=1 clean all"
+          make -C mpy-cross V=1 clean all
+
+          echo "cd ../boards/esp32/MICROLITE"
+          cd ../boards/esp32/MICROLITE
+
+          pwd
+
+          echo "Building MICROLITE"
+          rm -rf builds
+          idf.py clean build
+
       - name: Archive ESP32-MICROLITE firmware
         uses: actions/upload-artifact@v2
         with:
