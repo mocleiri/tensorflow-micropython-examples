@@ -30,6 +30,7 @@ jobs:
         run: source ./micropython/tools/ci.sh && ci_esp32_idf43_setup
       - name: Build standard non-psram 4MB Flash firmware
         run: |
+          source ./ci/setup_esp32.sh && ci_setup_microlite
           ./ci/build_micropython_esp32_microlite.sh
       - name: Archive ESP32-MICROLITE firmware
         uses: actions/upload-artifact@v2
