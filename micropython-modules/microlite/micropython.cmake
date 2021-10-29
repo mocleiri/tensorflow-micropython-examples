@@ -212,6 +212,7 @@ target_compile_options(microlite INTERFACE
     -fno-rtti
     -fno-exceptions
     -O3
+    -Wno-error=maybe-uninitialized
 )
 
 target_link_libraries(usermod INTERFACE microlite)
