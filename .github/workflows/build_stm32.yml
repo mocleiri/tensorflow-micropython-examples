@@ -84,11 +84,15 @@ jobs:
 
           find build -ls
 
-#      - name: Archive NUCLEO_H743ZI2_MICROLITE firmware
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: microlite-stm32-nucleo-h743zi2-firmware
-#          path: |
-#            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/bootloader/bootloader.bin
-#            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/partition_table/partition-table.bin
-#            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/micropython.bin
+      - name: Archive NUCLEO_H743ZI2_MICROLITE firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: microlite-stm32-nucleo-h743zi2-firmware
+          path: |
+            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.elf
+            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.bin
+            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.dfu
+            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.hex
+            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/bootloader/bootloader.bin
+            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/partition_table/partition-table.bin
+            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/micropython.bin

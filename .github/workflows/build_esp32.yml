@@ -34,16 +34,16 @@ jobs:
           echo "esp-idf-commit=$IDF_COMMIT" >> $GITHUB_ENV
           TFLM_COMMIT=$(git submodule status tensorflow | awk '{print ($1)}')
           echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
-      - name: Cache esp-idf
-        id: cache-esp-idf
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-esp-idf
-        with:
-          path: ./esp-idf
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.esp-idf-commit }}
+#      - name: Cache esp-idf
+#        id: cache-esp-idf
+#        uses: actions/cache@v2
+#        env:
+#          cache-name: cache-esp-idf
+#        with:
+#          path: ./esp-idf
+#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.esp-idf-commit }}
       - name: Setup IDF
-        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
+#        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
         run: |
           source ./micropython/tools/ci.sh && ci_esp32_idf44_setup
       - name: Cache tflm
