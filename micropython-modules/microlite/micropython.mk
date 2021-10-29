@@ -109,7 +109,7 @@ CXXFLAGS_USERMOD += -DTF_LITE_STATIC_MEMORY
 CXXFLAGS_USERMOD += -DNDEBUG 
 CXXFLAGS_USERMOD += -DTF_LITE_MCU_DEBUG_LOG 
 
-# if we are building for cortext h7
+# if we are building for cortex h7
 
 CXXFLAGS_USERMOD += -DCMSIS_NN
 
