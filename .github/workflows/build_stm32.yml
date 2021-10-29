@@ -33,8 +33,6 @@ jobs:
           git submodule update --recursive
           cd micropython
           git submodule update --init lib/mynewt-nimble
-#          git submodule update --init lib/axtls
-#          git submodule update --init lib/berkeley-db-1.xx
           cd ..
       - name: Get Cache Keys
         run: |
