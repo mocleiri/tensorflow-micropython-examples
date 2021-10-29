@@ -1,0 +1,92 @@
+
+name: STM32
+
+# https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
+on:
+  push:
+  pull_request:
+    paths-ignore:
+      - 'examples/**'
+      - 'README.md'
+      - 'ci/*unix*.sh'
+      - '.github/workflows/build_unix.yml'
+      - '.github/workflows/build_esp32.yml'
+
+jobs:
+  tensorflow_micropython_stm32_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install Pillow & Wave
+        run: |
+          pip install Pillow
+          pip3 install Wave
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Prepare to Build Tensorflow Micropython Firmware for STM32
+        run: |
+          git submodule init
+          git submodule update --recursive
+          cd micropython
+          git submodule update --init lib/mynewt-nimble
+#          git submodule update --init lib/axtls
+#          git submodule update --init lib/berkeley-db-1.xx
+          cd ..
+      - name: Get Cache Keys
+        run: |
+          TFLM_COMMIT=$(git submodule status tensorflow | awk '{print ($1)}')
+          echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
+      - name: Setup GCC ARM
+        run: |
+          source ./micropython/tools/ci.sh && ci_gcc_arm_setup
+      - name: Cache tflm
+        id: cache-tflm
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-stm32-tflm
+        with:
+          path: ./micropython-modules/microlite/tflm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
+      - name: Setup Build for Tensorflow
+        if: steps.cache-tflm.outputs.cache-hit != 'true'
+        run: |
+
+          echo "Regenerating microlite/tfm directory"
+          rm -rf ./micropython-modules/microlite/tflm
+
+          cd ./tensorflow
+
+          python3 ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
+          --makefile_options="TARGET=cortex_m_generic TARGET_ARCH=project_generation OPTIMIZED_KERNEL_DIR=cmsis_nn" \
+          --examples micro_speech --rename-cc-to-cpp ../micropython-modules/microlite/tflm
+
+      - name: Build micropython cross compiler
+        run:  |
+          cd ./micropython
+          make -C ports/stm32 submodules
+          echo "make -C mpy-cross V=1 clean all"
+          make -C mpy-cross V=1 clean all
+      - name: Build H743ZI2
+        run: |
+
+          echo "cd ./boards/stm32/NUCLEO_H743ZI2_MICROLITE"
+          cd ./boards/stm32/NUCLEO_H743ZI2_MICROLITE
+
+          echo "Building NUCLEO_H743ZI2_MICROLITE"
+          rm -rf build
+          make V=1
+
+          find build -ls
+
+#      - name: Archive NUCLEO_H743ZI2_MICROLITE firmware
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: microlite-stm32-nucleo-h743zi2-firmware
+#          path: |
+#            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/bootloader/bootloader.bin
+#            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/partition_table/partition-table.bin
+#            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/micropython.bin
