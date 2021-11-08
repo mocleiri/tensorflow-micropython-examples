@@ -86,7 +86,7 @@ jobs:
           # for us we just need our build files
           cmake -S ports/rp2 -B build-ADAFRUIT_FEATHER_RP2040_MICROLITE -DPICO_BUILD_DOCS=0 \
           -DMICROPY_BOARD=ADAFRUIT_FEATHER_RP2040_MICROLITE \
-          -DMICROPY_BOARD_DIR=/home/mike/git/tensorflow-micropython-examples/boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE \
+          -DMICROPY_BOARD_DIR=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE \
           -DPICO_BOARD=adafruit_feather_rp2040
 
       - name: Archive ADAFRUIT_FEATHER_RP2040_MICROLITE firmware
