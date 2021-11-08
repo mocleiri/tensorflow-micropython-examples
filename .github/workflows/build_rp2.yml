@@ -48,16 +48,16 @@ jobs:
         run: |
           source ./micropython/tools/ci.sh && ci_rp2_setup
 
-      - name: Cache tflm
-        id: cache-tflm
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-rp2-tflm
-        with:
-          path: ./micropython-modules/microlite/tflm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
+#      - name: Cache tflm
+#        id: cache-tflm
+#        uses: actions/cache@v2
+#        env:
+#          cache-name: cache-rp2-tflm
+#        with:
+#          path: ./micropython-modules/microlite/tflm
+#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
       - name: Setup Build for Tensorflow
-        if: steps.cache-tflm.outputs.cache-hit != 'true'
+#        if: steps.cache-tflm.outputs.cache-hit != 'true'
         run: |
 
           echo "Regenerating microlite/tfm directory"
