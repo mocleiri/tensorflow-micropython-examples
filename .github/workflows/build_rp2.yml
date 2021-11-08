@@ -80,16 +80,14 @@ jobs:
 
           cd micropython-modules
           ln -s ../micropython-ulab/code  ulab
-          cd ..
+          cd ../micropython
 
-          echo "cd ./boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE"
-          cd ./boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE
-
-          echo "Building ADAFRUIT_FEATHER_RP2040_MICROLITE"
-          rm -rf build
-          make V=1
-
-          find build -ls
+          # the pico_board needs to point at the name that exists in the pico sdk.
+          # for us we just need our build files
+          cmake -S ports/rp2 -B build-ADAFRUIT_FEATHER_RP2040_MICROLITE -DPICO_BUILD_DOCS=0 \
+          -DMICROPY_BOARD=ADAFRUIT_FEATHER_RP2040_MICROLITE \
+          -DMICROPY_BOARD_DIR=/home/mike/git/tensorflow-micropython-examples/boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE \
+          -DPICO_BOARD=adafruit_feather_rp2040
 
       - name: Archive ADAFRUIT_FEATHER_RP2040_MICROLITE firmware
         uses: actions/upload-artifact@v2
