@@ -25,6 +25,8 @@
 #/
 MICROLITE_MOD_DIR := $(USERMOD_DIR)
 
+TF_OPTIMIZATION := "Standard"
+
 # Add all C files to SRC_USERMOD.
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tensorflow-microlite.c
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/bare-metal-gc-heap.c
@@ -40,6 +42,8 @@ TF_MICROLITE_SRCS := $(shell find $(MICROLITE_MOD_DIR)/tflm/tensorflow -name "*.
 
 $(info TF_MICROLITE_SRCS = $(TF_MICROLITE_SRCS))
 
+ifeq ($(TF_OPTIMIZATION),"CMSIS_NN")
+
 PATH_TO_OPTIMIZED_KERNELS := tflm/tensorflow/lite/micro/kernels/cmsis_nn
 
 TF_MICROLITE_SPECIALIZED_SRCS := $(shell python3 $(MICROLITE_MOD_DIR)/../../tensorflow/tensorflow/lite/micro/tools/make/specialize_files.py \
@@ -48,39 +52,20 @@ TF_MICROLITE_SPECIALIZED_SRCS := $(shell python3 $(MICROLITE_MOD_DIR)/../../tens
 
 $(info TF_MICROLITE_SPECIALIZED_SRCS = $(TF_MICROLITE_SPECIALIZED_SRCS))
 
+# For CMSIS_NN: 
 SRC_USERMOD_CXX += $(TF_MICROLITE_SPECIALIZED_SRCS)
-
+ 
 SRC_USERMOD += $(shell find $(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/NN/Source -name "*.c")
 SRC_USERMOD_CXX += $(shell find $(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/NN/Source -name "*.cpp")
 
+endif
 
-# LDFLAGS_USERMOD += -L /home/mike/git/tensorflow-micropython-examples/lib -ltensorflow-microlite
+ifeq ($(TF_OPTIMIZATION),"Standard")
+# For Standard:
 
-# may need to incorporate from: https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/tools/project_generation/Makefile
-# This will generate for cortex_m_generic and all of the files
-# python3 ./tensorflow/lite/micro/tools/project_generatio
-#n/create_tflm_tree.py --makefile_options="TARGET=cortex_m_generic TARGET_ARCH=project_generation OPTIMI
-#ZED_KERNEL_DIR=cmsis_nn" --examples micro_speech --rename-cc-to-cpp /opt/tflite-micro/micropython-modul
-#es/microlite/tflm
+SRC_USERMOD_CXX += $(TF_MICROLITE_SRCS)
 
-
-# TARGET=cortex_m_generic
-# OPTIMIZED_KERNEL_DIR=cmsis_nn
-# TARGET_ARCH="cortex-m7+fp
-# option from micropython
-# -mfpu=fpv5-d16 -mfloat-abi=hard
-
-
-# $(shell cd ../../../tensorflow && $(PYTHON) ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
---makefile_options="TARGET=cortex_m_generic TARGET_ARCH=project_generation OPTIMIZED_KERNEL_DIR=cmsis_nn" \
---examples micro_speech --rename-cc-to-cpp ../micropython-modules/microlite/tflm )
-
-# needed with c++
-# LDFLAGS_USERMOD += -lstdc++_nano -lm
-#LDFLAGS_USERMOD += -lstdc++_nano -lm
-
-# this path is valid if used within the esp-idf-4.0.1 docker container
-
+endif
 
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)
@@ -109,14 +94,17 @@ CXXFLAGS_USERMOD += -DTF_LITE_STATIC_MEMORY
 CXXFLAGS_USERMOD += -DNDEBUG 
 CXXFLAGS_USERMOD += -DTF_LITE_MCU_DEBUG_LOG 
 
+CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm
+
 # if we are building for cortex h7
+
+ifeq ($(TF_OPTIMIZATION),"CMSIS_NN")
 
 CXXFLAGS_USERMOD += -DCMSIS_NN
 
 CXXFLAGS_USERMOD += -D __FPU_PRESENT=1 
 CXXFLAGS_USERMOD += -DARM_MATH_CM7
 
-CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/Core/Include
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/NN/Include
@@ -126,6 +114,7 @@ CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/Core/Include
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/NN/Include
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/DSP/Include
+endif
 
 # in the ESP32 port the standard library is provided by the FreeRTOS OS.
 LDFLAGS_USERMOD += -lstdc++_nano -lm
