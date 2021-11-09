@@ -65,9 +65,7 @@ jobs:
 
           cd ./tensorflow
 
-          python3 ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
-          --makefile_options="TARGET=cortex_m_generic TARGET_ARCH=project_generation OPTIMIZED_KERNEL_DIR=cmsis_nn" \
-          --examples micro_speech --rename-cc-to-cpp ../micropython-modules/microlite/tflm
+          ../micropython-modules/microlite/prepare-tflm-rp2.sh
 
       - name: Build micropython cross compiler
         run:  |
@@ -84,20 +82,22 @@ jobs:
 
           # the pico_board needs to point at the name that exists in the pico sdk.
           # for us we just need our build files
-          cmake -S ports/rp2 -B build-ADAFRUIT_FEATHER_RP2040_MICROLITE -DPICO_BUILD_DOCS=0 \
-          -DMICROPY_BOARD=ADAFRUIT_FEATHER_RP2040_MICROLITE \
-          -DMICROPY_BOARD_DIR=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE \
-          -DPICO_BOARD=adafruit_feather_rp2040
+          cmake -S ports/rp2 -B build-rp2-microlite -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=ADAFRUIT_FEATHER_RP2040 \
+          -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
+
+
+          cd build-rp2-microlite
+
+          make
 
       - name: Archive ADAFRUIT_FEATHER_RP2040_MICROLITE firmware
         uses: actions/upload-artifact@v2
         with:
           name: microlite-rp2-adafruit-feather-rp2040-firmware
           path: |
-            boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE/build/firmware.elf
-            boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE/build/firmware.bin
-            boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE/build/firmware.dfu
-            boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE/build/firmware.hex
-            boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE/build/bootloader/bootloader.bin
-            boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE/build/partition_table/partition-table.bin
-            boards/rp2/ADAFRUIT_FEATHER_RP2040_MICROLITE/build/micropython.bin
+            micropython/build-rp2-microlite/build/firmware.elf
+            micropython/build-rp2-microlite/build/firmware.bin
+            micropython/build-rp2-microlite/build/firmware.dis
+            micropython/build-rp2-microlite/build/firmware.elf.map
+            micropython/build-rp2-microlite/build/firmware.hex
+            micropython/build-rp2-microlite/build/firmware.uf2
