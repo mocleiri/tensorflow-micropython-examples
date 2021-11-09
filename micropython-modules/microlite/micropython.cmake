@@ -24,12 +24,24 @@
 # THE SOFTWARE.
 #/
 
+if (PICO_SDK_PATH)
+  set(MICROLITE_PLATFORM "RP2")
+endif()
+
+if(IDF_TARGET STREQUAL "esp32")
+  set(MICROLITE_PLATFORM "ESP32")
+endif()
+
 get_filename_component(TENSORFLOW_DIR ${PROJECT_DIR}/../../../tensorflow ABSOLUTE)
 
 add_library(microlite INTERFACE)
 
+if (MICROLITE_PLATFORM STREQUAL "ESP32")
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+
+endif()
 
 # needed when we have custom/specialized kernels.
 # add_custom_command(
@@ -37,6 +49,20 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
 #     COMMAND cd ${TENSORFLOW_DIR} && ${Python3_EXECUTABLE} ${MICROPY_DIR}/py/makeversionhdr.py ${MICROPY_MPVERSION}
 #     DEPENDS MICROPY_FORCE_BUILD
 # )
+
+if (MICROLITE_PLATFORM STREQUAL "ESP32")
+    set (TF_MICROLITE_LOG 
+        ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/debug_log.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_time.cpp
+    )
+endif()
+
+if (MICROLITE_PLATFORM STREQUAL "RP2")
+    set (TF_MICROLITE_LOG 
+        ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/cortex_m_generic/debug_log.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/cortex_m_generic/micro_time.cpp
+    )
+endif()
 
 
 target_sources(microlite INTERFACE
@@ -74,7 +100,6 @@ target_sources(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/kernels/internal/reference/portable_tensor_utils.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/kernels/kernel_util.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/all_ops_resolver.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/debug_log.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/flatbuffer_utils.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/activations.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/activations_common.cpp
@@ -172,7 +197,7 @@ target_sources(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_profiler.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_resource_variable.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_string.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_time.cpp
+    
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_utils.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/mock_micro_graph.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/recording_micro_allocator.cpp
@@ -182,6 +207,7 @@ target_sources(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/test_helpers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/schema/schema_utils.cpp
 
+    ${TF_MICROLITE_LOG}
 
 )
 
@@ -203,6 +229,7 @@ target_compile_definitions(microlite INTERFACE
 )
 
 target_compile_options(microlite INTERFACE
+    -Wno-error
     -Wno-error=float-conversion
     -Wno-error=nonnull
     -Wno-error=double-promotion
