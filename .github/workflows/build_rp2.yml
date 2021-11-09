@@ -95,9 +95,9 @@ jobs:
         with:
           name: microlite-rp2-adafruit-feather-rp2040-firmware
           path: |
-            micropython/build-rp2-microlite/build/firmware.elf
-            micropython/build-rp2-microlite/build/firmware.bin
-            micropython/build-rp2-microlite/build/firmware.dis
-            micropython/build-rp2-microlite/build/firmware.elf.map
-            micropython/build-rp2-microlite/build/firmware.hex
-            micropython/build-rp2-microlite/build/firmware.uf2
+            micropython/build-rp2-microlite/firmware.elf
+            micropython/build-rp2-microlite/firmware.bin
+            micropython/build-rp2-microlite/firmware.dis
+            micropython/build-rp2-microlite/firmware.elf.map
+            micropython/build-rp2-microlite/firmware.hex
+            micropython/build-rp2-microlite/firmware.uf2
