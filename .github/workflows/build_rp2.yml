@@ -1,9 +1,15 @@
 
-name: STM32
+name: RP2
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
 on:
   push:
+    paths-ignore:
+      - 'examples/**'
+      - 'README.md'
+      - 'ci/*unix*.sh'
+      - '.github/workflows/build_unix.yml'
+      - '.github/workflows/build_esp32.yml'
   pull_request:
     paths-ignore:
       - 'examples/**'
@@ -13,7 +19,7 @@ on:
       - '.github/workflows/build_esp32.yml'
 
 jobs:
-  tensorflow_micropython_stm32_build:
+  tensorflow_micropython_rp2_build:
     runs-on: ubuntu-latest
 
     steps:
@@ -27,12 +33,12 @@ jobs:
           pip3 install Wave
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Prepare to Build Tensorflow Micropython Firmware for STM32
+      - name: Prepare to Build Tensorflow Micropython Firmware for RP2
         run: |
           git submodule init
           git submodule update --recursive
           cd micropython
-          git submodule update --init lib/mynewt-nimble
+          git submodule update --init lib/pico-sdk lib/tinyusb
           cd ..
       - name: Get Cache Keys
         run: |
@@ -40,12 +46,13 @@ jobs:
           echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
       - name: Setup GCC ARM
         run: |
-          source ./micropython/tools/ci.sh && ci_gcc_arm_setup
+          source ./micropython/tools/ci.sh && ci_rp2_setup
+
 #      - name: Cache tflm
 #        id: cache-tflm
 #        uses: actions/cache@v2
 #        env:
-#          cache-name: cache-stm32-tflm
+#          cache-name: cache-rp2-tflm
 #        with:
 #          path: ./micropython-modules/microlite/tflm
 #          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
@@ -58,41 +65,39 @@ jobs:
 
           cd ./tensorflow
 
-          python3 ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
-          --makefile_options="TARGET=cortex_m_generic TARGET_ARCH=project_generation OPTIMIZED_KERNEL_DIR=cmsis_nn" \
-          --examples micro_speech --rename-cc-to-cpp ../micropython-modules/microlite/tflm
+          ../micropython-modules/microlite/prepare-tflm-rp2.sh
 
       - name: Build micropython cross compiler
         run:  |
           cd ./micropython
-          make -C ports/stm32 submodules
+          make -C ports/rp2 submodules
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
-      - name: Build H743ZI2
+      - name: Build RP2
         run: |
 
           cd micropython-modules
           ln -s ../micropython-ulab/code  ulab
-          cd ..
+          cd ../micropython
 
-          echo "cd ./boards/stm32/NUCLEO_H743ZI2_MICROLITE"
-          cd ./boards/stm32/NUCLEO_H743ZI2_MICROLITE
+          # the pico_board needs to point at the name that exists in the pico sdk.
+          # for us we just need our build files
+          cmake -S ports/rp2 -B build-rp2-microlite -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=ADAFRUIT_FEATHER_RP2040 \
+          -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
-          echo "Building NUCLEO_H743ZI2_MICROLITE"
-          rm -rf build
-          make V=1
 
-          find build -ls
+          cd build-rp2-microlite
 
-      - name: Archive NUCLEO_H743ZI2_MICROLITE firmware
+          make
+
+      - name: Archive ADAFRUIT_FEATHER_RP2040_MICROLITE firmware
         uses: actions/upload-artifact@v2
         with:
-          name: microlite-stm32-nucleo-h743zi2-firmware
+          name: microlite-rp2-adafruit-feather-rp2040-firmware
           path: |
-            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.elf
-            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.bin
-            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.dfu
-            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.hex
-            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/bootloader/bootloader.bin
-            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/partition_table/partition-table.bin
-            boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/micropython.bin
+            micropython/build-rp2-microlite/firmware.elf
+            micropython/build-rp2-microlite/firmware.bin
+            micropython/build-rp2-microlite/firmware.dis
+            micropython/build-rp2-microlite/firmware.elf.map
+            micropython/build-rp2-microlite/firmware.hex
+            micropython/build-rp2-microlite/firmware.uf2

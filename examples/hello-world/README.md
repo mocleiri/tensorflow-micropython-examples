@@ -52,5 +52,18 @@ From examples/hello-world copy the following to the root file system of your boa
 2. hello_world.py
 3. in main.py add an import hello_world
 
+## RP2 Port
+
+Download the micropython firmware for your rp2 board:
+https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_rp2.yml
+(click on the most successful, then scroll down to download the build artifact)
+
+From examples/hello-world copy the following to the root file system of your board:
+1. model.tflite
+2. hello_world.py
+3. in main.py add an import hello_world
+
+![](../../images/rp2-hello-world.png)
+
 
 

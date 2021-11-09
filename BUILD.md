@@ -1,17 +1,22 @@
 # Build Tensorflow Micropython
 
-First we need to build tensorflow to which results in a libtensorflow-microlite.a static library.
+The tensorflow micro files are materialized into the micropython-modules/microlite
+directory.
+
+We no longer build a separate static library.  Instead, we generate the tflm files using the
+upstream (tensorflow) project generator.
 
 Then we have 3 micropython modules:
 1. microlite (ours, tensorflow micropython bindings and links to libtensorflow-microlite.a)
-2. audio_frontend (ours, micropython bindings to tensorflow lite experimental audiofrontend.)
+2. audio_frontend* (ours, micropython bindings to tensorflow lite experimental audiofrontend.)
 3. ulab (submodule)
 
-We have a boards/<micropython port>/<board config> and we will build each board with the above 3 modules.
+*: we are in progress to merge audio_frontend into microlite.
 
-For building there are two main steps:
-1. Build **tensorflow-microlite.a** which is the tensorflow library from the tensorflow sources using the port specific cross compiler.
-2. Build micropython firmware which builds the microlite, audio_frontend and ulab modules.  
+We normally want to have a seperate board directory so that we can control the name of the board
+to have the _MICROLITE suffix.
+
+This convention works for ESP32 and STM32 but not for RP2.
 
 # Consult Continuous Integration Scripts for latest
 
