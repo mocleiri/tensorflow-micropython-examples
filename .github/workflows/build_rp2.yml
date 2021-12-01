@@ -172,12 +172,12 @@ jobs:
         with:
           name: microlite-rp2-adafruit-qtpy-rp2040-firmware
           path: |
-              micropython/build-ADAFRUIT_QTPY_RP2040/firmware.elf
-              micropython/build-ADAFRUIT_QTPY_RP2040/firmware.bin
-              micropython/build-ADAFRUIT_QTPY_RP2040/firmware.dis
-              micropython/build-ADAFRUIT_QTPY_RP2040/firmware.elf.map
-              micropython/build-ADAFRUIT_QTPY_RP2040/firmware.hex
-              micropython/build-ADAFRUIT_QTPY_RP2040/firmware.uf2
+            micropython/build-ADAFRUIT_QTPY_RP2040/firmware.elf
+            micropython/build-ADAFRUIT_QTPY_RP2040/firmware.bin
+            micropython/build-ADAFRUIT_QTPY_RP2040/firmware.dis
+            micropython/build-ADAFRUIT_QTPY_RP2040/firmware.elf.map
+            micropython/build-ADAFRUIT_QTPY_RP2040/firmware.hex
+            micropython/build-ADAFRUIT_QTPY_RP2040/firmware.uf2
 
       - name: Archive PICO firmware
         uses: actions/upload-artifact@v2
@@ -194,26 +194,26 @@ jobs:
       - name: Archive PIMORONI_PICOLIPO_4MB firmware
         uses: actions/upload-artifact@v2
         with:
-            name: microlite-rp2-pimoroni-picolipo-4mb-firmware
-            path: |
-              micropython/build-PIMORONI_PICOLIPO_4MB/firmware.elf
-              micropython/build-PIMORONI_PICOLIPO_4MB/firmware.bin
-              micropython/build-PIMORONI_PICOLIPO_4MB/firmware.dis
-              micropython/build-PIMORONI_PICOLIPO_4MB/firmware.elf.map
-              micropython/build-PIMORONI_PICOLIPO_4MB/firmware.hex
-              micropython/build-PIMORONI_PICOLIPO_4MB/firmware.uf2
+          name: microlite-rp2-pimoroni-picolipo-4mb-firmware
+          path: |
+            micropython/build-PIMORONI_PICOLIPO_4MB/firmware.elf
+            micropython/build-PIMORONI_PICOLIPO_4MB/firmware.bin
+            micropython/build-PIMORONI_PICOLIPO_4MB/firmware.dis
+            micropython/build-PIMORONI_PICOLIPO_4MB/firmware.elf.map
+            micropython/build-PIMORONI_PICOLIPO_4MB/firmware.hex
+            micropython/build-PIMORONI_PICOLIPO_4MB/firmware.uf2
 
       - name: Archive PIMORONI_PICOLIPO_16MB firmware
         uses: actions/upload-artifact@v2
         with:
-            name: microlite-rp2-pimoroni-picolipo-16mb-firmware
-            path: |
-              micropython/build-PIMORONI_PICOLIPO_16MB/firmware.elf
-              micropython/build-PIMORONI_PICOLIPO_16MB/firmware.bin
-              micropython/build-PIMORONI_PICOLIPO_16MB/firmware.dis
-              micropython/build-PIMORONI_PICOLIPO_16MB/firmware.elf.map
-              micropython/build-PIMORONI_PICOLIPO_16MB/firmware.hex
-              micropython/build-PIMORONI_PICOLIPO_16MB/firmware.uf2
+          name: microlite-rp2-pimoroni-picolipo-16mb-firmware
+          path: |
+            micropython/build-PIMORONI_PICOLIPO_16MB/firmware.elf
+            micropython/build-PIMORONI_PICOLIPO_16MB/firmware.bin
+            micropython/build-PIMORONI_PICOLIPO_16MB/firmware.dis
+            micropython/build-PIMORONI_PICOLIPO_16MB/firmware.elf.map
+            micropython/build-PIMORONI_PICOLIPO_16MB/firmware.hex
+            micropython/build-PIMORONI_PICOLIPO_16MB/firmware.uf2
 
       - name: Archive PIMORONI_TINY2040 firmware
         uses: actions/upload-artifact@v2
