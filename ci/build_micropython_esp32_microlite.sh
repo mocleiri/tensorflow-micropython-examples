@@ -33,5 +33,5 @@ cd $BASE_DIR/boards/esp32/MICROLITE
 pwd
 
 echo "Building MICROLITE"
-rm -rf builds
+rm -rf build
 idf.py clean build

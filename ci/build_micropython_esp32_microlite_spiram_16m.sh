@@ -32,5 +32,5 @@ cd $BASE_DIR/boards/esp32/MICROLITE_SPIRAM_16M
 pwd
 
 echo "Building MICROLITE_SPIRAM_16M"
-rm -rf builds
+rm -rf build
 idf.py clean build
