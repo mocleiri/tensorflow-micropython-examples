@@ -67,6 +67,9 @@ typedef struct _microlite_tensor_obj_t {
     microlite_interpreter_obj_t *microlite_interpreter;
 } microlite_tensor_obj_t;
 
+typedef struct _microlite_audio_frontend_obj_t {
+     mp_obj_base_t base; 
+} microlite_audio_frontend_obj_t;
 
 mp_obj_t audio_frontend_execute (mp_obj_t input);
 mp_obj_t audio_frontend_configure ();
