@@ -76,7 +76,7 @@ STATIC struct FrontendConfig config;
 STATIC struct FrontendState state;
 
 
-STATIC mp_obj_t audio_frontend_configure () {
+mp_obj_t audio_frontend_configure () {
 
 //  mp_arg_check_num(n_args, n_kw, 5, 5, true);
 
@@ -114,7 +114,7 @@ STATIC mp_obj_t audio_frontend_configure () {
 static int32_t value_scale = 256;
 static int32_t value_div = (int32_t)((25.6f * 26.0f) + 0.5f);
 
-STATIC mp_obj_t audio_frontend_execute (mp_obj_t input) {
+mp_obj_t audio_frontend_execute (mp_obj_t input) {
 
   // mp_arg_check_num(n_args, n_kw, 2, 2, false);
 

@@ -94,7 +94,10 @@ file(GLOB TF_LITE_MICROFRONTEND_SRCS
 
 file(GLOB TF_LITE_KERNELS_SRCS
           "${TF_LITE_DIR}/kernels/*.c"
-          "${TF_LITE_DIR}/kernels/*.cpp")
+          "${TF_LITE_DIR}/kernels/*.cpp"
+          "${TF_LITE_DIR}/kernels/internal/*.c"
+          "${TF_LITE_DIR}/kernels/internal/*.cpp"
+          )
 
 # lite schema 
 file(GLOB TF_LITE_SCHEMA_SRCS
@@ -122,8 +125,8 @@ file(GLOB TF_MICRO_KERNELS_SRCS
 # micro memory_planner 
 
 file(GLOB TF_MICRO_MEMORY_PLANNER_SRCS
-          "${TF_MICRO_DIR}/*.cpp"
-          "${TF_MICRO_DIR}/*.c")
+          "${TF_MICRO_DIR}/memory_planner/*.cpp"
+          "${TF_MICRO_DIR}/memory_planner/*.c")
 
 target_sources(microlite INTERFACE
 #   microlite micropython module sources

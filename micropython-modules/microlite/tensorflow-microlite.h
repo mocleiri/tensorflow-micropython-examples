@@ -68,8 +68,8 @@ typedef struct _microlite_tensor_obj_t {
 } microlite_tensor_obj_t;
 
 
-STATIC mp_obj_t audio_frontend_execute (mp_obj_t input);
-STATIC mp_obj_t audio_frontend_configure ();
+mp_obj_t audio_frontend_execute (mp_obj_t input);
+mp_obj_t audio_frontend_configure ();
 
 #ifdef __cplusplus
 }
