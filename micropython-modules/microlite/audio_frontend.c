@@ -37,6 +37,8 @@
 // ulab
 #include "ndarray.h"
 
+#include "tensorflow-microlite.h"
+
 // tensorflow
 #include "tensorflow/lite/experimental/microfrontend/lib/frontend.h"
 #include "tensorflow/lite/experimental/microfrontend/lib/frontend_util.h"
@@ -74,7 +76,7 @@ STATIC struct FrontendConfig config;
 STATIC struct FrontendState state;
 
 
-STATIC mp_obj_t configure () {
+STATIC mp_obj_t audio_frontend_configure () {
 
 //  mp_arg_check_num(n_args, n_kw, 5, 5, true);
 
@@ -109,12 +111,10 @@ STATIC mp_obj_t configure () {
     return mp_const_none;
 }
 
-MP_DEFINE_CONST_FUN_OBJ_0(audio_frontend_configure, configure);
-
 static int32_t value_scale = 256;
 static int32_t value_div = (int32_t)((25.6f * 26.0f) + 0.5f);
 
-STATIC mp_obj_t execute (mp_obj_t input) {
+STATIC mp_obj_t audio_frontend_execute (mp_obj_t input) {
 
   // mp_arg_check_num(n_args, n_kw, 2, 2, false);
 
@@ -194,28 +194,5 @@ STATIC mp_obj_t execute (mp_obj_t input) {
     return MP_OBJ_FROM_PTR(micro_features_output);
 }
 
-MP_DEFINE_CONST_FUN_OBJ_1(audio_frontend_execute, execute);
 
-// audio_frontend module
-
-// Define all properties of the module.
-// Table entries are key/value pairs of the attribute name (a string)
-// and the MicroPython object reference.
-// All identifiers and strings are written as MP_QSTR_xxx and will be
-// optimized to word-sized integers by the build system (interned strings).
-STATIC const mp_rom_map_elem_t audio_frontend_module_globals_table[] = {
-    { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_audio_frontend) },
-    { MP_ROM_QSTR(MP_QSTR_execute), MP_ROM_PTR(&audio_frontend_execute) },
-    { MP_ROM_QSTR(MP_QSTR_configure), MP_ROM_PTR(&audio_frontend_configure) }
-};
-STATIC MP_DEFINE_CONST_DICT(audio_frontend_module_globals, audio_frontend_module_globals_table);
-
-// Define module object.
-const mp_obj_module_t audio_frontend_cmodule = {
-    .base = { &mp_type_module },
-    .globals = (mp_obj_dict_t *)&audio_frontend_module_globals,
-};
-
-// Register the module to make it available in Python.
-MP_REGISTER_MODULE(MP_QSTR_audio_frontend, audio_frontend_cmodule, MODULE_AUDIO_FRONTEND_ENABLED);
 

@@ -29,7 +29,8 @@ TF_OPTIMIZATION := "Standard"
 
 # Add all C files to SRC_USERMOD.
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tensorflow-microlite.c
-SRC_USERMOD += $(MICROLITE_MOD_DIR)/bare-metal-gc-heap.c
+SRC_USERMOD += $(MICROLITE_MOD_DIR)/audio_frontend.c
+
 # SRC_USERMOD += $(MICROLITE_MOD_DIR)/../../micropython/shared/libc/__errno.c
 #SRC_USERMOD += $(MICROLITE_MOD_DIR)/../../micropython/shared/libc/string0.c
 
@@ -43,6 +44,9 @@ TF_MICROLITE_SRCS := $(shell find $(MICROLITE_MOD_DIR)/tflm/tensorflow -name "*.
 $(info TF_MICROLITE_SRCS = $(TF_MICROLITE_SRCS))
 
 ifeq ($(TF_OPTIMIZATION),"CMSIS_NN")
+
+# This is not quite right.  this needs to be included if the build is for stm32
+SRC_USERMOD += $(MICROLITE_MOD_DIR)/bare-metal-gc-heap.c
 
 PATH_TO_OPTIMIZED_KERNELS := tflm/tensorflow/lite/micro/kernels/cmsis_nn
 

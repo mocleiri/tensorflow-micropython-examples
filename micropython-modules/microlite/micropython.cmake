@@ -128,6 +128,7 @@ file(GLOB TF_MICRO_MEMORY_PLANNER_SRCS
 target_sources(microlite INTERFACE
 #   microlite micropython module sources
     ${CMAKE_CURRENT_LIST_DIR}/tensorflow-microlite.c
+    ${CMAKE_CURRENT_LIST_DIR}/audio_frontend.c
     ${CMAKE_CURRENT_LIST_DIR}/openmv-libtf.cpp
     ${CMAKE_CURRENT_LIST_DIR}/micropython-error-reporter.cpp
 
