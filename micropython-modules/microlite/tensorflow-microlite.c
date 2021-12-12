@@ -232,6 +232,22 @@ const mp_obj_type_t audio_frontend_type = {
     .locals_dict = (mp_obj_dict_t*)&audio_frontend_locals_dict,
 };
 
+STATIC microlite_audio_frontend_obj_t single_audio_frontend = NULL;
+
+
+STATIC mp_obj_t get_audio_frontend() {
+
+
+    if(single_audio_frontend != NULL)
+        return single_audio_frontend;
+
+    single_audio_frontend = m_new_obj(microlite_audio_frontend_obj_t);
+
+    return MP_OBJ_FROM_PTR(single_audio_frontend);
+}
+
+MP_DEFINE_CONST_FUN_OBJ_0(af_get_audio_frontend, get_audio_frontend);
+
 // - microlite interpreter
 
 STATIC void interpreter_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
@@ -393,7 +409,8 @@ STATIC const mp_rom_map_elem_t microlite_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___version__), MP_ROM_PTR(&microlite_version_string_obj) },
     { MP_ROM_QSTR(MP_QSTR_interpreter), (mp_obj_t)&microlite_interpreter_type },
     { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_tensor_type },
-    { MP_ROM_QSTR(MP_QSTR_audio_frontend), (mp_obj_t)&audio_frontend_type }
+    { MP_ROM_QSTR(MP_QSTR_audio_frontend), (mp_obj_t)&audio_frontend_type },
+    { MP_ROM_QSTR(MP_QSTR_get_audio_frontend), MP_ROM_PTR(&af_get_audio_frontend) }
 
 };
 STATIC MP_DEFINE_CONST_DICT(microlite_module_globals, microlite_module_globals_table);
