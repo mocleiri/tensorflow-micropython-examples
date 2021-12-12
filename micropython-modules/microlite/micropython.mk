@@ -85,6 +85,8 @@ CFLAGS_USERMOD += -Wno-error=discarded-qualifiers
 CFLAGS_USERMOD += -Wno-error=unused-variable
 CFLAGS_USERMOD += -Wno-error=int-conversion
 CFLAGS_USERMOD += -Wno-error=incompatible-pointer-types
+CFLAGS_USERMOD += -Wno-error=float-conversion
+CFLAGS_USERMOD += -Wno-error=unused-const-variable=
 
 
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm
