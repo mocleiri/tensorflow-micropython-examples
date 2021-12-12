@@ -219,12 +219,12 @@ const mp_obj_type_t microlite_tensor_type = {
 MP_DEFINE_CONST_FUN_OBJ_0(af_configure, audio_frontend_configure);
 MP_DEFINE_CONST_FUN_OBJ_1(af_execute, audio_frontend_execute);
 
-STATIC const mp_rom_map_elem_t audio_frontend_locals_dict[] = {
+STATIC const mp_rom_map_elem_t audio_frontend_locals_dict_table[] = {
    { MP_ROM_QSTR(MP_QSTR_execute), MP_ROM_PTR(&audio_frontend_execute) },
     { MP_ROM_QSTR(MP_QSTR_configure), MP_ROM_PTR(&audio_frontend_configure) }
 };
 
-STATIC MP_DEFINE_CONST_DICT(tensor_locals_dict, tensor_locals_dict_table);
+STATIC MP_DEFINE_CONST_DICT(audio_frontend_locals_dict, audio_frontend_locals_dict_table);
 
 const mp_obj_type_t audio_frontend_type = {
     { &mp_type_type },
