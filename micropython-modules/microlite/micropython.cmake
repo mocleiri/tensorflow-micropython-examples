@@ -65,147 +65,83 @@ if (MICROLITE_PLATFORM STREQUAL "RP2")
 endif()
 
 
+
+
+# copied from https://github.com/espressif/tflite-micro-esp-examples/blob/master/components/tflite-lib/CMakeLists.txt
+# commit: 2ef35273160643b172ce76078c0c95c71d528842
+set(TF_LITE_DIR "${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite")
+set(TF_MICRO_DIR "${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro")
+
+# lite c 
+
+file(GLOB TF_LITE_C_SRCS
+          "${TF_LITE_DIR}/c/*.cpp"
+          "${TF_LITE_DIR}/c/*.c")
+
+# lite core/api 
+
+file(GLOB TF_LITE_API_SRCS
+          "${TF_LITE_DIR}/core/api/*.cpp"
+          "${TF_LITE_DIR}/core/api/*.c")
+
+# lite experimental 
+
+file(GLOB TF_LITE_MICROFRONTEND_SRCS
+          "${TF_LITE_DIR}/experimental/microfrontend/lib/*.c"
+          "${TF_LITE_DIR}/experimental/microfrontend/lib/*.cpp")
+
+# lite kernels 
+
+file(GLOB TF_LITE_KERNELS_SRCS
+          "${TF_LITE_DIR}/kernels/*.c"
+          "${TF_LITE_DIR}/kernels/*.cpp")
+
+# lite schema 
+file(GLOB TF_LITE_SCHEMA_SRCS
+          "${TF_LITE_DIR}/schema/*.c"
+          "${TF_LITE_DIR}/schema/*.cpp")
+
+# micro 
+
+file(GLOB TF_MICRO_SRCS
+          "${TF_MICRO_DIR}/*.c"
+          "${TF_MICRO_DIR}/*.cpp")
+
+          
+# logs are platform specific and added seperately
+
+list(REMOVE_ITEM TF_MICRO_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/debug_log.cpp)
+list(REMOVE_ITEM TF_MICRO_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_time.cpp)
+
+# micro kernels 
+
+file(GLOB TF_MICRO_KERNELS_SRCS
+          "${TF_MICRO_DIR}/kernels/*.c"
+          "${TF_MICRO_DIR}/kernels/*.cpp")
+
+# micro memory_planner 
+
+file(GLOB TF_MICRO_MEMORY_PLANNER_SRCS
+          "${TF_MICRO_DIR}/*.cpp"
+          "${TF_MICRO_DIR}/*.c")
+
 target_sources(microlite INTERFACE
+#   microlite micropython module sources
     ${CMAKE_CURRENT_LIST_DIR}/tensorflow-microlite.c
     ${CMAKE_CURRENT_LIST_DIR}/openmv-libtf.cpp
     ${CMAKE_CURRENT_LIST_DIR}/micropython-error-reporter.cpp
-    # TODO: see if we can determine this list at runtime
-    # find ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow -name "*.c" | grep  -v experimental
-    # find ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow -name "*.cpp" | grep  -v experimental
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/c/common.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/filterbank.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/filterbank_util.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/frontend.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/frontend_util.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/log_lut.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/log_scale.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/log_scale_util.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/noise_reduction.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/noise_reduction_util.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/pcan_gain_control.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/pcan_gain_control_util.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/window.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/window_util.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/third_party/kissfft/kiss_fft.c
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/third_party/kissfft/tools/kiss_fftr.c
 
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/core/api/error_reporter.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/core/api/flatbuffer_conversions.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/core/api/op_resolver.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/core/api/tensor_utils.cpp
-#    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/fft.cpp
-#    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/fft_util.cpp
-#    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/experimental/microfrontend/lib/kiss_fft_int16.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/kernels/internal/quantization_util.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/kernels/internal/reference/portable_tensor_utils.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/kernels/kernel_util.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/all_ops_resolver.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/flatbuffer_utils.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/activations.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/activations_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/add.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/add_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/add_n.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/arg_min_max.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/assign_variable.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/batch_to_space_nd.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/call_once.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/cast.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/ceil.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/circular_buffer.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/circular_buffer_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/comparisons.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/concatenation.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/conv.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/conv_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/cumsum.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/depthwise_conv.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/depthwise_conv_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/depth_to_space.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/dequantize.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/detection_postprocess.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/elementwise.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/elu.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/ethosu.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/exp.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/expand_dims.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/fill.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/floor.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/floor_div.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/floor_mod.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/fully_connected.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/fully_connected_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/gather.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/gather_nd.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/hard_swish.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/hard_swish_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/if.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/kernel_runner.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/kernel_util.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/l2norm.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/l2_pool_2d.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/leaky_relu.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/leaky_relu_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/logical.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/logical_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/logistic.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/logistic_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/log_softmax.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/maximum_minimum.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/mul.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/mul_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/neg.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/pack.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/pad.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/pooling.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/pooling_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/prelu.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/quantize.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/quantize_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/read_variable.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/reduce.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/reshape.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/resize_bilinear.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/resize_nearest_neighbor.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/round.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/shape.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/softmax.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/softmax_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/space_to_batch_nd.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/space_to_depth.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/split.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/split_v.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/squeeze.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/strided_slice.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/sub.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/sub_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/svdf.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/svdf_common.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/tanh.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/transpose.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/transpose_conv.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/unpack.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/var_handle.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/zeros_like.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/memory_helpers.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/memory_planner/greedy_memory_planner.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/memory_planner/linear_memory_planner.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_allocator.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_error_reporter.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_graph.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_interpreter.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_profiler.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_resource_variable.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_string.cpp
-    
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_utils.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/mock_micro_graph.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/recording_micro_allocator.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/recording_simple_memory_allocator.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/simple_memory_allocator.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/system_setup.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/test_helpers.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/schema/schema_utils.cpp
+    # tf lite sources
+    ${TF_LITE_C_SRCS}
+    ${TF_LITE_API_SRCS}
+    ${TF_LITE_MICROFRONTEND_SRCS}
+    ${TF_LITE_KERNELS_SRCS}
+    ${TF_LITE_SCHEMA_SRCS}
+
+    # tf micro sources
+    ${TF_MICRO_SRCS}
+    ${TF_MICRO_KERNELS_SRCS}
+    ${TF_MICRO_MEMORY_PLANNER_SRCS}
 
     ${TF_MICROLITE_LOG}
 

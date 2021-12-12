@@ -68,9 +68,8 @@ jobs:
 
           cd ./tensorflow
 
-          python3 ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
-          --makefile_options="TARGET_TOOLCHAIN_PREFIX=xtensa-esp32-elf- TARGET=esp TARGET_ARCH=xtensa-esp32" \
-          --examples micro_speech --rename-cc-to-cpp ../micropython-modules/microlite/tflm
+          ../micropython-modules/microlite/prepare-tflm-esp.sh
+          
       - name: Build micropython cross compiler
         run:  |
           source ./esp-idf/export.sh
