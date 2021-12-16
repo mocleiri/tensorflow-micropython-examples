@@ -40,6 +40,25 @@
 			]
 		},
 		{
+			"label": "Build ESP32 MICROLITE",
+			"type": "shell",
+			"command": ". /home/mike/esp/esp-idf/export.sh && /home/mike/.espressif/python_env/idf4.3_py3.7_env/bin/python /home/mike/esp/esp-idf/tools/idf.py build",
+			"options": {
+				"cwd": "${workspaceFolder}/boards/esp32/MICROLITE"
+			  },
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "new"
+			},
+			"problemMatcher": [
+				"$gcc"
+			]
+		},
+		{
 			"label": "Clean Micropython - Unix",
 			"type": "shell",
 			"command": "make -f /home/mike/git/tensorflow-micropython-examples/micropython-modules/GNUmakefile-unix V=1 clean",

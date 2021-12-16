@@ -41,7 +41,7 @@
     "python.pythonPath": "/usr/bin/python3",
     "makefile.configurations": [
             {
-                "name": "firmware",
+                "name": "H743 firmware",
                 "makeArgs": ["MICROPY_TOP=/home/mike/git/tensorflow-micropython-examples/micropython", 
                     "BOARD_DIR=/home/mike/git/tensorflow-micropython-examples/boards/stm32/NUCLEO_H743ZI2_MICROLITE",
                     "CROSS_COMPILE=/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-",
@@ -57,5 +57,6 @@
             "binaryArgs": []
         }
     ],
-    "cortex-debug.variableUseNaturalFormat": false
+    "cortex-debug.variableUseNaturalFormat": false,
+    "cmake.configureOnOpen": false
 }
