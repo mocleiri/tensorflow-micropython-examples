@@ -11,7 +11,6 @@
 
 import gc
 import io
-import audio_frontend
 from ulab import numpy as np
 import micro_speech
 import microlite

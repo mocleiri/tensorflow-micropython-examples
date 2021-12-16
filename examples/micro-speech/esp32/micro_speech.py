@@ -1,7 +1,10 @@
 import math
 
-import audio_frontend
+import microlite
+
 from ulab import numpy as np
+
+audio_frontend = microlite.audio_frontend()
 
 audio_frontend.configure()
 
