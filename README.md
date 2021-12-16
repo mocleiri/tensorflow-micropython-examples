@@ -2,30 +2,40 @@
 
 The purpose of this project is to make a custom micropython firmware that installs tensorflow lite for micro controllers and allows for experimentation.
 
-I want to incubate this project here but if it is successful at enabling tensorflow lite for microcontroller models to be run from micropython I will explore how to merge the microlite and audio_frontend modules into the tensorflow for microcontrollers upstream repository.
-
 ## Architecture
 
-| Area        | Are           | 
-| ------------- |:-------------:| 
-| tensorflow-microlite.a | This is the tensorflow lite micro library with all operations to start with |
-| micropython-modules/microlite | Micropython 'microlite' module that interconnects micropython to tensorflow lite micropython c++ api |
-| micropython-modules/audio_frontend | Micropython Wrapper for tensorflow experimental microfrontend audio processor needed by the micro_speech example to convert wav data into spectrogram data for processing by the model. |
-| micropython-modules/ulab | We have a submodule dependency on [ulab](https://github.com/v923z/micropython-ulab).  |
+This project is a micropython module built using the USER_C_MODULES extension mechanism.  There are two modules:
+* microlite
+* ulab
 
-At the moment all of the tensor operations are included in tensorflow-microlite.a but in the future we will try to externalize them so they can be brought on the file system with the model being run.
+There are 3 git submodules:
+* tensorflow lite micro
+* micropython
+* ulab
 
-Because we have all of the operations there is a cost in the size of the image generated.
 
+tflite-micro sources are generated within the microlite module at build time using the tensorflow lite example generator.
+
+The microlite module has several types:
+* tensor
+* interpreter
+* audio_frontend (used for the micro_speech example)
 
 # Port Status
 
 Build Type | Status |
  --------- | ------ |
 ESP32   | [![ESP32](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml) |
+ESP32 S3   | [![ESP32 S3](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32s3.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32s3.yml) |
 RP2     | [![RP2](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_rp2.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_rp2.yml) |
 STM32   | [![STM32](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_stm32.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_stm32.yml) |
 UNIX   | [![UNIX](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml) |
+
+# Recent Changes
+
+## Build Process Changed
+
+[#36](https://github.com/mocleiri/tensorflow-micropython-examples/issues/36) moved the audio_frontend from a seperate module into a type within the microlite module.
 
 # Roadmap
 
@@ -41,7 +51,7 @@ Tracked in #36 and #37.
 For unknown reasons when I try to run the hello world example on my Nucleo H743ZI2 the board
 resets.
 
-Tracked by #31
+Tracked by [#31](https://github.com/mocleiri/tensorflow-micropython-examples/issues/31)
 
 
 # Prebuilt Firmware
