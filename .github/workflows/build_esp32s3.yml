@@ -45,7 +45,7 @@ jobs:
       - name: Setup IDF
 #        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
         run: |
-          source ./micropython/tools/ci.sh && ci_esp32_setup_helper v4.3.1
+          source ./micropython/tools/ci.sh && ci_esp32_idf44_setup
       - name: Cache tflm
         id: cache-tflm
         uses: actions/cache@v2
@@ -76,41 +76,43 @@ jobs:
           cd ./micropython
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
-      - name: Build standard non-psram 4MB Flash firmware
+ 
+      - name: Build standard non-ps ram ESP32 S3 8MB FLASH
         run: |
           source ./esp-idf/export.sh
-          
-          echo "cd ./boards/esp32/MICROLITE"
-          cd ./boards/esp32/MICROLITE
-          
-          echo "Building MICROLITE"
+
+          echo "cd ./boards/esp32/MICROLITE_S3"
+          cd ./boards/esp32/MICROLITE_S3
+
+          echo "Building MICROLITE_S3"
           rm -rf builds
           idf.py clean build
 
-      - name: Archive ESP32-MICROLITE firmware
+      - name: Archive ESP32-S3  MICROLITE firmware
         uses: actions/upload-artifact@v2
         with:
-          name: microlite-esp32-firmware
+          name: microlite-esp32-s3-firmware
           path: |
-            boards/esp32/MICROLITE/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE/build/micropython.bin
-      - name: Build with psram support and 16MB Flash firmware
+            boards/esp32/MICROLITE_S3/build/bootloader/bootloader.bin
+            boards/esp32/MICROLITE_S3/build/partition_table/partition-table.bin
+            boards/esp32/MICROLITE_S3/build/micropython.bin
+
+      - name: Build ESP32 S3 psram support and 8MB Flash firmware
         run: |
           source ./esp-idf/export.sh
-          
-          echo "cd ./boards/esp32/MICROLITE_SPIRAM_16M"
-          cd ./boards/esp32/MICROLITE_SPIRAM_16M
-          
-          echo "Building MICROLITE_SPIRAM_16M"
+
+          echo "cd ./boards/esp32/MICROLITE_S3_SPIRAM"
+          cd ./boards/esp32/MICROLITE_S3_SPIRAM
+
+          echo "Building MICROLITE_S3_SPIRAM"
           rm -rf builds
           idf.py clean build
 
-      - name: Archive ESP32-MICROLITE-SPIRAM-16M firmware
+      - name: Archive ESP32-MICROLITE_S3_SPIRAM firmware
         uses: actions/upload-artifact@v2
         with:
-          name: microlite-spiram-16m-esp32-firmware
+          name: microlite-esp32-s3-spiram-firmware
           path: |
-            boards/esp32/MICROLITE_SPIRAM_16M/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE_SPIRAM_16M/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE_SPIRAM_16M/build/micropython.bin
+            boards/esp32/MICROLITE_S3_SPIRAM/build/bootloader/bootloader.bin
+            boards/esp32/MICROLITE_S3_SPIRAM/build/partition_table/partition-table.bin
+            boards/esp32/MICROLITE_S3_SPIRAM/build/micropython.bin
