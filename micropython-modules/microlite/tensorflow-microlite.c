@@ -40,6 +40,9 @@
 
 const mp_obj_type_t microlite_interpreter_type;
 const mp_obj_type_t microlite_tensor_type;
+const mp_obj_type_t microlite_audio_frontend_type;
+
+STATIC mp_obj_t interpreter_get_input_tensor(mp_obj_t self_in, mp_obj_t index_obj);
 
 // - microlite tensor
 STATIC void tensor_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
@@ -214,6 +217,55 @@ const mp_obj_type_t microlite_tensor_type = {
     .locals_dict = (mp_obj_dict_t*)&tensor_locals_dict,
 };
 
+// audio_frontend
+
+STATIC mp_obj_t af_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
+    mp_arg_check_num(n_args, n_kw, 0, 0, false);
+
+    microlite_audio_frontend_obj_t*single_audio_frontend = m_new_obj(microlite_audio_frontend_obj_t);
+
+    single_audio_frontend->config = m_malloc(sizeof(struct FrontendConfig));
+    single_audio_frontend->state = m_malloc(sizeof(struct FrontendState));
+
+    single_audio_frontend->base.type = &microlite_audio_frontend_type;
+
+    return MP_OBJ_FROM_PTR(single_audio_frontend);
+}
+
+STATIC void af_print(const mp_print_t *print, mp_obj_t self_in, mp_print_kind_t kind) {
+    (void)kind;
+    // microlite_tensor_obj_t *self = MP_OBJ_TO_PTR(self_in);
+
+    // TfLiteTensor * tensor = (TfLiteTensor *)self->tf_tensor;
+
+    mp_print_str(print, "audio_frontend(type=");
+
+    // mp_print_str(print, TfLiteTypeGetName(tensor->type));
+
+    // int size = tensor->dims->size;
+
+    // mp_printf(print, ", dims->size=%d\n", size);
+
+    mp_print_str(print, ")\n");
+}
+
+MP_DEFINE_CONST_FUN_OBJ_1(af_configure, audio_frontend_configure);
+MP_DEFINE_CONST_FUN_OBJ_2(af_execute, audio_frontend_execute);
+
+STATIC const mp_rom_map_elem_t audio_frontend_locals_dict_table[] = {
+   { MP_ROM_QSTR(MP_QSTR_execute), MP_ROM_PTR(&af_execute) },
+   { MP_ROM_QSTR(MP_QSTR_configure), MP_ROM_PTR(&af_configure) }
+};
+
+STATIC MP_DEFINE_CONST_DICT(audio_frontend_locals_dict, audio_frontend_locals_dict_table);
+
+const mp_obj_type_t microlite_audio_frontend_type = {
+    { &mp_type_type },
+    .name = MP_QSTR_audio_frontend,
+    .make_new = af_make_new,
+    .print = af_print,
+    .locals_dict = (mp_obj_dict_t*)&audio_frontend_locals_dict,
+};
 
 // - microlite interpreter
 
@@ -221,9 +273,15 @@ STATIC void interpreter_print(const mp_print_t *print, mp_obj_t self_in, mp_prin
     (void)kind;
     microlite_interpreter_obj_t *self = MP_OBJ_TO_PTR(self_in);
     mp_print_str(print, "interpreter(");
-//    mp_obj_print_helper(print, mp_obj_new_int(self->a), PRINT_REPR);
-//    mp_print_str(print, ", ");
-//    mp_obj_print_helper(print, mp_obj_new_int(self->b), PRINT_REPR);
+    
+    mp_printf(print, "model size = %d, tensor_area size = %d\n", self->model_data->len, self->tensor_area->len);
+    
+    microlite_tensor_obj_t *input_tensor = MP_OBJ_TO_PTR(interpreter_get_input_tensor(self, 0));
+
+    microlite_tensor_obj_t *output_tensor = MP_OBJ_TO_PTR(interpreter_get_input_tensor(self, 0));
+
+    mp_obj_print_helper (print, output_tensor, PRINT_STR);
+
     mp_print_str(print, ")");
 }
 
@@ -271,7 +329,12 @@ STATIC mp_obj_t interpreter_make_new(const mp_obj_type_t *type, size_t n_args, s
 
     self->model_data = model;
 
-    byte *tensor_area_buffer = m_new(byte, tensor_area_len);
+// 
+
+// add extra space to allow for alinment
+    tensor_area_len  += 16;
+
+    uint8_t *tensor_area_buffer = m_new(uint8_t, tensor_area_len);
 
     self->tensor_area = mp_obj_new_bytearray_by_ref (tensor_area_len, tensor_area_buffer);
 
@@ -370,7 +433,9 @@ STATIC const mp_rom_map_elem_t microlite_module_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_microlite) },
     { MP_ROM_QSTR(MP_QSTR___version__), MP_ROM_PTR(&microlite_version_string_obj) },
     { MP_ROM_QSTR(MP_QSTR_interpreter), (mp_obj_t)&microlite_interpreter_type },
-    { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_tensor_type }
+    { MP_ROM_QSTR(MP_QSTR_tensor), (mp_obj_t)&microlite_tensor_type },
+    { MP_ROM_QSTR(MP_QSTR_audio_frontend), (mp_obj_t)&microlite_audio_frontend_type }
+
 };
 STATIC MP_DEFINE_CONST_DICT(microlite_module_globals, microlite_module_globals_table);
 

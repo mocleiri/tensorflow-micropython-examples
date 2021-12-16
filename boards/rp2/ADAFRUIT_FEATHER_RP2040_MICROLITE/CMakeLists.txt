@@ -1,0 +1,21 @@
+# Top-level cmake file for building MicroPython on RP2040.
+# Nothing in here needs to be customised, it will work for any board.
+
+cmake_minimum_required(VERSION 3.12)
+
+# Set the location of MicroPython, the rp2 port, and the board directory.
+get_filename_component(PROJECT_DIR "../../.." ABSOLUTE)
+set(MICROPY_PORT_DIR ${PROJECT_DIR}/micropython/ports/rp2)
+get_filename_component(MICROPY_BOARD_DIR "." ABSOLUTE)
+
+message (STATUS "PROJECT_DIR=${PROJECT_DIR}")
+message (STATUS "MICROPY_PORT_DIR=${MICROPY_PORT_DIR}")
+message (STATUS "MICROPY_BOARD_DIR=${MICROPY_BOARD_DIR}")
+
+# Define the output sdkconfig so it goes in the build directory.
+set(SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig)
+
+# Include board config; this is expected to set SDKCONFIG_DEFAULTS (among other options).
+include(${MICROPY_BOARD_DIR}/mpconfigboard.cmake)
+
+project(micropython)

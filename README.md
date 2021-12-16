@@ -23,7 +23,25 @@ Because we have all of the operations there is a cost in the size of the image g
 Build Type | Status |
  --------- | ------ |
 ESP32   | [![ESP32](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml) |
+RP2     | [![RP2](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_rp2.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_rp2.yml) |
+STM32   | [![STM32](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_stm32.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_stm32.yml) |
 UNIX   | [![UNIX](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml) |
+
+# Roadmap
+
+## Merge audio_frontend into microlite module
+
+For CircuitPython we need to put all our stuff into a single module.  The latest builds support more
+platforms but don't yet the support the audio frontend.
+
+Tracked in #36 and #37.
+
+## STM32 H743 Port Broken
+
+For unknown reasons when I try to run the hello world example on my Nucleo H743ZI2 the board
+resets.
+
+Tracked by #31
 
 
 # Prebuilt Firmware
@@ -31,7 +49,7 @@ UNIX   | [![UNIX](https://github.com/mocleiri/tensorflow-micropython-examples/ac
 The latest firmware can be downloaded from the applicable build above (in the Status section).
 1. Click on build status link.
 2. Click on the latest green build
-3. Review the available artifiacts for download
+3. Review the available artifacts for download
 
 You do need to be careful to get the proper firmware for your board.  If your board is not currently being built please file an issue and it can be added.
 

@@ -54,7 +54,7 @@ SRC_USERMOD_CXX += $(AUDIO_FRONTEND_MOD_DIR)/fft.cpp
 SRC_USERMOD_CXX += $(AUDIO_FRONTEND_MOD_DIR)/fft_util.cpp
 
 # needed with c++
-LDFLAGS_USERMOD += -lstdc++
+#LDFLAGS_USERMOD += -lsupc++
 
 CFLAGS_USERMOD += -I$(AUDIO_FRONTEND_MOD_DIR)
 CFLAGS_USERMOD += -I$(TENSORFLOW)/tensorflow/lite/micro/tools/make/downloads/kissfft
@@ -68,6 +68,7 @@ CFLAGS_USERMOD += -Wno-error=float-conversion
 CFLAGS_USERMOD += -Wno-error=nonnull
 CFLAGS_USERMOD += -Wno-error=double-promotion
 CFLAGS_USERMOD += -Wno-error=pointer-arith
+CFLAGS_USERMOD += -Wfloat-conversion
 
 CXXFLAGS_USERMOD += -I$(AUDIO_FRONTEND_MOD_DIR)
 CXXFLAGS_USERMOD += -I$(TENSORFLOW)/tensorflow/lite/micro/tools/make/downloads/kissfft
@@ -76,8 +77,9 @@ CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../tensorflow
 
 CXXFLAGS_USERMOD += -DTF_LITE_STATIC_MEMORY=1
 
+CXXFLAGS_USERMOD += -Wfloat-conversion
+
 # unix port
-CFLAGS_USERMOD += -g
 CFLAGS_USERMOD += -Wno-error=unused-const-variable
 
 override CFLAGS_EXTRA += -DMODULE_AUDIO_FRONTEND_ENABLED=1

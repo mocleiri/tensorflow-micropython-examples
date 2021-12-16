@@ -18,22 +18,75 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Build Tensorflow static library for ESP32
+      - name: Prepare to Build Tensorflow Micropython Firmware for ESP32
         run: |
           git submodule init
           git submodule update --recursive
-          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_tensorflow_esp32.sh
-      - name: Prepare to Build Tensorflow Micropython Firmware for ESP32
-        run: |
           cd micropython
           git submodule update --init lib/axtls
           git submodule update --init lib/berkeley-db-1.xx
           cd ..
-          cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft.cc micropython-modules/audio_frontend/fft.cpp
-          cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft_util.cc micropython-modules/audio_frontend/fft_util.cpp
+      - name: Get Cache Keys
+        # later get this like this: git ls-remote --heads https://github.com/espressif/esp-idf
+        # this commit is hard-coded in micropython/tools/ci.sh
+        run: |
+          IDF_COMMIT=142bb32c50fa9875b8b69fa539a2d59559460d72
+          echo "esp-idf-commit=$IDF_COMMIT" >> $GITHUB_ENV
+          TFLM_COMMIT=$(git submodule status tensorflow | awk '{print ($1)}')
+          echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
+#      - name: Cache esp-idf
+#        id: cache-esp-idf
+#        uses: actions/cache@v2
+#        env:
+#          cache-name: cache-esp-idf
+#        with:
+#          path: ./esp-idf
+#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.esp-idf-commit }}
+      - name: Setup IDF
+#        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
+        run: |
+          source ./micropython/tools/ci.sh && ci_esp32_setup_helper v4.3.1
+      - name: Cache tflm
+        id: cache-tflm
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-tflm
+        with:
+          path: ./micropython-modules/microlite/tflm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
+      - name: Setup Build for Tensorflow
+        if: steps.cache-tflm.outputs.cache-hit != 'true'
+        run: |
+
+          source ./esp-idf/export.sh
+
+          pip3 install Pillow
+          pip3 install Wave
+
+          echo "Regenerating microlite/tfm directory"
+          rm -rf ./micropython-modules/microlite/tflm
+
+          cd ./tensorflow
+
+          ../micropython-modules/microlite/prepare-tflm-esp.sh
+          
+      - name: Build micropython cross compiler
+        run:  |
+          source ./esp-idf/export.sh
+          cd ./micropython
+          echo "make -C mpy-cross V=1 clean all"
+          make -C mpy-cross V=1 clean all
       - name: Build standard non-psram 4MB Flash firmware
         run: |
-          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32_microlite.sh
+          source ./esp-idf/export.sh
+
+          echo "cd ./boards/esp32/MICROLITE"
+          cd ./boards/esp32/MICROLITE
+
+          echo "Building MICROLITE"
+          rm -rf builds
+          idf.py clean build
+
       - name: Archive ESP32-MICROLITE firmware
         uses: actions/upload-artifact@v2
         with:
@@ -44,7 +97,14 @@ jobs:
             boards/esp32/MICROLITE/build/micropython.bin
       - name: Build with psram support and 16MB Flash firmware
         run: |
-          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_esp32_microlite_spiram_16m.sh      
+          source ./esp-idf/export.sh
+
+          echo "cd ./boards/esp32/MICROLITE_SPIRAM_16M"
+          cd ./boards/esp32/MICROLITE_SPIRAM_16M
+
+          echo "Building MICROLITE_SPIRAM_16M"
+          rm -rf builds
+          idf.py clean build
       - name: Archive ESP32-MICROLITE-SPIRAM-16M firmware
         uses: actions/upload-artifact@v2
         with:
