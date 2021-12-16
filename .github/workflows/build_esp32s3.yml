@@ -1,5 +1,5 @@
 
-name: ESP32
+name: ESP32 S3
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
 on:
@@ -12,7 +12,7 @@ on:
       - '.github/workflows/build_unix.yml'
 
 jobs:
-  tensorflow_micropython_esp32_build:
+  tensorflow_micropython_esp32s3_build:
     runs-on: ubuntu-latest
 
     steps:
@@ -76,7 +76,7 @@ jobs:
           cd ./micropython
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
- 
+
       - name: Build standard non-ps ram ESP32 S3 8MB FLASH
         run: |
           source ./esp-idf/export.sh
