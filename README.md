@@ -13,7 +13,6 @@ There are 3 git submodules:
 * micropython
 * ulab
 
-
 tflite-micro sources are generated within the microlite module at build time using the tensorflow lite example generator.
 
 The microlite module has several types:
@@ -31,41 +30,56 @@ RP2     | [![RP2](https://github.com/mocleiri/tensorflow-micropython-examples/ac
 STM32   | [![STM32](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_stm32.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_stm32.yml) |
 UNIX   | [![UNIX](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml) |
 
-# Recent Changes
 
-## Build Process Changed
-
-[#36](https://github.com/mocleiri/tensorflow-micropython-examples/issues/36) moved the audio_frontend from a seperate module into a type within the microlite module.
-
-# Roadmap
-
-## Merge audio_frontend into microlite module
-
-For CircuitPython we need to put all our stuff into a single module.  The latest builds support more
-platforms but don't yet the support the audio frontend.
-
-Tracked in #36 and #37.
-
-## STM32 H743 Port Broken
-
-For unknown reasons when I try to run the hello world example on my Nucleo H743ZI2 the board
-resets.
-
-Tracked by [#31](https://github.com/mocleiri/tensorflow-micropython-examples/issues/31)
-
-
-# Prebuilt Firmware
+## Prebuilt Firmware
 
 The latest firmware can be downloaded from the applicable build above (in the Status section).
 1. Click on build status link.
 2. Click on the latest green build
 3. Review the available artifacts for download
 
-You do need to be careful to get the proper firmware for your board.  If your board is not currently being built please file an issue and it can be added.
+You do need to be careful to get the proper firmware for your board.  If your board is not currently being built please 
+file an issue and it can be added.
 
 ![](./images/download-esp32-artifact.png)
 
+# Recent Changes
+
+## Build Process Changed 2021-12-15
+
+[#36](https://github.com/mocleiri/tensorflow-micropython-examples/issues/36) moved the audio_frontend from a seperate 
+module into a type within the microlite module.
+
+# Building from Scratch
+
+The steps to build are self documented within the github actions used to build the firmware
+for the various supported boards.  Look with the .github/workflows/ directory to see the
+pipeline scripts for each board.
+
+Issues are welcomed to request adding ci support for new boards.
+
+Follow the [Upgrade Instructions](UPGRADE.md) on how to upgrade.  The main issue is to get the
+3 git submodules updated to the latest values.
+
+Follow the [Linux Build Instructions](BUILD.md) on how to build the latest firmware from a fresh clone
+of this repository.
+
 # Examples
+
+The goal of this project is for experimenting with TinyML and the plan is to have 
+micropython implementations of the [examples from the tensorflow micro project](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples).
+
+In all cases the model.tflite can be used from upstream.  However its common for us to have
+different implementation code written in micropython instead of C++.
+
+Pull requests are welcome for additional examples with custom models.
+
+| TF Micro Example Reference Examples                                                                                                | Training                                                                                                                               |
+|------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|
+| [hello_world](https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/examples/hello_world/README.md)           | [Train Hello World](https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/examples/hello_world/train/README.md)   |
+| [magic_wand ](https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/examples/magic_wand/README.md)            | [Train Magic Wand](https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/examples/magic_wand/train/README.md)     |                                                                                                                  |
+| [micro_speech](https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/examples/micro_speech/README.md)         | [Train Micro Speech](https://github.com/tensorflow/tflite-micro/tree/main/tensorflow/lite/micro/examples/micro_speech/train/README.md) |
+| [person_detection](https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/examples/person_detection/README.md) | [Train Person Detection](https://github.com/tensorflow/tflite-micro/blob/main/tensorflow/lite/micro/examples/person_detection/training_a_model.md)                                                                                                             |
 
 ## Hello World
 
@@ -92,6 +106,8 @@ Status:
 
 [Micro Speech Documentation](examples/micro-speech/README.md)
 
+[ESP32 Example with INMP441 Microphone](examples/micro-speech/esp32/README.md)
+
 ## Person Detection
 
 Process:
@@ -111,37 +127,16 @@ Status:
 
 [TODO #5](https://github.com/mocleiri/tensorflow-micropython-examples/issues/5)
 
-# Roadmap
-
-Almost all of the examples work now.
-
-| # | Description | Issue |
-| --- | --- | --- |
-| 1. | Adjust microlite api to match tflite python api (at least a subset).  We don't really need the callback approach anymore. |  https://github.com/mocleiri/tensorflow-micropython-examples/issues/10 |
-| 2. | Cleanup micro_speech implementation | |
-| 3. | Implement the magic wand example | https://github.com/mocleiri/tensorflow-micropython-examples/issues/5 |
-| 4. | Investigate automatic tensor quantization | https://github.com/mocleiri/tensorflow-micropython-examples/issues/6 |
-| 5. | Find way to externalize tensor op's from firmware | https://github.com/mocleiri/tensorflow-micropython-examples/issues/7 |
-
 # About Tensorflow
 
-At the moment we are using the main branch in the tensorflow lite micro repository.
+At the moment we are using the **main** branch in the
+[tensorflow lite micro repository](https://github.com/tensorflow/tflite-micro).
 
-This is the c++ api version of tensorflow lite designed to run on microcontrollers.
-
-At the moment we are building everything and linking it into the micropython firmware.
-
-The next steps are to try and find ways to use build switches or native modules to support
-smaller firmware sizes.
+This is the C++ api version of tensorflow lite designed to run on microcontrollers.
 
 # About Micropython
 
-We are building from micropython master.  
-
-# How to Build
-
-Normally you can just download the precompiled firmware.  If you want to know how to build it yourself
-then consult the [Build Documentation](BUILD.md).
+We are building from micropython **master** branch.  
 
 # Flash image
 
@@ -154,11 +149,16 @@ The zip file contains:
 2. The partition table
 3. The firmware
 
+## Flash from Windows 
 ```
  esptool.py -p COM5 -b 460800 --before default_reset --after hard_reset --chip esp32 write_flash --flash_mode dio --flash_size detect --flash_freq 40m 0x1000 bootloader/bootloader.bin 0x8000 partition_table/partition-table.bin 0x10000 micropython.bin
 ```
 
 ![](./images/write-firmware.png)
+
+## Flash for Linux
+
+TODO 
 
 # Credits
 

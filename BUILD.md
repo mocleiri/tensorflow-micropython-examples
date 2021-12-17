@@ -1,144 +1,220 @@
 # Build Tensorflow Micropython
 
-The tensorflow micro files are materialized into the micropython-modules/microlite
-directory.
+If you were building from scratch before 2021-12-15 then follow the [Upgrade Instructions](UPGRADE.md).
 
-We no longer build a separate static library.  Instead, we generate the tflm files using the
-upstream (tensorflow) project generator.
+## Overview 
+We use the Micropython USER_C_MODULES extension mechanism for building a firmware with the microlite module and ulab
+included.
 
-Then we have 3 micropython modules:
-1. microlite (ours, tensorflow micropython bindings and links to libtensorflow-microlite.a)
-2. audio_frontend* (ours, micropython bindings to tensorflow lite experimental audiofrontend.)
-3. ulab (submodule)
+The tensorflow lite micro code is generated using the [tensorflow/tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py](https://github.com/mocleiri/tflite-micro/blob/main/tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py)
+python script.
 
-*: we are in progress to merge audio_frontend into microlite.
+Depending on the port it works in conjunction with the ./tensorflow/lite/micro/tools/make/Makefile to generate the source files
+for the tensorflow lite micro project suitable for inclusion in downstream projects.
 
-We normally want to have a seperate board directory so that we can control the name of the board
-to have the _MICROLITE suffix.
+Some ports like stm32 and rp2 have custom kernels that are provided in place of the reference kernels.
 
-This convention works for ESP32 and STM32 but not for RP2.
+There is a per port script within the micropython-modules/microlite directory that will invoke this script with the correct
+options.
 
-# Consult Continuous Integration Scripts for latest
+* [prepare-tflm-esp.sh](https://github.com/mocleiri/tensorflow-micropython-examples/blob/main/micropython-modules/microlite/prepare-tflm-esp.sh)
+* [prepare-tflm-rp2.sh](https://github.com/mocleiri/tensorflow-micropython-examples/blob/main/micropython-modules/microlite/prepare-tflm-rp2.sh)
+* [prepare-tflm-stm32.sh](https://github.com/mocleiri/tensorflow-micropython-examples/blob/main/micropython-modules/microlite/prepare-tflm-stm32.sh)
+
+Running the applicable script will create a tflm subdirectory within micropython-modules/microlite and it is under this
+where all of the tensorflow c++ files are located.
+
+
+## Building ESP32
+
+Remember to have built mpy-cross before building the board itself.
+
+### Prerequisites
+pip3 install Pillow
+pip3 install Wave
+
+The esp-idf is provisioned through the micropython/tools/ci.sh script.  We tie into the same tooling used by
+micropython to build esp32.
+
+If you have the idf installed somewhere else you can use that instead.  The shells running the build steps just
+need to have been configured by esp-idf/export.sh prior to running commands.
+
+###  Setup submodules
+
+```shell
+git submodule init
+git submodule update --recursive
+cd micropython
+git submodule update --init lib/axtls
+git submodule update --init lib/berkeley-db-1.xx
+cd ..
+```
+
+### Generate Tensorflow Micro source files
+
+```shell
+echo "Regenerating microlite/tfm directory"
+rm -rf ./micropython-modules/microlite/tflm
+
+cd ./tensorflow
+
+../micropython-modules/microlite/prepare-tflm-esp.sh
+```
+
+### Build mpy-cross before building the board
+
+```shell
+source ./esp-idf/export.sh
+cd ./micropython
+echo "make -C mpy-cross V=1 clean all"
+make -C mpy-cross V=1 clean all
+```
+
+### Build Board
+
+We should be able to support all micropython boards for the esp32 port.  However, at the moment we have our own directory
+boards/esp32 which a further subdirectory for the boards we build.
+
+Issues are welcome to request that we support new boards.  
+
+I'm considering implementing the building logic ontop of micropython's auto build logic which would allow a microlite
+build for all boards supported by the ports supported.
+
+
+
+```shell
+$ source ./esp-idf/export.sh
+$ cd boards/esp32/MICROLITE
+$ rm -rf build
+$ idf.py build
+```
+
+After the successful build the build directory will contain:
+1. bootloader/bootloader.bin 
+2. partition_table/partition-table.bin 
+3. micropython.bin
+
+These can then be flashed onto your board.
+
+## Building RP2
+
+For CI we use the micropython/tools/ci.sh script to install the arm gcc toolchain.  You probably want to have it installed
+somewhere permanently and have it available so that it will be used by the build steps below.
+
+### Prerequisites
+pip3 install Pillow
+pip3 install Wave
+
+###  Setup submodules
+
+```shell
+git submodule init
+git submodule update --recursive
+cd micropython
+git submodule update --init lib/pico-sdk lib/tinyusb
+cd ..
+```
+
+### Generate Tensorflow Micro source files
+
+```shell
+echo "Regenerating microlite/tfm directory"
+rm -rf ./micropython-modules/microlite/tflm
+
+cd ./tensorflow
+
+../micropython-modules/microlite/prepare-tflm-rp2.sh
+```
+### Build mpy-cross before building the board
+
+```shell
+cd ./micropython
+echo "make -C mpy-cross V=1 clean all"
+make -C mpy-cross V=1 clean all
+```
+
+### Build Board
+
+RP2 doesn't have the same external build configuration like esp32 and stm32 have so I have it implemented for all
+of the boards defined by micropython for rp2.
+
+```shell
+  cd micropython
+  cmake -S ports/rp2 -B build-PICO -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=PICO \
+-DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
+
+  cd build-PICO
+  make
+```
+The path needs to be absolute so you would change /home/runner/work/tensorflow-micropython-examples to be the prefix on
+your system where the project was cloned to.
+
+The firmware files are located within micropython/build-PICO.  The firmware.uf2 can be used to flash the board.
+
+## Building STM32
+
+
+For CI we use the micropython/tools/ci.sh script to install the arm gcc toolchain.  You probably want to have it installed
+somewhere permanently and have it available so that it will be used by the build steps below.
+
+### Prerequisites
+pip3 install Pillow
+pip3 install Wave
+
+###  Setup submodules
+
+```shell
+git submodule init
+git submodule update --recursive
+cd micropython
+git submodule update --init lib/mynewt-nimble
+cd ..
+```
+
+### Generate Tensorflow Micro source files
+
+```shell
+echo "Regenerating microlite/tfm directory"
+rm -rf ./micropython-modules/microlite/tflm
+
+cd ./tensorflow
+
+../micropython-modules/microlite/prepare-tflm-stm32.sh
+```
+### Build mpy-cross before building the board
+
+```shell
+cd ./micropython
+echo "make -C mpy-cross V=1 clean all"
+make -C mpy-cross V=1 clean all
+```
+
+### Build Board
+
+RP2 doesn't have the same external build configuration like esp32 and stm32 have so I have it implemented for all
+of the boards defined by micropython for rp2.
+
+```shell
+cd micropython-modules
+ln -s ../micropython-ulab/code  ulab
+cd ..
+
+echo "cd ./boards/stm32/NUCLEO_H743ZI2_MICROLITE"
+cd ./boards/stm32/NUCLEO_H743ZI2_MICROLITE
+
+echo "Building NUCLEO_H743ZI2_MICROLITE"
+rm -rf build
+make V=1
+```
+
+You can then flash the firmware with build/micropython.elf using the stm32cubeprogrammer.
+
+# Github Actions for reference
 
 The documentation here is mostly up to date but the latest is what is currently working for the github actions.
 
-1. [Unix Build](.github/workflows/build_unix.yml) 
-2. [ESP32 Build](.github/workflows/build_esp32.yml)
-
-# Docker Build Containers
-
-Building for esp32 can be done using the [Espressif idf docker images](https://hub.docker.com/r/espressif/idf):
-1. espressif/idf:v4.0.2
-2. espressif/idf:release-v4.1
-3. espressif/idf:release-v4.2
-4. espressif/idf:release-v4.3
-
-Buiding for the unix port can be done using visual studio in the windows subsystem for linux mode.  The necessary build and debug actions are contained within the repository (Detailed Documentation to follow).
-
-## Docker Environments
-
-https://github.com/mocleiri/tensorflow-micropython-examples/blob/master/build-with-docker-idf.sh
-
-```
-$ build-with-docker-idf.sh espressif/idf:v4.0.2
-```
-
-### Helper Scripts
-
-
-1. build-with-unix-docker.sh; this uses the unix-build image and mounts the project as /src in the container.
-
-2. build-with-docker-idf.sh; this uses the esp-idf 4.0.1 image and mounts the project as /src in the container.
-
-# How to Build Tensorflow
-
-## Build for Unix
-
-```
-cd /src/tensorflow
-
-make -f tensorflow/lite/micro/tools/make/Makefile [BUILD_TYPE=debug]
-
-# should put this into the script
-cp tensorflow/lite/micro/tools/make/gen/linux_x86_64/lib/libtensorflow-microlite.a /src/lib
-
-```
-
-Specify BUILD_TYPE=debug if you want to be able to debug the resultant code.
-
-## Build for ESP32
-
-Start the docker image using:
-```
-./build-with-docker-idf.sh [optional: name of docker image to use]
-
-```
-
-Run the build using the helper script which has the appropriate compile time flags needed when linking into the micropython firmware.  At the moment this script is esp32 specific.
-```
-$ cd /src
-
-$ ./build-tensorflow-lite-micro.sh clean all
-
-```
-
-use 'update-microlite.sh' script to copy the tensorflow static library into the lib directory which is where micropython will pick it up from when linking the esp32 firmware.
-
-```
-$ cd /src
-
-$ ./update-microlite.sh
-copies: tensorflow/lite/micro/tools/make/gen/esp32_xtensa-esp32/lib/libtensorflow-microlite.a /src/lib
-```
-
-# How to Build Micropython
-
-## Build mpy-cross
-```
-git submodule update --recursive
-
-cd micropython/mpy-cross
-
-root@3453c74a93f6:/src/micropython# make -C mpy-cross V=1 clean all
-```
-You need to build the cross compiler for the host you are on which is typically linux gcc.  In the esp-idf container
-you can use regular gcc which is for x86.
-
-## Build for Unix
-
-
-```
-cd /src/micropython
-
-git submodule update --init lib/axtls
-
-git submodule update --init lib/berkeley-db-1.xx
-
-cd ports/unix
-
-make -f /src/src/GNUmakefile-unix V=1
-
-```
-
-## Build for ESP32
-
-Be sure to be building inside of the idf docker container:
-```
-root@3453c74a93f6:~# cd /src/micropython/ports/esp32
-
-root@3453c74a93f6:/src/micropython/ports/esp32# make BOARD=MICROLITE USER_C_MOOULES=/src/micropython-modules/micropython.cmake
-
-```
-
-Note as-is the firmware is too big to fit into the default Micropython partition scheme on a 4MB flash board.  There is a custom-partitions.csv parition table increases the space for the application and decreases the amount of filesystem available.  This is the main difference of the MICROLITE board from the GENERIC board.
-
-
-I think there is about 1MB of flash filesystem and 3MB for the boot loader and application partitions.
-
-### Additional Board configurations
-
-The MICROLITE_SPIRAM_16M board definition also exists.  It creates the microlite firmware for boards with SPIRAM and 16 MB of Flash.  There is 3MB allocated to the firmware and 13 MB available for the flash file-system.
-
-```
-$ make BOARD=MICROLITE_SPIRAM_16M USER_C_MODULES=/src/micropython-modules/micropython.cmake
-`
+1. [ESP32 Builds](.github/workflows/build_esp32.yml)
+2. [ESP32 S3 Builds](.github/workflows/build_esp32s3.yml)
+2. [RP2 Build](.github/workflows/build_rp2.yml)
+2. [STM32 Builds](.github/workflows/build_stm32.yml)
+2. [Unix Build](.github/workflows/build_unix.yml)
