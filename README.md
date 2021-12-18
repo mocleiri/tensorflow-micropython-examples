@@ -106,7 +106,14 @@ Status:
 
 [Micro Speech Documentation](examples/micro-speech/README.md)
 
+### ESP32 Example
+
 [ESP32 Example with INMP441 Microphone](examples/micro-speech/esp32/README.md)
+
+### ESP32 Demo
+
+[![Watch the micro speech video](https://img.youtube.com/vi/FBUwIvzNVd4/default.jpg)](https://youtu.be/FBUwIvzNVd4)
+
 
 ## Person Detection
 

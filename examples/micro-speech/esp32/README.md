@@ -1,3 +1,7 @@
+# Demo
+
+[![Watch the micro speech video](https://img.youtube.com/vi/FBUwIvzNVd4/default.jpg)](https://youtu.be/FBUwIvzNVd4)
+
 # Setup
 
 Using a single INMP441 Microphone:
