@@ -103,7 +103,7 @@ jobs:
           cd ./boards/esp32/MICROLITE_SPIRAM_16M
           
           echo "Building MICROLITE_SPIRAM_16M"
-          rm -rf builds
+          rm -rf build
           idf.py clean build
 
       - name: Archive ESP32-MICROLITE-SPIRAM-16M firmware
