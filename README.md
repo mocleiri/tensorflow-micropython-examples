@@ -169,6 +169,13 @@ TODO
 
 # Credits
 
+## Mike Teachman for I2S micropython implementation for ESP32, STM32 and RP2
+
+The Micropython I2S implementation was written by [Mike Teachman](https://github.com/miketeachman/micropython-i2s-examples) 
+and its because of his hard work that the micro-speech example works so well.
+
+## Open MV
+
 As far as I am aware OpenMV (https://openmv.io/) was the first micropython firmware to support tensorflow.  
 
 I copied extensively from their approach to get inference working in the hello world example and also for micro-speech example.
