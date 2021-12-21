@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/reent.h>
+#include <stdarg.h>
 
 struct _reent *_impure_ptr;
 
@@ -28,26 +29,18 @@ int fputs ( const char * str, FILE * stream ) {
 
 }
 
-// I need to store the buffer as a root pointer
-// can I initialize the buffer from the bootstrapping of the microlite module?
-// can I add an initialization method to the module?
-//
-//void *gc_alloc(size_t n_bytes, unsigned int alloc_flags);
-//void gc_free(void *ptr); // does not call finaliser
-//size_t gc_nbytes(const void *ptr);
-//void *gc_realloc(void *ptr, size_t n_bytes, bool allow_move);
-void *malloc (size_t size) {
-    return m_malloc(size);
+int fprintf(FILE* stream, const char *fmt, ...) {
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = mp_vprintf(&mp_plat_print, fmt, ap);
+    va_end(ap);
+    return ret;
 }
 
-void *calloc (size_t num, size_t size) {
-    return m_malloc (num*size);
-}
 
-void* realloc (void* ptr, size_t size) {
-    return m_realloc(ptr, size);
-}
-void free (void* ptr) {
-    m_free(ptr);
-}
+// size_t fwrite (const void * __ptr, size_t __size,
+// 		      size_t __n, FILE * __s);
+
+
+
 

@@ -4,22 +4,22 @@
  *
  */
 #include <cstdlib>
-#include "xalloc.h"
 
+#include "malloc.h"
 
-void * operator new(std::size_t n)
+void * operator new(unsigned int n)
 {
-  void * const p = xalloc((size_t)n);
+  void * const p = malloc(n);
   // handle p == 0
   return p;
 }
 
 void operator delete(void *p)
 {
-  xfree(p);
+  free(p);
 }
 
-void operator delete(void *p, std::size_t size)
+void operator delete(void *p, size_t size)
 {
-  xfree(p);
+  free(p);
 }

@@ -17,7 +17,7 @@ void *calloc (size_t num, size_t size) {
 }
 
 void* realloc (void* ptr, size_t size) {
-    return xrealloc (size);
+    return xrealloc (ptr, size);
 }
 void free (void* ptr) {
     xfree(ptr);

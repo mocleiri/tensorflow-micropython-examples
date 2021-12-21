@@ -18,14 +18,14 @@
 #include "py/mphal.h"
 #include "xalloc.h"
 
-NORETURN static void xalloc_fail(uint32_t size)
+NORETURN static void xalloc_fail(size_t size)
 {
     mp_raise_msg_varg(&mp_type_MemoryError,
             MP_ERROR_TEXT("memory allocation failed, allocating %u bytes"), (uint)size);
 }
 
 // returns null pointer without error if size==0
-void *xalloc(uint32_t size)
+void *xalloc(size_t size)
 {
     void *mem = gc_alloc(size, false);
     if (size && (mem == NULL)) {
@@ -35,13 +35,13 @@ void *xalloc(uint32_t size)
 }
 
 // returns null pointer without error if size==0
-void *xalloc_try_alloc(uint32_t size)
+void *xalloc_try_alloc(size_t size)
 {
     return gc_alloc(size, false);
 }
 
 // returns null pointer without error if size==0
-void *xalloc0(uint32_t size)
+void *xalloc0(size_t size)
 {
     void *mem = gc_alloc(size, false);
     if (size && (mem == NULL)) {
@@ -60,7 +60,7 @@ void xfree(void *mem)
 // returns null pointer without error if size==0
 // allocs if mem==null and size!=0
 // frees if mem!=null and size==0
-void *xrealloc(void *mem, uint32_t size)
+void *xrealloc(void *mem, size_t size)
 {
     mem = gc_realloc(mem, size, true);
     if (size && (mem == NULL)) {
