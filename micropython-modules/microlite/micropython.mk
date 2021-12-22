@@ -67,18 +67,17 @@ ifeq ($(BOARD), NUCLEO_H743ZI2_MICROLITE)
 
 ifeq ($(TF_OPTIMIZATION),CMSIS_NN)
 
-PATH_TO_OPTIMIZED_KERNELS := tflm/tensorflow/lite/micro/kernels/cmsis_nn
+PATH_TO_OPTIMIZED_KERNELS := $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/kernels/cmsis_nn
 
 TF_MICROLITE_SRCS := $(shell find $(MICROLITE_MOD_DIR)/tflm/tensorflow -name "*.cpp" )
 
-TF_MICROLITE_SPECIALIZED_SRCS := $(shell python3 $(MICROLITE_MOD_DIR)/../../tensorflow/tensorflow/lite/micro/tools/make/specialize_files.py \
+SRC_USERMOD_CXX +=  $(shell python3 $(MICROLITE_MOD_DIR)/../../tensorflow/tensorflow/lite/micro/tools/make/specialize_files.py \
 		--base_files "$(TF_MICROLITE_SRCS)" \
 		--specialize_directory $(PATH_TO_OPTIMIZED_KERNELS))
 
-$(info TF_MICROLITE_SPECIALIZED_SRCS = $(TF_MICROLITE_SPECIALIZED_SRCS))
+#  $(info TF_MICROLITE_SPECIALIZED_SRCS = $(TF_MICROLITE_SPECIALIZED_SRCS))
 
 # For CMSIS_NN: 
-SRC_USERMOD_CXX += $(TF_MICROLITE_SPECIALIZED_SRCS)
  
 SRC_USERMOD += $(shell find $(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/NN/Source -name "*.c")
 SRC_USERMOD_CXX += $(shell find $(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/NN/Source -name "*.cpp")

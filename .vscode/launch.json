@@ -46,6 +46,21 @@
 			// ]
         },
         {
+            "name": "Debug OpenOCD H743ZI2",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.elf",
+            "args": [],
+            "miDebuggerPath": "/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-gdb",
+            "miDebuggerServerAddress": "172.27.16.1:3333",
+            "stopAtEntry": true,
+            "stopAtConnect": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+        },
+        {
             "name": "(gdb) Micropython - micro speech",
             "type": "cppdbg",
             "request": "launch",

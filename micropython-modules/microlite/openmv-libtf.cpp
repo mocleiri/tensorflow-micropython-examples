@@ -16,7 +16,7 @@
 extern "C" {
 
     STATIC microlite::MicropythonErrorReporter micro_error_reporter;
-    STATIC tflite::AllOpsResolver resolver;
+    
 
     
 /*
@@ -85,6 +85,7 @@ extern "C" {
         //     (uint8_t*)microlite_interpreter->tensor_area->items, 
         //     microlite_interpreter->tensor_area->len, error_reporter);
 
+        tflite::AllOpsResolver resolver;
         tflite::MicroInterpreter *interpreter = new tflite::MicroInterpreter(model, 
                                              resolver, 
                                              (uint8_t*)microlite_interpreter->tensor_area->items, 
