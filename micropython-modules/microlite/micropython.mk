@@ -88,7 +88,7 @@ ifeq ($(TF_OPTIMIZATION),Standard)
 # For Standard:
 
 # for now lets just use the reference kernels
-SRC_USERMOD_CXX += $(shell find $(MICROLITE_MOD_DIR)/tflm/tensorflow -name "*.cpp" | grep -v cortex_m_generic)
+SRC_USERMOD_CXX += $(shell find $(MICROLITE_MOD_DIR)/tflm/tensorflow -name "*.cpp")
 
 $(info "SRC_USERMOD_CXX = $(SRC_USERMOD_CXX)" )
 endif
