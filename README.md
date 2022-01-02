@@ -45,6 +45,14 @@ file an issue and it can be added.
 
 # Recent Changes
 
+## STM32 Port Fixed 2022-01-02
+
+The STM32 port works for hello_world now.
+
+At the moment the build is specific to my Nucleo H743ZI2 board but I think can be generalized for many other STM32 boards.  
+
+Please file an issue if you would like to have a build added for your board.
+
 ## Build Process Changed 2021-12-15
 
 [#36](https://github.com/mocleiri/tensorflow-micropython-examples/issues/36) moved the audio_frontend from a seperate 
