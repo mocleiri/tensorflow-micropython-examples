@@ -37,7 +37,10 @@
         "cmsis_compiler.h": "c",
         "cmsis_gcc.h": "c",
         "gchelper.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "features.h": "c",
+        "_ansi.h": "c",
+        "newlib.h": "c"
     },
     "python.pythonPath": "/usr/bin/python3",
     "makefile.configurations": [
