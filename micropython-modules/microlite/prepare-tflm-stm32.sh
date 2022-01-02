@@ -8,5 +8,8 @@ rm -rf ../micropython-modules/microlite/tflm
 # kernels
 # however we need a lot more of the math library to support it.
 python3 ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
-	--makefile_options="TARGET=cortex_m_generic TARGET_ARCH=project_generation" \
+	--makefile_options="TARGET=cortex_m_generic OPTIMIZED_KERNEL_DIR=cmsis_nn  TARGET_ARCH=project_generation" \
        	--examples micro_speech --rename-cc-to-cpp ../micropython-modules/microlite/tflm
+
+# we need to update the CMSIS-Core files to use the ones that were downloaded 
+cp ../micropython-modules/microlite/tflm/third_party/cmsis/CMSIS/Core/Include/* ../micropython/lib/cmsis/inc

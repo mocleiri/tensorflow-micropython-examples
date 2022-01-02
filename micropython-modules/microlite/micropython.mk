@@ -25,7 +25,7 @@
 #/
 MICROLITE_MOD_DIR := $(USERMOD_DIR)
 
-TF_OPTIMIZATION := Standard
+TF_OPTIMIZATION := CMSIS_NN
 
 $(info TF_OPTIMIZATION = $(TF_OPTIMIZATION))
 $(info BOARD = $(BOARD))
@@ -48,8 +48,34 @@ SRC_USERMOD += $(MICROLITE_MOD_DIR)/bare-metal-gc-heap.c
 
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/mpy_heap_new_delete.cpp
 
+# LIBC_FILE_NAME   = $(shell $(CC) $(CFLAGS_USERMOD) -print-file-name=libc.a)
 
+# LDFLAGS_USERMOD += -L $(shell dirname $(LIBC_FILE_NAME)) -lc -lm -lstdc++
 
+LDFLAGS_USERMOD += -lm -lstdc++
+
+SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/bsearch.c
+SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/strtoll.c
+SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/strtoull.c
+
+SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/ctype_.c
+
+# additional musl math functions needed by tensorflow
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/cosf.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/expf.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/expm1f.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/logf.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/nan.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/powf.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/sinf.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/sqrtf.c
+
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/exp2f_data.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/logf_data.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/sqrt_data.c
+
+# CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/../../micropython/lib/libm
+# CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
 
 endif
 
@@ -139,8 +165,22 @@ CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/kissfft/tools
 
 ifeq ($(BOARD), NUCLEO_H743ZI2_MICROLITE)
 
-CXXFLAGS_USERMOD += -D __FPU_PRESENT=1 
+CXXFLAGS_USERMOD += -D__FPU_PRESENT=1 
+
+CXXFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1 
+
 CXXFLAGS_USERMOD += -DARM_MATH_CM7
+
+CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
+
+
+CFLAGS_USERMOD += -D__FPU_PRESENT=1 
+
+CFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1 
+
+CFLAGS_USERMOD += -DARM_MATH_CM7
+
+CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
 
 ifeq ($(TF_OPTIMIZATION),CMSIS_NN)
 
@@ -155,6 +195,8 @@ CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/Core/Include
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/NN/Include
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/DSP/Include
+
+
 endif
 
 endif
