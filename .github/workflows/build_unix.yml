@@ -25,6 +25,11 @@ jobs:
           pip3 install Wave
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Prepare to Build Tensorflow Micropython Firmware for UNIX
+        run: |
+          git submodule init
+          git submodule update --recursive
+
       - name: Setup Build for Tensorflow
         run: |
 
