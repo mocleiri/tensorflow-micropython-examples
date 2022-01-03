@@ -1,4 +1,3 @@
-
 name: UNIX
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
@@ -16,29 +15,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Build Tensorflow static library for Unix
+      - name: Setup Build for Tensorflow
         run: |
-          git submodule init
-          git submodule update --recursive
-          chmod +x ci/build_tensorflow_unix.sh
-          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_tensorflow_unix.sh
+
+          pip3 install Pillow
+          pip3 install Wave
+
+          echo "Regenerating microlite/tfm directory"
+          rm -rf ./micropython-modules/microlite/tflm
+
+          cd ./tensorflow
+
+          ../micropython-modules/microlite/prepare-tflm-unix.sh
+
+      - name: Setup micropython modules
+        run: |
+          cd ./micropython-modules
+          ln -s ../micropython-ulab/code ulab
+          
+      - name: Build micropython cross compiler
+        run:  |
+          cd ./micropython
+          echo "make -C mpy-cross V=1 clean all"
+          make -C mpy-cross V=1 clean all
       - name: Prepare to Build Tensorflow Micropython Firmware for unix
         run: |
-          cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft.cc micropython-modules/audio_frontend/fft.cpp
-                    cp tensorflow/tensorflow/lite/experimental/microfrontend/lib/fft_util.cc micropython-modules/audio_frontend/fft_util.cpp
           cd micropython/ports/unix
           make submodules
           make deplibs
-          cd ../../../micropython-modules
-          ln -s ../micropython-ulab/code ul
-          cd ..
-      - name: Build micropython unix port
-        run: |
-          chmod +x ci/build_micropython_unix.sh
-          docker run --rm -v `pwd`:/opt/tflite-micro-micropython espressif/idf:release-v4.3 /opt/tflite-micro-micropython/ci/build_micropython_unix.sh
-      - name: Archive Unix MICROLITE micropython interpreter
+
+          make USER_C_MODULES=../../../micropython-modules
+         
+     - name: Archive Unix MICROLITE micropython interpreter
         uses: actions/upload-artifact@v2
         with:
           name: microlite-unix-micropython
