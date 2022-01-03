@@ -46,7 +46,7 @@ jobs:
 
           make USER_C_MODULES=../../../micropython-modules
          
-     - name: Archive Unix MICROLITE micropython interpreter
+      - name: Archive Unix MICROLITE micropython interpreter
         uses: actions/upload-artifact@v2
         with:
           name: microlite-unix-micropython
