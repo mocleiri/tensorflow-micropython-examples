@@ -25,10 +25,18 @@
 #/
 MICROLITE_MOD_DIR := $(USERMOD_DIR)
 
-TF_OPTIMIZATION := CMSIS_NN
+TF_OPTIMIZATION := Standard
 
-$(info TF_OPTIMIZATION = $(TF_OPTIMIZATION))
-$(info BOARD = $(BOARD))
+ifndef ($(BOARD))
+
+ifeq ($(UNAME_S),Linux)
+
+	BOARD ?= unix
+
+endif
+
+endif
+
 
 # Add all C files to SRC_USERMOD.
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tensorflow-microlite.c
@@ -39,6 +47,8 @@ SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/openmv-libtf.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/micropython-error-reporter.cpp
 
 ifeq ($(BOARD), NUCLEO_H743ZI2_MICROLITE)
+
+TF_OPTIMIZATION = CMSIS_NN
 
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/../../micropython/shared/libc/__errno.c
 
@@ -79,10 +89,22 @@ SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/ctype_.c
 
 endif
 
+ifeq ($(BOARD),unix)
+
+CFLAGS_USERMOD += -Wno-error=sign-compare
+CXXFLAGS_USERMOD += -Wno-error=sign-compare
+
+LDFLAGS_USERMOD += -lm -lstdc++
+
+endif
+
 SRC_USERMOD += $(shell find $(MICROLITE_MOD_DIR)/tflm/tensorflow -name "*.c")
 SRC_USERMOD += $(shell find $(MICROLITE_MOD_DIR)/tflm/third_party -name "*.c")
 
-ifeq ($(BOARD), NUCLEO_H743ZI2_MICROLITE)
+$(info TF_OPTIMIZATION = $(TF_OPTIMIZATION))
+$(info BOARD = $(BOARD))
+
+
 
 
 
@@ -118,10 +140,6 @@ SRC_USERMOD_CXX += $(shell find $(MICROLITE_MOD_DIR)/tflm/tensorflow -name "*.cp
 
 $(info "SRC_USERMOD_CXX = $(SRC_USERMOD_CXX)" )
 endif
-
-
-endif
-
 
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)
