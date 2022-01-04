@@ -23,3 +23,6 @@
 #define MBOOT_BOOTPIN_PULL (MP_HAL_PIN_PULL_DOWN)
 #define MBOOT_BOOTPIN_ACTIVE (1)
 #endif
+
+// turn on I2S
+#define MICROPY_HW_I2S1         (1)
