@@ -6,7 +6,7 @@ import io
 counter = 1
 
 kXrange = 2.0 * 3.14159265359
-
+steps = 1000
 current_input = None
 
 
@@ -18,11 +18,11 @@ def input_callback (microlite_interpreter):
 
     # print (inputTensor)
 
-    position = (counter*1.0) / 1.0
+    position = counter*1.0
 
     # print ("position %f" % position)
 
-    x = position * kXrange
+    x = position * kXrange/steps
 
     current_input = x
     # print ("x: %f, " % x)
@@ -56,6 +56,6 @@ model_file.close()
 interp = microlite.interpreter(hello_world_model,2048, input_callback, output_callback)
 
 print ("time step,y")
-for c in range(1000):
+for c in range(steps):
     interp.invoke()
     counter = counter + 1
