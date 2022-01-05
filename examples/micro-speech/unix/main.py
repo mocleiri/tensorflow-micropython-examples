@@ -1,6 +1,5 @@
 #
 # For microspeech in unix we need to use a wav sample to invoke the tensorflow model
-import audio_frontend
 import micro_speech
 from ulab import numpy as np
 import microlite
@@ -8,8 +7,7 @@ import io
 import no_1000ms_sample_data
 import yes_1000ms_sample_data
 
-
-micro_speech_model = bytearray(18288)
+micro_speech_model = bytearray(18712)
 
 model_file = io.open('model.tflite', 'rb')
 
@@ -37,6 +35,13 @@ kSilenceIndex = 0
 kUnknownIndex = 1
 kYesIndex = 2
 kNoIndex = 3
+
+resultLabel = {}
+
+resultLabel[0] = "Silence"
+resultLabel[1] = "Unknown"
+resultLabel[2] = "Understood Yes"
+resultLabel[3] = "Understood No"
 
 inferenceResult = {}
 
@@ -69,8 +74,9 @@ def output_callback (microlite_interpreter):
         inferenceResult[index] = result
 
 
+af = microlite.audio_frontend()
 
-audio_frontend.configure()
+af.configure()
 
 
 interp = microlite.interpreter(micro_speech_model,20480, input_callback, output_callback)
@@ -78,7 +84,7 @@ interp = microlite.interpreter(micro_speech_model,20480, input_callback, output_
 
 no_pcm_input = no_1000ms_sample_data.no_1000ms_array
 
-print ("length of no input = %d\n" % (len (no_pcm_input)))
+print ("Process 'No' input of length = %d\n" % (len (no_pcm_input)))
 
 noFeatureData = micro_speech.FeatureData(interp)
 
@@ -96,9 +102,13 @@ if foundIndex != kNoIndex:
     raise ValueError("Error: Expected inference to match the 1 second no sample to no.\n")
 
 
+print (resultLabel[foundIndex])
+
+print ("\n\n")
+
 yes_pcm_input = yes_1000ms_sample_data.yes_1000ms_array
 
-print ("length of yes input = %d\n" % (len (yes_pcm_input)))
+print ("Process 'Yes' input of length = %d\n" % (len (yes_pcm_input)))
 
 yesFeatureData = micro_speech.FeatureData(interp)
 
@@ -116,5 +126,7 @@ if foundIndex != kYesIndex:
     raise ValueError("Error: Expected inference to match the 1 second yes sample to yes.\n")
 
 
+print (resultLabel[foundIndex])
 
+print ("\n\n")
 
