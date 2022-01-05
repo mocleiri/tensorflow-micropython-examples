@@ -1,6 +1,5 @@
 #
 # For microspeech in unix we need to use a wav sample to invoke the tensorflow model
-import audio_frontend
 import micro_speech
 from ulab import numpy as np
 import microlite
@@ -8,8 +7,7 @@ import io
 import no_1000ms_sample_data
 import yes_1000ms_sample_data
 
-
-micro_speech_model = bytearray(18288)
+micro_speech_model = bytearray(18712)
 
 model_file = io.open('model.tflite', 'rb')
 
@@ -69,8 +67,9 @@ def output_callback (microlite_interpreter):
         inferenceResult[index] = result
 
 
+af = microlite.audio_frontend()
 
-audio_frontend.configure()
+af.configure()
 
 
 interp = microlite.interpreter(micro_speech_model,20480, input_callback, output_callback)
