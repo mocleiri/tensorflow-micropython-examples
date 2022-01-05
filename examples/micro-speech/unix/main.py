@@ -36,6 +36,13 @@ kUnknownIndex = 1
 kYesIndex = 2
 kNoIndex = 3
 
+resultLabel = {}
+
+resultLabel[0] = "Silence"
+resultLabel[1] = "Unknown"
+resultLabel[2] = "Understood Yes"
+resultLabel[3] = "Understood No"
+
 inferenceResult = {}
 
 def maxIndex ():
@@ -77,7 +84,7 @@ interp = microlite.interpreter(micro_speech_model,20480, input_callback, output_
 
 no_pcm_input = no_1000ms_sample_data.no_1000ms_array
 
-print ("length of no input = %d\n" % (len (no_pcm_input)))
+print ("Process 'No' input of length = %d\n" % (len (no_pcm_input)))
 
 noFeatureData = micro_speech.FeatureData(interp)
 
@@ -95,9 +102,13 @@ if foundIndex != kNoIndex:
     raise ValueError("Error: Expected inference to match the 1 second no sample to no.\n")
 
 
+print (resultLabel[foundIndex])
+
+print ("\n\n")
+
 yes_pcm_input = yes_1000ms_sample_data.yes_1000ms_array
 
-print ("length of yes input = %d\n" % (len (yes_pcm_input)))
+print ("Process 'Yes' input of length = %d\n" % (len (yes_pcm_input)))
 
 yesFeatureData = micro_speech.FeatureData(interp)
 
@@ -115,5 +126,7 @@ if foundIndex != kYesIndex:
     raise ValueError("Error: Expected inference to match the 1 second yes sample to yes.\n")
 
 
+print (resultLabel[foundIndex])
 
+print ("\n\n")
 
