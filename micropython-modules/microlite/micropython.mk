@@ -25,16 +25,28 @@
 #/
 MICROLITE_MOD_DIR := $(USERMOD_DIR)
 
-TF_OPTIMIZATION := Standard
+TF_BOARD := NOT_SUPPORTED
 
 ifndef ($(BOARD))
 
 ifeq ($(UNAME_S),Linux)
 
 	BOARD ?= unix
+	TF_BOARD = STANDARD
+endif
 
 endif
 
+
+ifeq ($(BOARD),NUCLEO_H743ZI2_MICROLITE)
+  TF_BOARD = CMSIS_NN
+endif
+
+ifeq ($(BOARD),NUCLEO_F446RE_MICROLITE)
+  TF_BOARD = CMSIS_NN
+
+  CFLAGS_USERMOD += -Wno-error=attributes
+  
 endif
 
 
@@ -47,9 +59,7 @@ SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/openmv-libtf.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/libtf-op-resolvers.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/micropython-error-reporter.cpp
 
-ifeq ($(BOARD), NUCLEO_H743ZI2_MICROLITE)
-
-TF_OPTIMIZATION = CMSIS_NN
+ifeq ($(TF_BOARD),CMSIS_NN)
 
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/../../micropython/shared/libc/__errno.c
 
@@ -102,7 +112,7 @@ endif
 SRC_USERMOD += $(shell find $(MICROLITE_MOD_DIR)/tflm/tensorflow -name "*.c")
 SRC_USERMOD += $(shell find $(MICROLITE_MOD_DIR)/tflm/third_party -name "*.c")
 
-$(info TF_OPTIMIZATION = $(TF_OPTIMIZATION))
+$(info TF_BOARD = $(TF_BOARD))
 $(info BOARD = $(BOARD))
 
 
@@ -114,7 +124,7 @@ $(info BOARD = $(BOARD))
 #SRC_USERMOD += $(MICROLITE_MOD_DIR)/mpy_heap_malloc.c
 #SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/mpy_heap_new_delete.cpp
 
-ifeq ($(TF_OPTIMIZATION),CMSIS_NN)
+ifeq ($(TF_BOARD),CMSIS_NN)
 
 PATH_TO_OPTIMIZED_KERNELS := $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/kernels/cmsis_nn
 
@@ -133,7 +143,7 @@ SRC_USERMOD_CXX += $(shell find $(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSI
 
 endif
 
-ifeq ($(TF_OPTIMIZATION),Standard)
+ifeq ($(TF_BOARD),STANDARD)
 # For Standard:
 
 # for now lets just use the reference kernels
@@ -182,26 +192,17 @@ CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/kissfft/tools
 
 # if we are building for cortex h7
 
-ifeq ($(BOARD), NUCLEO_H743ZI2_MICROLITE)
-
-CXXFLAGS_USERMOD += -D__FPU_PRESENT=1 
-
-CXXFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1 
+ifneq ($(TF_BOARD),NOT_SUPPORTED)
 
 CXXFLAGS_USERMOD += -DARM_MATH_CM7
 
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
 
-
-CFLAGS_USERMOD += -D__FPU_PRESENT=1 
-
-CFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1 
-
 CFLAGS_USERMOD += -DARM_MATH_CM7
 
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
 
-ifeq ($(TF_OPTIMIZATION),CMSIS_NN)
+ifeq ($(TF_BOARD),CMSIS_NN)
 
 CXXFLAGS_USERMOD += -DCMSIS_NN
 
