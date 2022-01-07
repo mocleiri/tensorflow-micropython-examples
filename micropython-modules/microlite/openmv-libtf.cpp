@@ -16,7 +16,7 @@
 extern "C" {
 
     STATIC microlite::MicropythonErrorReporter micro_error_reporter;
-    
+    STATIC tflite::MicroMutableOpResolver<MICROLITE_TOTAL_OPS> tf_op_resolver;
 
     
 /*
@@ -59,7 +59,7 @@ extern "C" {
     //      return 0;
     //  }
 
-    STATIC tflite::MicroMutableOpResolver<MICROLITE_TOTAL_OPS> tf_op_resolver;
+
 
     int libtf_interpreter_init(microlite_interpreter_obj_t *microlite_interpreter) {
 
@@ -88,8 +88,7 @@ extern "C" {
         //     (uint8_t*)microlite_interpreter->tensor_area->items, 
         //     microlite_interpreter->tensor_area->len, error_reporter);
 
-        tflite::AllOpsResolver resolver;
-        tflite::MicroInterpreter *interpreter = new tflite::MicroInterpreter(model, 
+        tflite::MicroInterpreter *interpreter = new tflite::MicroInterpreter(model,
                                              tf_op_resolver,
                                              (uint8_t*)microlite_interpreter->tensor_area->items, 
                                              microlite_interpreter->tensor_area->len, 
