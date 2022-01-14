@@ -7,4 +7,4 @@ USER_C_MODULES=../../../micropython-modules
 # SRC_C += shared/libc/__errno.c
 # SRC_C += shared/libc/string0.c
 
-FROZEN_MANIFEST =  $(BOARD_DIR)/manifest.py
+# FROZEN_MANIFEST =  $(BOARD_DIR)/manifest.py
