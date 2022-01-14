@@ -58,9 +58,7 @@ jobs:
 
           cd ./tensorflow
 
-          python3 ./tensorflow/lite/micro/tools/project_generation/create_tflm_tree.py \
-          --makefile_options="TARGET=cortex_m_generic TARGET_ARCH=project_generation" \
-          --examples micro_speech --rename-cc-to-cpp ../micropython-modules/microlite/tflm
+          ../micropython-modules/microlite/prepare-tflm-stm32.sh
 
       - name: Build micropython cross compiler
         run:  |
@@ -96,3 +94,28 @@ jobs:
             boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/bootloader/bootloader.bin
             boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/partition_table/partition-table.bin
             boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/micropython.bin
+      - name: Build F446RE
+        run: |
+
+          echo "cd ./boards/stm32/NUCLEO_F446RE_MICROLITE"
+          cd ./boards/stm32/NUCLEO_F446RE_MICROLITE
+
+          echo "Building NUCLEO_F446RE_MICROLITE"
+          rm -rf build
+          make V=1
+
+          find build -ls
+
+      - name: Archive NUCLEO_F446RE_MICROLITE firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: microlite-stm32-nucleo-f446re-firmware
+          path: |
+            boards/stm32/NUCLEO_F446RE_MICROLITE/build/firmware.elf
+            boards/stm32/NUCLEO_F446RE_MICROLITE/build/firmware.bin
+            boards/stm32/NUCLEO_F446RE_MICROLITE/build/firmware.dfu
+            boards/stm32/NUCLEO_F446RE_MICROLITE/build/firmware.hex
+            boards/stm32/NUCLEO_F446RE_MICROLITE/build/firmware.map
+            boards/stm32/NUCLEO_F446RE_MICROLITE/build/bootloader/bootloader.bin
+            boards/stm32/NUCLEO_F446RE_MICROLITE/build/partition_table/partition-table.bin
+            boards/stm32/NUCLEO_F446RE_MICROLITE/build/micropython.bin

@@ -4,7 +4,7 @@
 # Define your settings here.
 
 # The board name.
-BOARD ?= NUCLEO_H743ZI2_MICROLITE
+BOARD ?= NUCLEO_F446RE_MICROLITE
 
 # Location of MicroPython repository.
 MICROPY_TOP ?= $(abspath ../../../micropython)
@@ -28,8 +28,7 @@ firmware:
 		PROJECT_TOP=$(abspath ../..) \
 		BOARD=$(BOARD) \
 		BOARD_DIR=$(BOARD_DIR) \
-		BUILD=$(BUILD) 
-		
+		BUILD=$(BUILD) \
 
 deploy:
 	$(PYTHON) $(MICROPY_TOP)/tools/pydfu.py -u $(BUILD)/firmware.dfu
