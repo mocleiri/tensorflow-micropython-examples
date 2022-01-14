@@ -3,7 +3,7 @@
  *
  * The MIT License (MIT)
  *
- * Copyright (c) 2021 Michael O'Cleirigh
+ * Copyright (c) 2022 Michael O'Cleirigh
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,30 @@
 extern "C" {
 #endif
 
+// Values defined here can be overridden by your own config file as
+// make -MICROLITE_TFLM_OPS_CONFIG_FILE="my_tflm_ops_config.h"
+// or specify in the mpconfigboard.h file
+#if defined(MICROLITE_TFLM_OPS_CONFIG_FILE)
+#include MICROLITE_TFLM_OPS_CONFIG_FILE
+#endif
+
+/*
+ This __COUNTER__ is a GNU Compiler preproccessor extension where each time its called it will increment.
+
+ It allows us to not count how many tflm op's we enable.  Instead the counter is incremented each time an op 
+ is enabled.
+
+ Then at the end we turn the final total into a constant and use that for the MicroMutableOpResolver's size.
+ */
 #ifndef MICROLITE_TOTAL_COUNTER
 #define MICROLITE_TOTAL_COUNTER __COUNTER__
 #endif
 
 #ifndef MICROLITE_OP_ABS
-#define MICROLITE_OP_ABS (0)
+#define MICROLITE_OP_ABS (1)
+#endif
+
+#if MICROLITE_OP_ABS == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -45,7 +63,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_ADD
-#define MICROLITE_OP_ADD (0)
+#define MICROLITE_OP_ADD (1)
+#endif
+
+#if MICROLITE_OP_ADD == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -55,7 +76,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_ADD_N
-#define MICROLITE_OP_ADD_N (0)
+#define MICROLITE_OP_ADD_N (1)
+#endif
+
+#if MICROLITE_OP_ADD_N == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -66,7 +90,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_ARG_MAX
-#define MICROLITE_OP_ARG_MAX (0)
+#define MICROLITE_OP_ARG_MAX (1)
+#endif
+
+#if MICROLITE_OP_ARG_MAX == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -77,7 +104,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_ARG_MIN
-#define MICROLITE_OP_ARG_MIN (0)
+#define MICROLITE_OP_ARG_MIN (1)
+#endif
+
+#if MICROLITE_OP_ARG_MIN == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -88,7 +118,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_AVERAGE_POOL_2D
-#define MICROLITE_OP_AVERAGE_POOL_2D (0)
+#define MICROLITE_OP_AVERAGE_POOL_2D (1)
+#endif
+
+#if MICROLITE_OP_AVERAGE_POOL_2D == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -99,7 +132,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_BATCH_TO_SPACE_ND
-#define MICROLITE_OP_BATCH_TO_SPACE_ND (0)
+#define MICROLITE_OP_BATCH_TO_SPACE_ND (1)
+#endif
+
+#if MICROLITE_OP_BATCH_TO_SPACE_ND == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -110,7 +146,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_CAST
-#define MICROLITE_OP_CAST (0)
+#define MICROLITE_OP_CAST (1)
+#endif
+
+#if MICROLITE_OP_CAST == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -121,7 +160,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_CEIL
-#define MICROLITE_OP_CEIL (0)
+#define MICROLITE_OP_CEIL (1)
+#endif
+
+#if MICROLITE_OP_CEIL == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -132,7 +174,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_CIRCULAR_BUFFER
-#define MICROLITE_OP_CIRCULAR_BUFFER (0)
+#define MICROLITE_OP_CIRCULAR_BUFFER (1)
+#endif
+
+#if MICROLITE_OP_CIRCULAR_BUFFER == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -143,7 +188,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_CONCATENATION
-#define MICROLITE_OP_CONCATENATION (0)
+#define MICROLITE_OP_CONCATENATION (1)
+#endif
+
+#if MICROLITE_OP_CONCATENATION == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -154,7 +202,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_CONV_2D
-#define MICROLITE_OP_CONV_2D (0)
+#define MICROLITE_OP_CONV_2D (1)
+#endif
+
+#if MICROLITE_OP_CONV_2D == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -165,7 +216,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_COS
-#define MICROLITE_OP_COS (0)
+#define MICROLITE_OP_COS (1)
+#endif
+
+#if MICROLITE_OP_COS == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -176,7 +230,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_CUMSUM
-#define MICROLITE_OP_CUMSUM   (0)
+#define MICROLITE_OP_CUMSUM   (1)
+#endif
+
+#if MICROLITE_OP_CUMSUM   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -187,7 +244,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_DEPTH_TO_SPACE
-#define MICROLITE_OP_DEPTH_TO_SPACE (0)
+#define MICROLITE_OP_DEPTH_TO_SPACE (1)
+#endif
+
+#if MICROLITE_OP_DEPTH_TO_SPACE == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -198,7 +258,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_DEPTHWISE_CONV_2D
-#define MICROLITE_OP_DEPTHWISE_CONV_2D   (0)
+#define MICROLITE_OP_DEPTHWISE_CONV_2D   (1)
+#endif
+
+#if MICROLITE_OP_DEPTHWISE_CONV_2D   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -209,7 +272,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_DEQUANTIZE
-#define MICROLITE_OP_DEQUANTIZE   (0)
+#define MICROLITE_OP_DEQUANTIZE   (1)
+#endif
+
+#if MICROLITE_OP_DEQUANTIZE   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -220,7 +286,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_DETECTION_POSTPROCESS
-#define MICROLITE_OP_DETECTION_POSTPROCESS   (0)
+#define MICROLITE_OP_DETECTION_POSTPROCESS   (1)
+#endif
+
+#if MICROLITE_OP_DETECTION_POSTPROCESS   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -231,7 +300,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_ELU
-#define MICROLITE_OP_ELU   (0)
+#define MICROLITE_OP_ELU   (1)
+#endif
+
+#if MICROLITE_OP_ELU   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -242,7 +314,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_EQUAL
-#define MICROLITE_OP_EQUAL   (0)
+#define MICROLITE_OP_EQUAL   (1)
+#endif
+
+#if MICROLITE_OP_EQUAL   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -253,7 +328,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_ETHOSU
-#define MICROLITE_OP_ETHOSU   (0)
+#define MICROLITE_OP_ETHOSU   (1)
+#endif
+
+#if MICROLITE_OP_ETHOSU   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -264,7 +342,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_EXP
-#define MICROLITE_OP_EXP   (0)
+#define MICROLITE_OP_EXP   (1)
+#endif
+
+#if MICROLITE_OP_EXP   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -275,7 +356,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_EXPAND_DIMS
-#define MICROLITE_OP_EXPAND_DIMS (0)
+#define MICROLITE_OP_EXPAND_DIMS (1)
+#endif
+
+#if MICROLITE_OP_EXPAND_DIMS == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -286,7 +370,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_FILL
-#define MICROLITE_OP_FILL   (0)
+#define MICROLITE_OP_FILL   (1)
+#endif
+
+#if MICROLITE_OP_FILL   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -297,7 +384,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_FLOOR
-#define MICROLITE_OP_FLOOR   (0)
+#define MICROLITE_OP_FLOOR   (1)
+#endif
+
+#if MICROLITE_OP_FLOOR   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -308,7 +398,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_FLOOR_DIV
-#define MICROLITE_OP_FLOOR_DIV   (0)
+#define MICROLITE_OP_FLOOR_DIV   (1)
+#endif
+
+#if MICROLITE_OP_FLOOR_DIV   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -319,7 +412,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_FLOOR_MOD
-#define MICROLITE_OP_FLOOR_MOD   (0)
+#define MICROLITE_OP_FLOOR_MOD   (1)
+#endif
+
+#if MICROLITE_OP_FLOOR_MOD   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -330,7 +426,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_FULLY_CONNECTED
-#define MICROLITE_OP_FULLY_CONNECTED   (0)
+#define MICROLITE_OP_FULLY_CONNECTED   (1)
+#endif
+
+#if MICROLITE_OP_FULLY_CONNECTED   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -341,7 +440,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_GATHER
-#define MICROLITE_OP_GATHER   (0)
+#define MICROLITE_OP_GATHER   (1)
+#endif
+
+#if MICROLITE_OP_GATHER   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -352,7 +454,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_GATHER_ND
-#define MICROLITE_OP_GATHER_ND   (0)
+#define MICROLITE_OP_GATHER_ND   (1)
+#endif
+
+#if MICROLITE_OP_GATHER_ND   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -363,7 +468,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_GREATER
-#define MICROLITE_OP_GREATER   (0)
+#define MICROLITE_OP_GREATER   (1)
+#endif
+
+#if MICROLITE_OP_GREATER   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -374,7 +482,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_GREATER_EQUAL
-#define MICROLITE_OP_GREATER_EQUAL   (0)
+#define MICROLITE_OP_GREATER_EQUAL   (1)
+#endif
+
+#if MICROLITE_OP_GREATER_EQUAL   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -385,7 +496,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_HARD_SWISH
-#define MICROLITE_OP_HARD_SWISH   (0)
+#define MICROLITE_OP_HARD_SWISH   (1)
+#endif
+
+#if MICROLITE_OP_HARD_SWISH   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -396,7 +510,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_IF
-#define MICROLITE_OP_IF   (0)
+#define MICROLITE_OP_IF   (1)
+#endif
+
+#if MICROLITE_OP_IF   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -407,7 +524,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_L2_NORMALIZATION
-#define MICROLITE_OP_L2_NORMALIZATION   (0)
+#define MICROLITE_OP_L2_NORMALIZATION   (1)
+#endif
+
+#if MICROLITE_OP_L2_NORMALIZATION   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -418,7 +538,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_L2_POOL_2D
-#define MICROLITE_OP_L2_POOL_2D   (0)
+#define MICROLITE_OP_L2_POOL_2D   (1)
+#endif
+
+#if MICROLITE_OP_L2_POOL_2D   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -429,7 +552,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_LEAKY_RELU
-#define MICROLITE_OP_LEAKY_RELU   (0)
+#define MICROLITE_OP_LEAKY_RELU   (1)
+#endif
+
+#if MICROLITE_OP_LEAKY_RELU   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -440,7 +566,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_LESS
-#define MICROLITE_OP_LESS   (0)
+#define MICROLITE_OP_LESS   (1)
+#endif
+
+#if MICROLITE_OP_LESS   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -451,7 +580,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_LESS_EQUAL
-#define MICROLITE_OP_LESS_EQUAL   (0)
+#define MICROLITE_OP_LESS_EQUAL   (1)
+#endif
+
+#if MICROLITE_OP_LESS_EQUAL   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -462,7 +594,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_LOG
-#define MICROLITE_OP_LOG   (0)
+#define MICROLITE_OP_LOG   (1)
+#endif
+
+#if MICROLITE_OP_LOG   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -473,7 +608,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_LOGICAL_AND
-#define MICROLITE_OP_LOGICAL_AND (0)
+#define MICROLITE_OP_LOGICAL_AND (1)
+#endif
+
+#if MICROLITE_OP_LOGICAL_AND == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -484,7 +622,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_LOGICAL_NOT
-#define MICROLITE_OP_LOGICAL_NOT   (0)
+#define MICROLITE_OP_LOGICAL_NOT   (1)
+#endif
+
+#if MICROLITE_OP_LOGICAL_NOT   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -495,7 +636,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_LOGICAL_OR
-#define MICROLITE_OP_LOGICAL_OR   (0)
+#define MICROLITE_OP_LOGICAL_OR   (1)
+#endif
+
+#if MICROLITE_OP_LOGICAL_OR   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -506,7 +650,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_LOGISTIC
-#define MICROLITE_OP_LOGISTIC   (0)
+#define MICROLITE_OP_LOGISTIC   (1)
+#endif
+
+#if MICROLITE_OP_LOGISTIC   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -517,7 +664,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_MAXIMUM
-#define MICROLITE_OP_MAXIMUM   (0)
+#define MICROLITE_OP_MAXIMUM   (1)
+#endif
+
+#if MICROLITE_OP_MAXIMUM   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -528,7 +678,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_MAX_POOL_2D
-#define MICROLITE_OP_MAX_POOL_2D   (0)
+#define MICROLITE_OP_MAX_POOL_2D   (1)
+#endif
+
+#if MICROLITE_OP_MAX_POOL_2D   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -539,7 +692,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_MEAN
-#define MICROLITE_OP_MEAN   (0)
+#define MICROLITE_OP_MEAN   (1)
+#endif
+
+#if MICROLITE_OP_MEAN   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -550,7 +706,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_MINIMUM
-#define MICROLITE_OP_MINIMUM   (0)
+#define MICROLITE_OP_MINIMUM   (1)
+#endif
+
+#if MICROLITE_OP_MINIMUM   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -561,7 +720,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_MUL
-#define MICROLITE_OP_MUL   (0)
+#define MICROLITE_OP_MUL   (1)
+#endif
+
+#if MICROLITE_OP_MUL   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -572,7 +734,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_NEG
-#define MICROLITE_OP_NEG   (0)
+#define MICROLITE_OP_NEG   (1)
+#endif
+
+#if MICROLITE_OP_NEG   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -582,7 +747,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_NOT_EQUAL
-#define MICROLITE_OP_NOT_EQUAL   (0)
+#define MICROLITE_OP_NOT_EQUAL   (1)
+#endif
+
+#if MICROLITE_OP_NOT_EQUAL   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -592,7 +760,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_PACK
-#define MICROLITE_OP_PACK   (0)
+#define MICROLITE_OP_PACK   (1)
+#endif
+
+#if MICROLITE_OP_PACK   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -602,7 +773,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_PAD
-#define MICROLITE_OP_PAD   (0)
+#define MICROLITE_OP_PAD   (1)
+#endif
+
+#if MICROLITE_OP_PAD   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -612,7 +786,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_PADV2
-#define MICROLITE_OP_PADV2   (0)
+#define MICROLITE_OP_PADV2   (1)
+#endif
+
+#if MICROLITE_OP_PADV2   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -622,7 +799,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_PRELU
-#define MICROLITE_OP_PRELU   (0)
+#define MICROLITE_OP_PRELU   (1)
+#endif
+
+#if MICROLITE_OP_PRELU   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -632,7 +812,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_QUANTIZE
-#define MICROLITE_OP_QUANTIZE   (0)
+#define MICROLITE_OP_QUANTIZE   (1)
+#endif
+
+#if MICROLITE_OP_QUANTIZE   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -642,7 +825,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_REDUCE_MAX
-#define MICROLITE_OP_REDUCE_MAX   (0)
+#define MICROLITE_OP_REDUCE_MAX   (1)
+#endif
+
+#if MICROLITE_OP_REDUCE_MAX   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -652,7 +838,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_RELU
-#define MICROLITE_OP_RELU   (0)
+#define MICROLITE_OP_RELU   (1)
+#endif
+
+#if MICROLITE_OP_RELU   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -662,7 +851,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_RELU6
-#define MICROLITE_OP_RELU6   (0)
+#define MICROLITE_OP_RELU6   (1)
+#endif
+
+#if MICROLITE_OP_RELU6   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -672,7 +864,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_RESHAPE
-#define MICROLITE_OP_RESHAPE   (0)
+#define MICROLITE_OP_RESHAPE   (1)
+#endif
+
+#if MICROLITE_OP_RESHAPE   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -682,7 +877,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_RESIZE_BILINEAR
-#define MICROLITE_OP_RESIZE_BILINEAR   (0)
+#define MICROLITE_OP_RESIZE_BILINEAR   (1)
+#endif
+
+#if MICROLITE_OP_RESIZE_BILINEAR   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -692,7 +890,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_RESIZE_NEAREST_NEIGHBOR
-#define MICROLITE_OP_RESIZE_NEAREST_NEIGHBOR   (0)
+#define MICROLITE_OP_RESIZE_NEAREST_NEIGHBOR   (1)
+#endif
+
+#if MICROLITE_OP_RESIZE_NEAREST_NEIGHBOR   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -702,7 +903,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_ROUND
-#define MICROLITE_OP_ROUND   (0)
+#define MICROLITE_OP_ROUND   (1)
+#endif
+
+#if MICROLITE_OP_ROUND   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -712,7 +916,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_RSQRT
-#define MICROLITE_OP_RSQRT   (0)
+#define MICROLITE_OP_RSQRT   (1)
+#endif
+
+#if MICROLITE_OP_RSQRT   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -722,7 +929,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SHAPE
-#define MICROLITE_OP_SHAPE   (0)
+#define MICROLITE_OP_SHAPE   (1)
+#endif
+
+#if MICROLITE_OP_SHAPE   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -732,7 +942,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SIN
-#define MICROLITE_OP_SIN   (0)
+#define MICROLITE_OP_SIN   (1)
+#endif
+
+#if MICROLITE_OP_SIN   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -742,7 +955,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SOFTMAX
-#define MICROLITE_OP_SOFTMAX   (0)
+#define MICROLITE_OP_SOFTMAX   (1)
+#endif
+
+#if MICROLITE_OP_SOFTMAX   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -752,7 +968,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SPACE_TO_BATCH_ND
-#define MICROLITE_OP_SPACE_TO_BATCH_ND   (0)
+#define MICROLITE_OP_SPACE_TO_BATCH_ND   (1)
+#endif
+
+#if MICROLITE_OP_SPACE_TO_BATCH_ND   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -762,7 +981,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SPACE_TO_DEPTH
-#define MICROLITE_OP_SPACE_TO_DEPTH   (0)
+#define MICROLITE_OP_SPACE_TO_DEPTH   (1)
+#endif
+
+#if MICROLITE_OP_SPACE_TO_DEPTH   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -772,7 +994,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SPLIT
-#define MICROLITE_OP_SPLIT   (0)
+#define MICROLITE_OP_SPLIT   (1)
+#endif
+
+#if MICROLITE_OP_SPLIT   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -782,7 +1007,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SPLIT_V
-#define MICROLITE_OP_SPLIT_V   (0)
+#define MICROLITE_OP_SPLIT_V   (1)
+#endif
+
+#if MICROLITE_OP_SPLIT_V   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -792,7 +1020,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SQUEEZE
-#define MICROLITE_OP_SQUEEZE   (0)
+#define MICROLITE_OP_SQUEEZE   (1)
+#endif
+
+#if MICROLITE_OP_SQUEEZE   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -802,7 +1033,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SQRT
-#define MICROLITE_OP_SQRT   (0)
+#define MICROLITE_OP_SQRT   (1)
+#endif
+
+#if MICROLITE_OP_SQRT   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -812,7 +1046,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SQUARE
-#define MICROLITE_OP_SQUARE   (0)
+#define MICROLITE_OP_SQUARE   (1)
+#endif
+
+#if MICROLITE_OP_SQUARE   == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -822,7 +1059,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_STRIDED_SLICE
-#define MICROLITE_OP_STRIDED_SLICE (0)
+#define MICROLITE_OP_STRIDED_SLICE (1)
+#endif
+
+#if MICROLITE_OP_STRIDED_SLICE == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -832,7 +1072,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SUB
-#define MICROLITE_OP_SUB (0)
+#define MICROLITE_OP_SUB (1)
+#endif
+
+#if MICROLITE_OP_SUB == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -842,7 +1085,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_SVDF
-#define MICROLITE_OP_SVDF (0)
+#define MICROLITE_OP_SVDF (1)
+#endif
+
+#if MICROLITE_OP_SVDF == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -852,7 +1098,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_TANH
-#define MICROLITE_OP_TANH (0)
+#define MICROLITE_OP_TANH (1)
+#endif
+
+#if MICROLITE_OP_TANH == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -862,7 +1111,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_TRANSPOSE_CONV
-#define MICROLITE_OP_TRANSPOSE_CONV (0)
+#define MICROLITE_OP_TRANSPOSE_CONV (1)
+#endif
+
+#if MICROLITE_OP_TRANSPOSE_CONV == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -872,7 +1124,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_TRANSPOSE
-#define MICROLITE_OP_TRANSPOSE (0)
+#define MICROLITE_OP_TRANSPOSE (1)
+#endif
+
+#if MICROLITE_OP_TRANSPOSE == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -882,7 +1137,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_UNPACK
-#define MICROLITE_OP_UNPACK (0)
+#define MICROLITE_OP_UNPACK (1)
+#endif
+
+#if MICROLITE_OP_UNPACK == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER
@@ -892,7 +1150,10 @@ extern "C" {
 #endif
 
 #ifndef MICROLITE_OP_ZEROS_LIKE
-#define MICROLITE_OP_ZEROS_LIKE (0)
+#define MICROLITE_OP_ZEROS_LIKE (1)
+#endif
+
+#if MICROLITE_OP_ZEROS_LIKE == 1
 
 #if MICROLITE_TOTAL_COUNTER
 #undef MICROLITE_TOTAL_COUNTER

@@ -28,8 +28,8 @@ firmware:
 		PROJECT_TOP=$(abspath ../..) \
 		BOARD=$(BOARD) \
 		BOARD_DIR=$(BOARD_DIR) \
-		BUILD=$(BUILD) \
-		DEBUG=1
+		BUILD=$(BUILD) 
+		
 
 deploy:
 	$(PYTHON) $(MICROPY_TOP)/tools/pydfu.py -u $(BUILD)/firmware.dfu
