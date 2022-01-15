@@ -152,9 +152,12 @@ static int setup = 0;
 // }
 // #endif
 
+
 // #if MICROLITE_OP_L2_POOL_2D == 0
-// TfLiteRegistration tflite::Register_L2_POOL_2D() {
-//     return dummyRegistration;
+// namespace tflite {
+// TfLiteRegistration Register_L2_POOL_2D() {
+//     return dummyRegist
+// }ration;
 // }
 // #endif
 

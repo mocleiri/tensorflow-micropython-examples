@@ -49,7 +49,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
 
 
-set (COMPONENTS esp_nn)
+set (COMPONENTS esp-nn)
 
 endif()
 
@@ -274,7 +274,7 @@ else()
 
     # set_property(SOURCE ${BUGGY_OP} PROPERTY COMPILE_FLAGS -O3)
 
-    list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/l2_pool_2d.cpp)
+    # list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/l2_pool_2d.cpp)
 
     list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/add.cpp)
     list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/conv.cpp)
@@ -394,6 +394,7 @@ target_compile_options(microlite INTERFACE
     -Wno-error=sign-compare
     -Wno-error=unused-but-set-variable
     -fno-rtti
+    -Os
     -fno-exceptions
     -Wno-error=maybe-uninitialized
 )
