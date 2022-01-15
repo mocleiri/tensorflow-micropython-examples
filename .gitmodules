@@ -10,3 +10,7 @@
 	path = micropython-ulab
 	url = https://github.com/v923z/micropython-ulab.git
 	branch = master
+[submodule "tflm_esp_kernels"]
+	path = tflm_esp_kernels
+	url = https://github.com/espressif/tflite-micro-esp-examples
+	branch = master

@@ -30,10 +30,12 @@ endif()
 
 if(IDF_TARGET STREQUAL "esp32")
   set(MICROLITE_PLATFORM "ESP32")
+  
 endif()
 
 if(IDF_TARGET STREQUAL "esp32s3")
   set(MICROLITE_PLATFORM "ESP32S3")
+  
 endif()
 
 
@@ -45,6 +47,9 @@ if (MICROLITE_PLATFORM STREQUAL "ESP32" OR MICROLITE_PLATFORM STREQUAL "ESP32S3"
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
+
+
+set (COMPONENTS esp_nn)
 
 endif()
 
@@ -60,6 +65,7 @@ if (MICROLITE_PLATFORM STREQUAL "ESP32" OR MICROLITE_PLATFORM STREQUAL "ESP32S3"
         ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/debug_log.cpp
         ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_time.cpp
     )
+
 endif()
 
 if (MICROLITE_PLATFORM STREQUAL "RP2")
@@ -262,6 +268,28 @@ target_sources(microlite INTERFACE
 
 else()
 
+# ESP32
+
+    # set(BUGGY_OP ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/l2_pool_2d.cpp)
+
+    # set_property(SOURCE ${BUGGY_OP} PROPERTY COMPILE_FLAGS -O3)
+
+    list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/l2_pool_2d.cpp)
+
+    list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/add.cpp)
+    list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/conv.cpp)
+    list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/depthwise_conv.cpp)
+    list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/fully_connected.cpp)
+    list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/mul.cpp)
+    list(REMOVE_ITEM TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/kernels/pooling.cpp)
+    
+    list(APPEND TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/esp_nn/add.cpp)
+    list(APPEND TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/esp_nn/conv.cpp)
+    list(APPEND TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/esp_nn/depthwise_conv.cpp)
+    list(APPEND TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/esp_nn/fully_connected.cpp)
+    list(APPEND TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/esp_nn/mul.cpp)
+    list(APPEND TF_MICRO_KERNELS_SRCS ${CMAKE_CURRENT_LIST_DIR}/esp_nn/pooling.cpp)
+
 
 target_sources(microlite INTERFACE
 #   microlite micropython module sources
@@ -334,9 +362,12 @@ target_compile_options(microlite INTERFACE
 
 else()
 
+get_filename_component(ESP_NN ${PROJECT_DIR}/../../../tflm_esp_kernels/components/esp-nn ABSOLUTE)
+
 # ESP32 
 target_include_directories(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
+    ${ESP_NN}/include
     ${CMAKE_CURRENT_LIST_DIR}/tflm
     ${CMAKE_CURRENT_LIST_DIR}/tflm/third_party/kissfft
     ${CMAKE_CURRENT_LIST_DIR}/tflm/third_party/kissfft/tools
@@ -350,6 +381,7 @@ target_compile_definitions(microlite INTERFACE
     TF_LITE_STATIC_MEMORY=1
     TF_LITE_MCU_DEBUG_LOG
     NDEBUG
+    ESP_NN
 )
 
 target_compile_options(microlite INTERFACE
@@ -363,7 +395,6 @@ target_compile_options(microlite INTERFACE
     -Wno-error=unused-but-set-variable
     -fno-rtti
     -fno-exceptions
-    -O3
     -Wno-error=maybe-uninitialized
 )
 
