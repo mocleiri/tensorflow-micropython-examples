@@ -210,7 +210,7 @@ set(TF_SOURCES
     # ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/debug_log.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_graph.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_time.cpp
-    # ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/all_ops_resolver.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/all_ops_resolver.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/memory_helpers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_error_reporter.cpp
     # ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/mock_micro_graph.cpp
@@ -387,7 +387,6 @@ target_sources(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/tensorflow-microlite.c
     ${CMAKE_CURRENT_LIST_DIR}/audio_frontend.c
     ${CMAKE_CURRENT_LIST_DIR}/openmv-libtf.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/libtf-op-resolvers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/micropython-error-reporter.cpp
 
     # tf lite sources
@@ -483,7 +482,6 @@ target_sources(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/tensorflow-microlite.c
     ${CMAKE_CURRENT_LIST_DIR}/audio_frontend.c
     ${CMAKE_CURRENT_LIST_DIR}/openmv-libtf.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/libtf-op-resolvers.cpp
     ${CMAKE_CURRENT_LIST_DIR}/micropython-error-reporter.cpp
 
     # tf lite sources
@@ -584,7 +582,6 @@ target_compile_options(microlite INTERFACE
     -Wno-error=pointer-arith
     -Wno-error=unused-const-variable
     -Wno-error=sign-compare
-    -Wno-error=unused-but-set-variable
     -fno-rtti
     -O3
     -fno-exceptions

@@ -40,9 +40,7 @@
         "stdio.h": "c",
         "features.h": "c",
         "_ansi.h": "c",
-        "newlib.h": "c",
-        "stm32f4xx_hal_conf_base.h": "c",
-        "mpconfigboard.h": "c"
+        "newlib.h": "c"
     },
     "python.pythonPath": "/usr/bin/python3",
     "makefile.configurations": [
