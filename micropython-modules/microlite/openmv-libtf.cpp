@@ -80,6 +80,8 @@ extern "C" {
 
         libtf_op_resolver_init(&tf_op_resolver);
 
+        tf_op_resolver.GetRegistrationLength
+
         microlite_interpreter->tf_error_reporter = (mp_obj_t)error_reporter;
         microlite_interpreter->tf_model = (mp_obj_t)model;
 

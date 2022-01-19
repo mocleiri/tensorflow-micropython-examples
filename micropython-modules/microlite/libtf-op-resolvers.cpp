@@ -561,9 +561,6 @@ static int setup = 0;
 
 int libtf_op_resolver_init(void *op_resolver) {
 
-if (setup)
-    return 1;
-
 tflite::MicroMutableOpResolver<MICROLITE_TOTAL_OPS> *tf_op_resolver = (tflite::MicroMutableOpResolver<MICROLITE_TOTAL_OPS> *)op_resolver;
 
 static TfLiteStatus status;
