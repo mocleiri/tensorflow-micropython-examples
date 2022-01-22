@@ -10,6 +10,15 @@ CONFIG_TASK_WDT_CHECK_IDLE_TASK_CPU0=n
 CONFIG_ESP32_XTAL_FREQ_AUTO=y
 CONFIG_ESP32_SPIRAM_SUPPORT=y
 
+# verbose logging for debugging
+# CONFIG_LOG_DEFAULT_LEVEL_NONE=
+# CONFIG_LOG_DEFAULT_LEVEL_ERROR=
+# CONFIG_LOG_DEFAULT_LEVEL_WARN=
+# CONFIG_LOG_DEFAULT_LEVEL_INFO=
+# CONFIG_LOG_DEFAULT_LEVEL_DEBUG=
+# CONFIG_LOG_DEFAULT_LEVEL_VERBOSE=y
+# CONFIG_LOG_DEFAULT_LEVEL=5
+
 #
 # SPI RAM config
 #
@@ -25,6 +34,12 @@ CONFIG_SPIRAM_BOOT_INIT=y
 # CONFIG_SPIRAM_IGNORE_NOTFOUND is not set
 # CONFIG_SPIRAM_USE_MEMMAP is not set
 # CONFIG_SPIRAM_USE_CAPS_ALLOC is not set
+
+# Micropython default is to use CONFIG_SPIRAM_USE_MEMMAP where
+# the Micropython Heap is established based on memory address.
+# For examples using esp32-camera the code underneath needs to be able to use the
+# malloc with capabilities as it needs to be able to get dma memory
+# as well as allocate the framebuffer
 CONFIG_SPIRAM_USE_MALLOC=y
 CONFIG_SPIRAM_MEMTEST=y
 # CONFIG_SPIRAM_MALLOC_ALWAYSINTERNAL=16384
@@ -46,4 +61,4 @@ CONFIG_PPP_CHAP_SUPPORT=y
 
 # ESP32-CAMERA
 CONFIG_OV2640_SUPPORT=y
-#CONFIG_OV7725_SUPPORT=y
+CONFIG_OV3660_SUPPORT=y

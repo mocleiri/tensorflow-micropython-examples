@@ -1,5 +1,8 @@
 set (IDF_TARGET esp32)
 
+# this option causes the camera module to build
+set(CAMERA_TYPE esp32)
+
 set(SDKCONFIG_DEFAULTS
     ${MICROPY_PORT_DIR}/boards/sdkconfig.base
     ${MICROPY_PORT_DIR}/boards/sdkconfig.ble
@@ -13,7 +16,6 @@ set(USER_C_MODULES
     ${PROJECT_DIR}/micropython-modules/micropython.cmake
     )
   
-set(EXTRA_COMPONENT_DIRS esp32-camera)
   
 if(NOT MICROPY_FROZEN_MANIFEST)
     set(MICROPY_FROZEN_MANIFEST ${MICROPY_PORT_DIR}/boards/manifest.py)
