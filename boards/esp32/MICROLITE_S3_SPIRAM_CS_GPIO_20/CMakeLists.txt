@@ -3,6 +3,9 @@
 
 cmake_minimum_required(VERSION 3.12)
 
+set(EXTRA_COMPONENT_DIRS ../../../tflm_esp_kernels/components/esp-nn)
+message (STATUS "EXTRA_COMPONENT_DIRS=${EXTRA_COMPONENT_DIRS}")
+
 # Set the location of MicroPython, the esp32 port, and the board directory.
 get_filename_component(PROJECT_DIR "../../.." ABSOLUTE)
 set(MICROPY_PORT_DIR ${PROJECT_DIR}/micropython/ports/esp32)

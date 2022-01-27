@@ -29,9 +29,7 @@
             "program": "${workspaceFolder}/boards/esp32/MICROLITE/build/micropython.elf",
             "args": [],
             "miDebuggerPath": "/home/mike/.espressif/tools/xtensa-esp32-elf/esp-2020r3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gdb",
-            // cat /etc/resol.conf and set this IP to that value
-            // you may need to open up the firewall
-            "miDebuggerServerAddress": "172.27.16.1:3333",
+            "miDebuggerServerAddress": "172.29.144.1:3333",
             "stopAtEntry": true,
             "stopAtConnect": false,
             "cwd": "${workspaceFolder}",
