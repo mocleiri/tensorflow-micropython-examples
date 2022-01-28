@@ -49,16 +49,16 @@ jobs:
 #        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
         run: |
           source ./micropython/tools/ci.sh && ci_esp32_setup_helper v4.3.1
-      - name: Cache tflm
-        id: cache-tflm
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-tflm
-        with:
-          path: ./micropython-modules/microlite/tflm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
+      # - name: Cache tflm
+      #   id: cache-tflm
+      #   uses: actions/cache@v2
+      #   env:
+      #     cache-name: cache-tflm
+      #   with:
+      #     path: ./micropython-modules/microlite/tflm
+      #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
       - name: Setup Build for Tensorflow
-        if: steps.cache-tflm.outputs.cache-hit != 'true'
+        # if: steps.cache-tflm.outputs.cache-hit != 'true'
         run: |
 
           source ./esp-idf/export.sh
