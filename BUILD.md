@@ -3,6 +3,7 @@
 If you were building from scratch before 2021-12-15 then follow the [Upgrade Instructions](UPGRADE.md).
 
 If you need instructions on how to debug on ESP32 or STM32 on device using JTAG then follow the [On Device Debugging Instructions](DEBUGGING.md)
+
 ## Overview 
 We use the Micropython USER_C_MODULES extension mechanism for building a firmware with the microlite module and ulab
 included.
@@ -27,6 +28,8 @@ where all of the tensorflow c++ files are located.
 
 
 ## Building ESP32
+
+Instructions for [building ESP32S3 on MAC OS](MAC_ESP32S3_BUILD.md).
 
 Remember to have built mpy-cross before building the board itself.
 
