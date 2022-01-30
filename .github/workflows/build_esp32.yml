@@ -56,7 +56,7 @@ jobs:
           path: ./micropython-modules/microlite/tflm
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
       - name: Setup Build for Tensorflow
-        if: steps.cache-tflm.outputs.cache-hit != 'true'
+#        if: steps.cache-tflm.outputs.cache-hit != 'true'
         run: |
 
           source ./esp-idf/export.sh
@@ -77,6 +77,32 @@ jobs:
           cd ./micropython
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
+      - name: Build MICROLITE_SPIRAM_CAM
+        run: |
+          cd ./micropython
+          
+          git apply ../boards/esp32/MICROLITE_SPIRAM_CAM/micropython.patch
+          
+          cd ..
+
+          source ./esp-idf/export.sh
+          
+          echo "cd ./boards/esp32/MICROLITE_SPIRAM_CAM"
+          cd ./boards/esp32/MICROLITE_SPIRAM_CAM
+          
+          echo "Building MICROLITE_SPIRAM_CAM"
+          rm -rf builds
+          idf.py clean build
+
+      - name: Archive ESP32-MICROLITE_SPIRAM_CAM firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: microlite-esp32-firmware
+          path: |
+            boards/esp32/MICROLITE_SPIRAM_CAM/build/bootloader/bootloader.bin
+            boards/esp32/MICROLITE_SPIRAM_CAM/build/partition_table/partition-table.bin
+            boards/esp32/MICROLITE_SPIRAM_CAM/build/micropython.bin    
+
       - name: Build standard non-psram 4MB Flash firmware
         run: |
           source ./esp-idf/export.sh
