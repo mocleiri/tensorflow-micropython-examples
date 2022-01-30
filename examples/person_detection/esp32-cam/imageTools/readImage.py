@@ -11,7 +11,13 @@ import camera
 from utime import sleep_ms
 
 try:
+    # this is for the esp32-cam-mb using ov2640 sensor
     camera.init(0,format=camera.GRAYSCALE,framesize=camera.FRAME_96X96)
+    # switch to this for the m5 timer camera with ov3660 sensor
+    # camera.init(0,format=camera.GRAYSCALE,framesize=camera.FRAME_96X96,
+#            sioc=23,siod=25,xclk=27,vsync=22,href=26,pclk=21,
+#            d0=32,d1=35,d2=34,d3=5,d4=39,d5=18,d6=36,d7=19,
+#            reset=15)
 except:
     print("Error when initializing the camera")
     sys.exit()

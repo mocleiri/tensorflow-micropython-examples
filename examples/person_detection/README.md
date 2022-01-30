@@ -25,9 +25,13 @@ I was able to restore the tflite model from the person_detection_int8 archive.  
 
 I was able to create this (96,96) binary file from the corresponding .cc file from the person_detection_int8 archive.
 
+![person image](images/person.png)
+
 ## no_person_image_data.dat
 
 I was able to create this (96,96) binary file from the corresponding .cc file from the person_detection_int8 archive.
+
+![not a person](images/not_a_person.png)
 
 ## show-test-images.py
 
@@ -55,7 +59,7 @@ setup 9612 bytes on the inputTensor.
 'not a person' = -113, 'person' = 113
 ```  
 
-#  Running on ESP32 port
+# Running on ESP32 port without a camera
 
 **NOTE: The person detection model is 300 kb so you need to use a board with SPI RAM**
 
@@ -76,3 +80,14 @@ After flashing upload these files from here onto the board:
 
 Then import person_detection to run the example:
 ![ESP32 Running Person Detection](../../images/person-detection-esp32-running.png)
+
+# Running on an ESP32 With a Camera
+
+This has been tested using an ESP32-CAM-MB and an M5 Timer Camera using the 
+[MICROLITE_SPIRAM_CAM](../../boards/esp32/MICROLITE_SPIRAM_CAM) Firmware.
+
+Flash that firmware and then copy the esp32-cam/person_detection_cam.py and person_detect_model.tflite
+model to the camera.
+
+Run import person_detection_cam to activate the demo program.  The led will illuminate
+when it thinks a person is in frame.
