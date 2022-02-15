@@ -30,8 +30,8 @@
                 "MICROPY_MODULE_FROZEN_MPY",
                 "MICROPY_ROM_TEXT_COMPRESSION=1",
                 "CMSIS_NN",
-                "MODULE_CAMERA_ENABLED",
-                "__ARM_FEATURE_DSP=1"
+                "MICROLITE_TFLM_OPS_CONFIG_FILE=\"tflm_ops.h\""
+                
             ],
             "compilerPath": "/opt/gcc-arm-none-eabi-10-2020-q4-major/bin/arm-none-eabi-gcc",
             "cStandard": "gnu99",
