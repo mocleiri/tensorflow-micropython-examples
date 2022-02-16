@@ -28,7 +28,7 @@ firmware:
 		PROJECT_TOP=$(abspath ../..) \
 		BOARD=$(BOARD) \
 		BOARD_DIR=$(BOARD_DIR) \
-		BUILD=$(BUILD) 
+		BUILD=$(BUILD)
 		
 
 deploy:

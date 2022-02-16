@@ -23,3 +23,7 @@
 #define MBOOT_BOOTPIN_PULL (MP_HAL_PIN_PULL_DOWN)
 #define MBOOT_BOOTPIN_ACTIVE (1)
 #endif
+
+#define ULAB_CONFIG_FILE "ulab_config.h"
+
+#define MICROLITE_TFLM_OPS_CONFIG_FILE "tflm_ops.h"
