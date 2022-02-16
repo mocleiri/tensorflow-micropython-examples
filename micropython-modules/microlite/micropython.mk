@@ -80,6 +80,8 @@ SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/strtoull.c
 
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/ctype_.c
 
+SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/abs.c
+
 # additional musl math functions needed by tensorflow
 # SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/cosf.c
 # SRC_USERMOD += $(MICROLITE_MOD_DIR)/stm32lib/expf.c
@@ -158,13 +160,13 @@ CFLAGS_USERMOD += -DTF_LITE_STATIC_MEMORY=1
 CXXFLAGS_USERMOD += -DTF_LITE_STATIC_MEMORY=1
 
 CXXFLAGS_USERMOD += -fno-rtti -fno-exceptions
+CXXFLAGS_USERMOD += -Wno-error=maybe-uninitialized
 
 CFLAGS_USERMOD += -Wno-error=discarded-qualifiers
 
 # caused by  audio_frontend
 CFLAGS_USERMOD += -Wno-error=double-promotion
 
-# unix port
 CFLAGS_USERMOD += -Wno-error=unused-variable
 CFLAGS_USERMOD += -Wno-error=int-conversion
 CFLAGS_USERMOD += -Wno-error=incompatible-pointer-types
@@ -193,9 +195,17 @@ CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/kissfft/tools
 
 ifneq ($(TF_BOARD),NOT_SUPPORTED)
 
+CXXFLAGS_USERMOD += -D__FPU_PRESENT=1
+ 
+CXXFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1
+
 CXXFLAGS_USERMOD += -DARM_MATH_CM7
 
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
+
+CFLAGS_USERMOD += -D__FPU_PRESENT=1
+ 
+CFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1
 
 CFLAGS_USERMOD += -DARM_MATH_CM7
 
@@ -221,7 +231,7 @@ endif
 endif
 
 # needed by CMSIS NN complaints
-CFLAGS_USERMOD += -Wno-error=implicit-function-declaration
+CFLAGS_USERMOD += -Wno-error=implicit-function-declaration -Wno-error=unused-function
 
 CXXFLAGS_USERMOD += -Wno-error=sign-compare
 CXXFLAGS_USERMOD += -Wno-error=float-conversion
