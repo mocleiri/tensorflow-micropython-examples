@@ -291,8 +291,11 @@ endif()
 
 if (MICROLITE_PLATFORM STREQUAL "RP2")
 
+get_filename_component(RP2_OPS_DIR ${PROJECT_DIR}/../../../boards/rp2 ABSOLUTE)
+
 target_include_directories(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
+    ${RP2_OPS_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/tflm
     ${CMAKE_CURRENT_LIST_DIR}/tflm/third_party/kissfft
     ${CMAKE_CURRENT_LIST_DIR}/tflm/third_party/kissfft/tools
@@ -332,9 +335,14 @@ target_compile_options(microlite INTERFACE
 
 else()
 
-# ESP32 
+# ESP32
+
+# this will work until we need a board specific config.
+get_filename_component(ESP_OPS_DIR ${PROJECT_DIR}/../../../boards/esp32 ABSOLUTE)
+
 target_include_directories(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
+    ${ESP_OPS_DIR}
     ${CMAKE_CURRENT_LIST_DIR}/tflm
     ${CMAKE_CURRENT_LIST_DIR}/tflm/third_party/kissfft
     ${CMAKE_CURRENT_LIST_DIR}/tflm/third_party/kissfft/tools
