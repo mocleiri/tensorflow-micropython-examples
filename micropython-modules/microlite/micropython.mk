@@ -45,23 +45,14 @@ CXXFLAGS_USERMOD += -Wno-error=sign-compare
 
 LDFLAGS_USERMOD += -lm -lstdc++
 
-
 endif
 
 ifeq ($(BOARD),NUCLEO_H743ZI2_MICROLITE)
   TF_BOARD = CMSIS_NN
 
-  CXXFLAGS_USERMOD += -D__FPU_PRESENT=1
- 
-  CXXFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1
-
   CXXFLAGS_USERMOD += -DARM_MATH_CM7
 
   CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
-
-  CFLAGS_USERMOD += -D__FPU_PRESENT=1
- 
-  CFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1
 
   CFLAGS_USERMOD += -DARM_MATH_CM7
 
@@ -75,17 +66,9 @@ endif
 ifeq ($(BOARD),NUCLEO_H743ZI2)
   TF_BOARD = CMSIS_NN
 
-  CXXFLAGS_USERMOD += -D__FPU_PRESENT=1
- 
-  CXXFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1
-
   CXXFLAGS_USERMOD += -DARM_MATH_CM7
 
   CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
-
-  CFLAGS_USERMOD += -D__FPU_PRESENT=1
- 
-  CFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1
 
   CFLAGS_USERMOD += -DARM_MATH_CM7
 
@@ -93,33 +76,22 @@ ifeq ($(BOARD),NUCLEO_H743ZI2)
 
   # ulab
   CFLAGS_USERMOD += -Wno-error=unused-function
-
-
 
 endif
 
 ifeq ($(BOARD),SPARKFUN_THINGPLUS_STM32_MICROLITE)
   TF_BOARD = CMSIS_NN
 
-  CXXFLAGS_USERMOD += -D__FPU_PRESENT=1
- 
-  CXXFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1
-
-  CXXFLAGS_USERMOD += -DARM_MATH_CM7
+  CXXFLAGS_USERMOD += -DARM_MATH_CM4
 
   CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
 
-  CFLAGS_USERMOD += -D__FPU_PRESENT=1
- 
-  CFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1
-
-  CFLAGS_USERMOD += -DARM_MATH_CM7
+  CFLAGS_USERMOD += -DARM_MATH_CM4
 
   CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
 
   # ulab
   CFLAGS_USERMOD += -Wno-error=unused-function
-
 
 endif
 
@@ -128,34 +100,20 @@ ifeq ($(BOARD),NUCLEO_F446RE_MICROLITE)
 
   CFLAGS_USERMOD += -Wno-error=attributes
  
-  CXXFLAGS_USERMOD += -D__FPU_PRESENT=1
- 
-  CXXFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1
-
-  CFLAGS_USERMOD += -D__FPU_PRESENT=1
- 
-  CFLAGS_USERMOD += -D__ARM_FEATURE_DSP=1
-
   # ulab
   CFLAGS_USERMOD += -Wno-error=unused-function
 
- 
   CXXFLAGS_USERMOD += -DARM_MATH_CM4
   CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
 
   CFLAGS_USERMOD += -DARM_MATH_CM4
   CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/stm32lib
 
-
 endif
-
-
-
 
 # Add all C files to SRC_USERMOD.
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tensorflow-microlite.c
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/audio_frontend.c
-
 
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/libtf-op-resolvers.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/openmv-libtf.cpp
@@ -207,8 +165,6 @@ SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/cortex_m_gene
 
 endif
 
-
-
 ifeq ($(TF_BOARD),STANDARD)
 
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/debug_log.cpp
@@ -224,8 +180,6 @@ SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/kernels/add.c
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/kernels/svdf.cpp
 endif
 
-
-
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/experimental/microfrontend/lib/log_scale_util.c
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/experimental/microfrontend/lib/frontend_util.c
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/experimental/microfrontend/lib/pcan_gain_control.c
@@ -240,7 +194,6 @@ SRC_USERMOD += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/experimental/microfront
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/experimental/microfrontend/lib/noise_reduction.c
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/experimental/microfrontend/lib/log_lut.c
 
-
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/c/common.c
 
 ifeq ($(TF_BOARD),CMSIS_NN)
@@ -253,7 +206,6 @@ SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/kernels/cmsis
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/kernels/cmsis_nn/mul.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/kernels/cmsis_nn/add.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/kernels/cmsis_nn/svdf.cpp
-
 
 endif
 
@@ -373,10 +325,8 @@ SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/core/api/op_resolve
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/core/api/flatbuffer_conversions.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/core/api/tensor_utils.cpp
 
-
 $(info TF_BOARD = $(TF_BOARD))
 $(info BOARD = $(BOARD))
-
 
 ifeq ($(TF_BOARD),CMSIS_NN)
 
@@ -494,7 +444,6 @@ CFLAGS_USERMOD += -DTF_LITE_STATIC_MEMORY
 CFLAGS_USERMOD += -DNDEBUG 
 CFLAGS_USERMOD += -DTF_LITE_MCU_DEBUG_LOG 
 
-
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm
 CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/kissfft
@@ -503,7 +452,6 @@ CFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/kissfft/tools
 # if we are building for cortex h7
 
 ifneq ($(TF_BOARD),NOT_SUPPORTED)
-
 
 ifeq ($(TF_BOARD),CMSIS_NN)
 
@@ -519,7 +467,6 @@ CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/Core/Inc
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/NN/Include
 CXXFLAGS_USERMOD += -I$(MICROLITE_MOD_DIR)/tflm/third_party/cmsis/CMSIS/DSP/Include
 
-
 endif
 
 endif
@@ -530,14 +477,7 @@ CFLAGS_USERMOD += -Wno-error=implicit-function-declaration -Wno-error=unused-fun
 CXXFLAGS_USERMOD += -Wno-error=sign-compare
 CXXFLAGS_USERMOD += -Wno-error=float-conversion
 
-#CXXFLAGS_USERMOD += -g
-
-# unix port
 CXXFLAGS_USERMOD += -Wno-error=deprecated-declarations
-#CXXFLAGS_USERMOD += -fno-permissive
-#CXXFLAGS_USERMOD += -Wwarning=permissive
-
-
 
 override CFLAGS_EXTRA += -DMODULE_MICROLITE_ENABLED=1
 
