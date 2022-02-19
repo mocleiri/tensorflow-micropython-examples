@@ -67,9 +67,9 @@ jobs:
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
           
-          cd micropython-modules
+          cd ../micropython-modules
           ln -s ../micropython-ulab/code  ulab
-          cd ..
+          
       - name: Build NUCLEO_F446RE_MICROLITE
         run: |
           echo "cd ./boards/stm32/NUCLEO_F446RE_MICROLITE"
@@ -89,6 +89,7 @@ jobs:
             boards/stm32/NUCLEO_F446RE_MICROLITE/build/firmware.elf
             boards/stm32/NUCLEO_F446RE_MICROLITE/build/firmware.dfu
             boards/stm32/NUCLEO_F446RE_MICROLITE/build/firmware.hex
+
       - name: Build H743ZI2
         run: |
           echo "cd ./boards/stm32/NUCLEO_H743ZI2_MICROLITE"
@@ -108,6 +109,7 @@ jobs:
             boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.elf
             boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.dfu
             boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.hex
+            
       - name: Build SPARKFUN_THINGPLUS_STM32F405
         run: |
           echo "cd ./boards/stm32/SPARKFUN_THINGPLUS_STM32F405"
