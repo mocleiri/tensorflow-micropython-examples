@@ -293,7 +293,7 @@ endif()
 
 if (MICROLITE_PLATFORM STREQUAL "RP2")
 
-get_filename_component(RP2_OPS_DIR ${PROJECT_DIR}/../../../boards/rp2 ABSOLUTE)
+get_filename_component(RP2_OPS_DIR ${CMAKE_CURRENT_LIST_DIR}/../../boards/rp2 ABSOLUTE)
 
 target_include_directories(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
