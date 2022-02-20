@@ -27,10 +27,10 @@
 // 128 Mbit (16 MByte) external SPI flash
 #define MICROPY_HW_SPIFLASH_SIZE_BITS (128 * 1024 * 1024)
 
-#define MICROPY_HW_SPIFLASH_CS (pin_C3)
-#define MICROPY_HW_SPIFLASH_SCK (pin_C10)
-#define MICROPY_HW_SPIFLASH_MOSI (pin_C12)
-#define MICROPY_HW_SPIFLASH_MISO (pin_C11)
+#define MICROPY_HW_SPIFLASH_CS (pin_A15)
+#define MICROPY_HW_SPIFLASH_SCK (pin_B3)
+#define MICROPY_HW_SPIFLASH_MOSI (pin_B5)
+#define MICROPY_HW_SPIFLASH_MISO (pin_B4)
 
 #define MICROPY_BOARD_EARLY_INIT board_early_init
 void board_early_init(void);
@@ -65,8 +65,8 @@ extern struct _spi_bdev_t spi_bdev;
 
 // UART1 config (MicroMod UART1)
 #define MICROPY_HW_UART1_NAME "UART1"
-#define MICROPY_HW_UART1_TX (pin_A2)
-#define MICROPY_HW_UART1_RX (pin_A3)
+#define MICROPY_HW_UART1_TX (pin_A9)
+#define MICROPY_HW_UART1_RX (pin_A10)
 
 // CAN1 config (MicroMod CAN)
 #define MICROPY_HW_CAN1_NAME "CAN"
@@ -85,14 +85,14 @@ extern struct _spi_bdev_t spi_bdev;
 
 // SPI1 config (MicroMod SPI)
 #define MICROPY_HW_SPI1_NAME "SPI"
-#define MICROPY_HW_SPI1_NSS (pin_C4)
+#define MICROPY_HW_SPI1_NSS (pin_A4)
 #define MICROPY_HW_SPI1_SCK (pin_A5)
 #define MICROPY_HW_SPI1_MISO (pin_A6)
 #define MICROPY_HW_SPI1_MOSI (pin_A7)
 
 // LED1 config
 // The module has a single blue status LED.
-#define MICROPY_HW_LED1 (pin_A15)
+#define MICROPY_HW_LED1 (pin_C1)
 #define MICROPY_HW_LED_ON(pin) (mp_hal_pin_high(pin))
 #define MICROPY_HW_LED_OFF(pin) (mp_hal_pin_low(pin))
 
