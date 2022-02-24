@@ -98,7 +98,3 @@ extern struct _spi_bdev_t spi_bdev;
 
 // USB device config
 #define MICROPY_HW_USB_FS (1)
-
-#define ULAB_CONFIG_FILE "ulab_config.h"
-
-#define MICROLITE_TFLM_OPS_CONFIG_FILE "tflm_ops.h"
