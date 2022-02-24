@@ -337,6 +337,7 @@ SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/memory_planne
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/system_setup.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/core/api/error_reporter.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/core/api/op_resolver.cpp
+SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/core/api/all_ops_resolver.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/core/api/flatbuffer_conversions.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/core/api/tensor_utils.cpp
 
