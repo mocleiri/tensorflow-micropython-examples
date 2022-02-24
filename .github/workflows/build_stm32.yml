@@ -67,7 +67,7 @@ jobs:
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
           
-          cd micropython-modules
+          cd ../micropython-modules
           ln -s ../micropython-ulab/code  ulab
           cd ..
       - name: Build Nucleo H743ZI2 Microlite
