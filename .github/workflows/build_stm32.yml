@@ -11,6 +11,8 @@ on:
       - 'ci/*unix*.sh'
       - '.github/workflows/build_unix.yml'
       - '.github/workflows/build_esp32.yml'
+      - '.github/workflows/build_esp32s3.yml'
+      - '.github/workflows/build_rp2.yml'
 
 jobs:
   tensorflow_micropython_stm32_build:
@@ -89,22 +91,22 @@ jobs:
             boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.elf
             boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.dfu
             boards/stm32/NUCLEO_H743ZI2_MICROLITE/build/firmware.hex
-      - name: Build SPARKFUN_THINGPLUS_STM32F405
+      - name: Build SPARKFUN_THINGPLUS_MICROLITE
         run: |
-          echo "cd ./boards/stm32/SPARKFUN_THINGPLUS_STM32F405"
-          cd ./boards/stm32/SPARKFUN_THINGPLUS_STM32F405
+          echo "cd ./boards/stm32/SPARKFUN_THINGPLUS_MICROLITE"
+          cd ./boards/stm32/SPARKFUN_THINGPLUS_MICROLITE
 
-          echo "Building SPARKFUN_THINGPLUS_STM32F405"
+          echo "Building SPARKFUN_THINGPLUS_MICROLITE"
           rm -rf build
           make V=1
 
           find build -ls
 
-      - name: Archive SPARKFUN_THINGPLUS_STM32F405 firmware
+      - name: Archive SPARKFUN_THINGPLUS_MICROLITE firmware
         uses: actions/upload-artifact@v2
         with:
-          name: microlite-stm32-sparkfun-thingplus-stm32f405-firmware
+          name: microlite-stm32-sparkfun-thingplus-firmware
           path: |
-            boards/stm32/SPARKFUN_THINGPLUS_STM32F405/build/firmware.elf
-            boards/stm32/SPARKFUN_THINGPLUS_STM32F405/build/firmware.dfu
-            boards/stm32/SPARKFUN_THINGPLUS_STM32F405/build/firmware.hex
+            boards/stm32/SPARKFUN_THINGPLUS_MICROLITE/build/firmware.elf
+            boards/stm32/SPARKFUN_THINGPLUS_MICROLITE/build/firmware.dfu
+            boards/stm32/SPARKFUN_THINGPLUS_MICROLITE/build/firmware.hex
