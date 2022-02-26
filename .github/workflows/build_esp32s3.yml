@@ -138,3 +138,23 @@ jobs:
             boards/esp32/MICROLITE_S3_SPIRAM_CS_GPIO_20/build/bootloader/bootloader.bin
             boards/esp32/MICROLITE_S3_SPIRAM_CS_GPIO_20/build/partition_table/partition-table.bin
             boards/esp32/MICROLITE_S3_SPIRAM_CS_GPIO_20/build/micropython.bin
+
+      - name: Build ESP32 S3 psram support and 8MB Flash firmware - OCTAL SPIRAM
+        run: |
+          source ./esp-idf/export.sh
+
+          echo "cd ./boards/esp32/MICROLITE_S3_SPIRAM_OCTAL"
+          cd ./boards/esp32/MICROLITE_S3_SPIRAM_OCTAL
+
+          echo "Building MICROLITE_S3_SPIRAM_OCTAL"
+          rm -rf builds
+          idf.py clean build
+
+      - name: Archive ESP32-MICROLITE_S3_SPIRAM_OCTAL firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: microlite-esp32-s3-spiram-octal-firmware
+          path: |
+            boards/esp32/MICROLITE_S3_SPIRAM_OCTAL/build/bootloader/bootloader.bin
+            boards/esp32/MICROLITE_S3_SPIRAM_OCTAL/build/partition_table/partition-table.bin
+            boards/esp32/MICROLITE_S3_SPIRAM_OCTAL/build/micropython.bin

@@ -56,7 +56,7 @@ jobs:
           make submodules
           make deplibs
 
-          make USER_C_MODULES=../../../micropython-modules MICROPY_PY_FFI=0 LDFLAGS_EXTRA="-static"
+          make VARIANT_DIR=../../../boards/unix/microlite-variant VARIANT=microlite
          
       - name: Archive Unix MICROLITE micropython interpreter
         uses: actions/upload-artifact@v2

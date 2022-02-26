@@ -1,4 +1,3 @@
-
 name: ESP32
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
@@ -6,10 +5,10 @@ on:
   push:
   pull_request:
     paths-ignore:
-      - 'examples/**'
-      - 'README.md'
-      - 'ci/*unix*.sh'
-      - '.github/workflows/build_unix.yml'
+      - "examples/**"
+      - "README.md"
+      - "ci/*unix*.sh"
+      - ".github/workflows/build_unix.yml"
 
 jobs:
   tensorflow_micropython_esp32_build:
@@ -28,6 +27,7 @@ jobs:
           cd ..
           cd tflm_esp_kernels
           git submodule update --init components/esp-nn
+          git submodule update --init examples/person_detection/esp32-camera
 
       - name: Get Cache Keys
         # later get this like this: git ls-remote --heads https://github.com/espressif/esp-idf
@@ -37,16 +37,16 @@ jobs:
           echo "esp-idf-commit=$IDF_COMMIT" >> $GITHUB_ENV
           TFLM_COMMIT=$(git submodule status tensorflow | awk '{print ($1)}')
           echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
-#      - name: Cache esp-idf
-#        id: cache-esp-idf
-#        uses: actions/cache@v2
-#        env:
-#          cache-name: cache-esp-idf
-#        with:
-#          path: ./esp-idf
-#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.esp-idf-commit }}
+      #      - name: Cache esp-idf
+      #        id: cache-esp-idf
+      #        uses: actions/cache@v2
+      #        env:
+      #          cache-name: cache-esp-idf
+      #        with:
+      #          path: ./esp-idf
+      #          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.esp-idf-commit }}
       - name: Setup IDF
-#        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
+        #        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
         run: |
           source ./micropython/tools/ci.sh && ci_esp32_setup_helper v4.3.1
       # - name: Cache tflm
@@ -58,7 +58,7 @@ jobs:
       #     path: ./micropython-modules/microlite/tflm
       #     key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
       - name: Setup Build for Tensorflow
-        # if: steps.cache-tflm.outputs.cache-hit != 'true'
+#        if: steps.cache-tflm.outputs.cache-hit != 'true'
         run: |
 
           source ./esp-idf/export.sh
@@ -72,20 +72,21 @@ jobs:
           cd ./tensorflow
 
           ../micropython-modules/microlite/prepare-tflm-esp.sh
-          
+
       - name: Build micropython cross compiler
-        run:  |
+        run: |
           source ./esp-idf/export.sh
           cd ./micropython
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
+
       - name: Build standard non-psram 4MB Flash firmware
         run: |
           source ./esp-idf/export.sh
-          
+
           echo "cd ./boards/esp32/MICROLITE"
           cd ./boards/esp32/MICROLITE
-          
+
           echo "Building MICROLITE"
           rm -rf builds
           idf.py clean build
@@ -101,10 +102,10 @@ jobs:
       - name: Build with psram support and 16MB Flash firmware
         run: |
           source ./esp-idf/export.sh
-          
+
           echo "cd ./boards/esp32/MICROLITE_SPIRAM_16M"
           cd ./boards/esp32/MICROLITE_SPIRAM_16M
-          
+
           echo "Building MICROLITE_SPIRAM_16M"
           rm -rf build
           idf.py clean build
@@ -117,3 +118,48 @@ jobs:
             boards/esp32/MICROLITE_SPIRAM_16M/build/bootloader/bootloader.bin
             boards/esp32/MICROLITE_SPIRAM_16M/build/partition_table/partition-table.bin
             boards/esp32/MICROLITE_SPIRAM_16M/build/micropython.bin
+
+      - name: Build with psram support
+        run: |
+          source ./esp-idf/export.sh
+
+          echo "cd ./boards/esp32/MICROLITE_SPIRAM"
+          cd ./boards/esp32/MICROLITE_SPIRAM
+
+          echo "Building MICROLITE_SPIRAM"
+          rm -rf build
+          idf.py clean build
+
+      - name: Archive ESP32-MICROLITE-SPIRAM firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: microlite-spiram-esp32-firmware
+          path: |
+            boards/esp32/MICROLITE_SPIRAM/build/bootloader/bootloader.bin
+            boards/esp32/MICROLITE_SPIRAM/build/partition_table/partition-table.bin
+            boards/esp32/MICROLITE_SPIRAM/build/micropython.bin
+      - name: Build MICROLITE_SPIRAM_CAM
+        run: |
+          cd ./micropython
+          
+          git apply ../boards/esp32/MICROLITE_SPIRAM_CAM/micropython.patch
+          
+          cd ..
+          
+          source ./esp-idf/export.sh
+          
+          echo "cd ./boards/esp32/MICROLITE_SPIRAM_CAM"
+          cd ./boards/esp32/MICROLITE_SPIRAM_CAM
+          
+          echo "Building MICROLITE_SPIRAM_CAM"
+          rm -rf builds
+          idf.py clean build
+
+      - name: Archive ESP32-MICROLITE_SPIRAM_CAM firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: microlite-spiram-cam-esp32-firmware
+          path: |
+            boards/esp32/MICROLITE_SPIRAM_CAM/build/bootloader/bootloader.bin
+            boards/esp32/MICROLITE_SPIRAM_CAM/build/partition_table/partition-table.bin
+            boards/esp32/MICROLITE_SPIRAM_CAM/build/micropython.bin    

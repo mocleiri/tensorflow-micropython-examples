@@ -1,17 +1,24 @@
-# Tensorflow Lite for Microcontrollers in Micropython
+<p align="center">
+    <img src="images/tensorflow-micropython-examples.png">
+</p>
 
-The purpose of this project is to make a custom micropython firmware that installs tensorflow lite for micro controllers and allows for experimentation.
+# Tensorflow Micropython Examples
+
+The purpose of this project is to make a custom micropython firmware that installs tensorflow lite for micro controllers
+and allows for experimentation.
 
 ## Architecture
 
-This project is a micropython module built using the USER_C_MODULES extension mechanism.  There are two modules:
+This project is a micropython module built using the USER_C_MODULES extension mechanism.  There are several modules:
 * microlite
 * ulab
+* modcamera (for the person_detection example)
 
-There are 3 git submodules:
+There are 4 top level git submodules:
 * tensorflow lite micro
 * micropython
 * ulab
+* tflm_esp_kernels
 
 tflite-micro sources are generated within the microlite module at build time using the tensorflow lite example generator.
 

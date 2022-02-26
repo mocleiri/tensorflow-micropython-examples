@@ -1,0 +1,36 @@
+From d235a3f7b097a0b64fd8ef0f679a88699f6b5f71 Mon Sep 17 00:00:00 2001
+From: Michael O'Cleirigh <michael.ocleirigh@gmail.com>
+Date: Fri, 28 Jan 2022 00:35:53 -0500
+Subject: [PATCH] esp32/main: Support SPRAM allocated using malloc.
+
+This change allows the same heap allocation rules to be used when using malloc regardless if the board has
+SPRAM or normal RAM.
+
+Integrating with the esp32-camera for example requires that ESP32 SPRAM be allocatable using the esp-idf
+capabilities aware allocation functions.  In the case of esp32-camera its for the framebuffer.
+
+Detect when CONFIG_SPIRAM_USE_MALLOC is in use and use the standard automatic configuration of leaving 1/2
+of the SPRAM available to other FreeRTOS tasks.
+---
+ ports/esp32/main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/ports/esp32/main.c b/ports/esp32/main.c
+index e25e6fdd1..6fe82e40a 100644
+--- a/ports/esp32/main.c
++++ b/ports/esp32/main.c
+@@ -100,7 +100,10 @@ void mp_task(void *pvParameter) {
+     size_t mp_task_heap_size;
+     void *mp_task_heap = NULL;
+ 
+-    #if CONFIG_ESP32_SPIRAM_SUPPORT
++    #if CONFIG_SPIRAM_USE_MALLOC
++    // SPRAM is issued using MALLOC, fallback to normal allocation rules
++    mp_task_heap = NULL;
++    #elif CONFIG_ESP32_SPIRAM_SUPPORT
+     // Try to use the entire external SPIRAM directly for the heap
+     mp_task_heap = (void *)SOC_EXTRAM_DATA_LOW;
+     switch (esp_spiram_get_chip_size()) {
+-- 
+2.20.1
+
