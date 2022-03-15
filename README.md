@@ -48,6 +48,8 @@ The latest firmware can be downloaded from the applicable build above (in the St
 You do need to be careful to get the proper firmware for your board.  If your board is not currently being built please 
 file an issue and it can be added.
 
+Also be sure that you are getting the most recent boards build from the **main** branch.  There are builds from other feature branches but many, especially those related to optional ops, are broken even if it looks like the build worked properly.
+
 ![](./images/download-esp32-artifact.png)
 
 # Recent Changes
