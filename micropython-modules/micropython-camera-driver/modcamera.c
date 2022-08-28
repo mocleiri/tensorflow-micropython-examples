@@ -22,7 +22,7 @@
 #include "py/runtime.h"
 #include "py/binary.h"
 
-#if MODULE_CAMERA_ENABLED
+#if MICROPY_PY_CAMERA
 
 #include "esp_system.h"
 #include "esp_spi_flash.h"
@@ -956,7 +956,7 @@ const mp_obj_module_t mp_module_camera_system = {
     .globals = (mp_obj_dict_t *)&camera_module_globals,
 };
 
-MP_REGISTER_MODULE(MP_QSTR_camera, mp_module_camera_system, 1);
+MP_REGISTER_MODULE(MP_QSTR_camera, mp_module_camera_system);
 
 
 #endif

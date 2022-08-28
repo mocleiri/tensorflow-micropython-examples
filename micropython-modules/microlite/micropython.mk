@@ -328,6 +328,11 @@ SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/micro_interpr
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/micro_context.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/micro_graph.cpp
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/memory_helpers.cpp
+SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/arena_allocator/non_persistent_arena_buffer_allocator.cpp
+SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/arena_allocator/persistent_arena_buffer_allocator.cpp
+SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/arena_allocator/recording_single_arena_buffer_allocator.cpp
+SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/arena_allocator/single_arena_buffer_allocator.cpp
+
 SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/micro_error_reporter.cpp
 # SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/mock_micro_graph.cpp
 # SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/tflm/tensorflow/lite/micro/memory_planner/linear_memory_planner.cpp
@@ -507,5 +512,5 @@ CXXFLAGS_USERMOD += -Wno-error=deprecated-declarations
 
 
 
-override CFLAGS_EXTRA += -DMODULE_MICROLITE_ENABLED=1
+# override CFLAGS_EXTRA += -DMODULE_MICROLITE_ENABLED=1
 

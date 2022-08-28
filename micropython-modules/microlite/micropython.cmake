@@ -121,6 +121,11 @@ file(GLOB TF_MICRO_SRCS
 list(REMOVE_ITEM TF_MICRO_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/debug_log.cpp)
 list(REMOVE_ITEM TF_MICRO_SRCS ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_time.cpp)
 
+# arena allocator
+file(GLOB TF_MICRO_ARENA_ALLOCATOR_SRCS
+          "${TF_MICRO_DIR}/arena_allocator/*.cpp"
+          "${TF_MICRO_DIR}/arena_allocator/*.c")
+
 # micro kernels 
 
 file(GLOB TF_MICRO_KERNELS_SRCS
@@ -250,6 +255,7 @@ target_sources(microlite INTERFACE
 
     # tf micro sources
     ${TF_MICRO_SRCS}
+    ${TF_MICRO_ARENA_ALLOCATOR_SRCS}
     ${TF_MICRO_KERNELS_SRCS}
     ${TF_MICRO_MEMORY_PLANNER_SRCS}
 
@@ -278,6 +284,7 @@ target_sources(microlite INTERFACE
 
     # tf micro sources
     ${TF_MICRO_SRCS}
+    ${TF_MICRO_ARENA_ALLOCATOR_SRCS}
     ${TF_MICRO_KERNELS_SRCS}
     ${TF_MICRO_MEMORY_PLANNER_SRCS}
 
