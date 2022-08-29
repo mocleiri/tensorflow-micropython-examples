@@ -140,11 +140,6 @@ jobs:
             boards/esp32/MICROLITE_SPIRAM/build/micropython.bin
       - name: Build MICROLITE_SPIRAM_CAM
         run: |
-          cd ./micropython
-          
-          git apply ../boards/esp32/MICROLITE_SPIRAM_CAM/micropython.patch
-          
-          cd ..
           
           source ./esp-idf/export.sh
           
