@@ -24,7 +24,9 @@ jobs:
           cd micropython
           git submodule update --init lib/axtls
           git submodule update --init lib/berkeley-db-1.xx
-          cd ..
+          cd ports/esp32
+          make BOARD= submodules
+          cd ../../..
           cd tflm_esp_kernels
           git submodule update --init components/esp32-camera
       - name: Get Cache Keys
