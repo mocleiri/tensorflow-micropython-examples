@@ -327,6 +327,7 @@ target_compile_definitions(microlite INTERFACE
     TF_LITE_MCU_DEBUG_LOG
     NDEBUG
     CMSIS_NN
+    ARMCM0=1
 )
 
 target_compile_options(microlite INTERFACE
