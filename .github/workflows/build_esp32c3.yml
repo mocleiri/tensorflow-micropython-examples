@@ -99,7 +99,8 @@ jobs:
             boards/esp32/MICROLITE_C3_USB/build/bootloader/bootloader.bin
             boards/esp32/MICROLITE_C3_USB/build/partition_table/partition-table.bin
             boards/esp32/MICROLITE_C3_USB/build/micropython.bin
-
+            
+      - name: Build generic C3
         run: |
           source ./esp-idf/export.sh
 
