@@ -1,4 +1,4 @@
-name: ESP32
+name: ESP32 C3
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
 on:
