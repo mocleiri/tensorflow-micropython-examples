@@ -34,7 +34,7 @@ Build Type | Status |
 ESP32   | [![ESP32](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32.yml) |
 ESP32 S3   | [![ESP32 S3](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32s3.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_esp32s3.yml) |
 RP2     | [![RP2](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_rp2.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_rp2.yml) |
-STM32   | [![STM32](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_stm32.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_stm32.yml) |
+STM32   | Doesn't Work |
 UNIX   | [![UNIX](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml/badge.svg)](https://github.com/mocleiri/tensorflow-micropython-examples/actions/workflows/build_unix.yml) |
 
 
