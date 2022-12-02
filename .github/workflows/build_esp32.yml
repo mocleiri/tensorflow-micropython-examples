@@ -24,9 +24,11 @@ jobs:
           cd micropython
           git submodule update --init lib/axtls
           git submodule update --init lib/berkeley-db-1.xx
-          cd ..
+          cd ports/esp32
+          make BOARD= submodules
+          cd ../../..
           cd tflm_esp_kernels
-          git submodule update --init examples/person_detection/esp32-camera
+          git submodule update --init components/esp32-camera
       - name: Get Cache Keys
         # later get this like this: git ls-remote --heads https://github.com/espressif/esp-idf
         # this commit is hard-coded in micropython/tools/ci.sh
@@ -138,11 +140,6 @@ jobs:
             boards/esp32/MICROLITE_SPIRAM/build/micropython.bin
       - name: Build MICROLITE_SPIRAM_CAM
         run: |
-          cd ./micropython
-          
-          git apply ../boards/esp32/MICROLITE_SPIRAM_CAM/micropython.patch
-          
-          cd ..
           
           source ./esp-idf/export.sh
           

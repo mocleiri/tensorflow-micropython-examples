@@ -38,6 +38,8 @@
 
 #include "tensorflow/lite/c/common.h"
 
+// #if MICROPY_PY_MICROLITE 
+
 const mp_obj_type_t microlite_interpreter_type;
 const mp_obj_type_t microlite_tensor_type;
 const mp_obj_type_t microlite_audio_frontend_type;
@@ -446,5 +448,7 @@ const mp_obj_module_t microlite_cmodule = {
 };
 
 // Register the module to make it available in Python.
-MP_REGISTER_MODULE(MP_QSTR_microlite, microlite_cmodule, MODULE_MICROLITE_ENABLED);
+MP_REGISTER_MODULE(MP_QSTR_microlite, microlite_cmodule);
+
+// #endif
 

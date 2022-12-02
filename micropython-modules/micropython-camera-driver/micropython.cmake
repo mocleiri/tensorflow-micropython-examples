@@ -9,7 +9,7 @@ target_sources(usermod_esp32camera INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/modcamera.c
 )
 
-get_filename_component(ESP32_CAMERA_DIR ${PROJECT_DIR}/../../../tflm_esp_kernels/examples/person_detection/esp32-camera ABSOLUTE)
+get_filename_component(ESP32_CAMERA_DIR ${PROJECT_DIR}/../../../tflm_esp_kernels/components/esp32-camera ABSOLUTE)
 
 list(APPEND COMPONENTS esp32-camera) 
 
