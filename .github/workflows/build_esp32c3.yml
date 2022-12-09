@@ -84,7 +84,7 @@ jobs:
         run: |
           source ./esp-idf/export.sh
 
-          MICROLITE_DIR=$(pwd)micropython-modules
+          MICROLITE_DIR=$(pwd)/micropython-modules
           cd micropython
           echo "make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3_USB"
           make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3_USB
@@ -103,7 +103,7 @@ jobs:
         run: |
           source ./esp-idf/export.sh
 
-          MICROLITE_DIR=$(pwd)micropython-modules
+          MICROLITE_DIR=$(pwd)/micropython-modules
           cd micropython
           echo "make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3"
           make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3
