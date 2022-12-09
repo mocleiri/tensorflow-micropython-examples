@@ -84,9 +84,10 @@ jobs:
         run: |
           source ./esp-idf/export.sh
 
+          MICROLITE_DIR=$(pwd)micropython-modules
           cd micropython
-          echo "make -C ports/esp32 USER_C_MODULES=$(pwd)/micropython-modules/micropython.cmake BOARD=GENERIC_C3_USB"
-          make -C ports/esp32 USER_C_MODULES=$(pwd)/micropython-modules/micropython.cmake BOARD=GENERIC_C3_USB
+          echo "make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3_USB"
+          make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3_USB
           
 
       - name: Archive ESP32-MICROLITE_C3_USB firmware
@@ -102,9 +103,10 @@ jobs:
         run: |
           source ./esp-idf/export.sh
 
-           cd micropython
-          echo "make -C ports/esp32 USER_C_MODULES=$(pwd)/micropython-modules/micropython.cmake BOARD=GENERIC_C3"
-          make -C ports/esp32 USER_C_MODULES=$(pwd)/micropython-modules/micropython.cmake BOARD=GENERIC_C3
+          MICROLITE_DIR=$(pwd)micropython-modules
+          cd micropython
+          echo "make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3"
+          make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3
           
 
       - name: Archive ESP32-MICROLITE_C3 firmware
