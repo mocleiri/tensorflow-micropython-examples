@@ -84,39 +84,35 @@ jobs:
         run: |
           source ./esp-idf/export.sh
 
-          echo "cd ./boards/esp32/MICROLITE_C3_USB"
-          cd ./boards/esp32/MICROLITE_C3_USB
-
-          echo "Building MICROLITE_C3_USB"
-          rm -rf builds
-          idf.py clean build
+          cd micropython
+          echo "make -C ports/esp32 USER_C_MODULES=$(pwd)/micropython-modules/micropython.cmake BOARD=GENERIC_C3_USB"
+          make -C ports/esp32 USER_C_MODULES=$(pwd)/micropython-modules/micropython.cmake BOARD=GENERIC_C3_USB
+          
 
       - name: Archive ESP32-MICROLITE_C3_USB firmware
         uses: actions/upload-artifact@v2
         with:
           name: microlite-esp32c3-usb-firmware
           path: |
-            boards/esp32/MICROLITE_C3_USB/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE_C3_USB/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE_C3_USB/build/micropython.bin
-            
+            micropython/ports/esp32/build-GENERIC_C3_USB/bootloader/bootloader.bin
+            micropython/ports/esp32/build-GENERIC_C3_USB/partition_table/partition-table.bin
+            micropython/ports/esp32/build-GENERIC_C3_USB/micropython.bin
+
       - name: Build generic C3
         run: |
           source ./esp-idf/export.sh
 
-          echo "cd ./boards/esp32/MICROLITE_C3"
-          cd ./boards/esp32/MICROLITE_C3
-
-          echo "Building MICROLITE_C3"
-          rm -rf builds
-          idf.py clean build
+           cd micropython
+          echo "make -C ports/esp32 USER_C_MODULES=$(pwd)/micropython-modules/micropython.cmake BOARD=GENERIC_C3"
+          make -C ports/esp32 USER_C_MODULES=$(pwd)/micropython-modules/micropython.cmake BOARD=GENERIC_C3
+          
 
       - name: Archive ESP32-MICROLITE_C3 firmware
         uses: actions/upload-artifact@v2
         with:
           name: microlite-esp32c3-firmware
           path: |
-            boards/esp32/MICROLITE_C3/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE_C3/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE_C3/build/micropython.bin
+            micropython/ports/esp32/build-GENERIC_C3/bootloader/bootloader.bin
+            micropython/ports/esp32/build-GENERIC_C3/partition_table/partition-table.bin
+            micropython/ports/esp32/build-GENERIC_C3/micropython.bin
 
