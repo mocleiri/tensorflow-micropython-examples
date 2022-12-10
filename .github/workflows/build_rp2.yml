@@ -84,66 +84,75 @@ jobs:
           cmake -S ports/rp2 -B build-ADAFRUIT_FEATHER_RP2040 -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=ADAFRUIT_FEATHER_RP2040 \
           -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
+          cd build-ADAFRUIT_FEATHER_RP2040
+          make
+          cd ..
+
           # ADAFRUIT_ITSYBITSY_RP2040
           cmake -S ports/rp2 -B build-ADAFRUIT_ITSYBITSY_RP2040 -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=ADAFRUIT_ITSYBITSY_RP2040 \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
+
+          cd ../build-ADAFRUIT_ITSYBITSY_RP2040
+          make
+          cd ..
 
           # ADAFRUIT_QTPY_RP2040
           cmake -S ports/rp2 -B build-ADAFRUIT_QTPY_RP2040 -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=ADAFRUIT_QTPY_RP2040 \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
+          cd ../build-ADAFRUIT_QTPY_RP2040
+          make
+          cd ..
+
           # PICO
           cmake -S ports/rp2 -B build-PICO -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=PICO \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
+
+
+          cd ../build-PICO
+          make
+          cd ..          
 
           # PIMORONI_PICOLIPO_4MB
           cmake -S ports/rp2 -B build-PIMORONI_PICOLIPO_4MB -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=PIMORONI_PICOLIPO_4MB \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
+          cd ../build-PIMORONI_PICOLIPO_4MB
+          make
+          cd ..          
+
           # PIMORONI_PICOLIPO_16MB
           cmake -S ports/rp2 -B build-PIMORONI_PICOLIPO_16MB -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=PIMORONI_PICOLIPO_16MB \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
+
+
+          cd ../build-PIMORONI_PICOLIPO_16MB
+          make
+          cd ..          
 
           # PIMORONI_TINY2040
           cmake -S ports/rp2 -B build-PIMORONI_TINY2040 -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=PIMORONI_TINY2040 \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
+          cd ../build-PIMORONI_TINY2040
+          make
+          cd ..          
+
           # SPARKFUN_PROMICRO
           cmake -S ports/rp2 -B build-SPARKFUN_PROMICRO -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=SPARKFUN_PROMICRO \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
+
+          cd ../build-SPARKFUN_PROMICRO
+          make
+          cd ..          
 
           # SPARKFUN_THINGPLUS
           cmake -S ports/rp2 -B build-SPARKFUN_THINGPLUS -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=SPARKFUN_THINGPLUS \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
-          cd build-ADAFRUIT_FEATHER_RP2040
-          make
-
-          cd ../build-ADAFRUIT_ITSYBITSY_RP2040
-          make
-
-          cd ../build-ADAFRUIT_QTPY_RP2040
-          make
-
-          cd ../build-PICO
-          make
-
-          cd ../build-PIMORONI_PICOLIPO_4MB
-          make
-
-          cd ../build-PIMORONI_PICOLIPO_16MB
-          make
-
-          cd ../build-PIMORONI_TINY2040
-          make
-
-          cd ../build-SPARKFUN_PROMICRO
-          make
-
           cd ../build-SPARKFUN_THINGPLUS
           make
-
-
+          
       - name: Archive ADAFRUIT_FEATHER_RP2040 firmware
         uses: actions/upload-artifact@v2
         with:
