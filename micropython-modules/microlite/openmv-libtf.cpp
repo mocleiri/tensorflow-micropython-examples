@@ -4,7 +4,7 @@
  */
 
 #include "tensorflow/lite/micro/all_ops_resolver.h"
-#include "tensorflow/lite/micro/micro_error_reporter.h"
+#include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
@@ -89,8 +89,7 @@ extern "C" {
         tflite::MicroInterpreter *interpreter = new tflite::MicroInterpreter(model, 
                                              resolver, 
                                              (uint8_t*)microlite_interpreter->tensor_area->items, 
-                                             microlite_interpreter->tensor_area->len, 
-                                             error_reporter);
+                                             microlite_interpreter->tensor_area->len);
 
         if (interpreter->AllocateTensors() != kTfLiteOk) {
             error_reporter->Report("AllocateTensors() failed!");

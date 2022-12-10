@@ -36,12 +36,17 @@ if(IDF_TARGET STREQUAL "esp32s3")
   set(MICROLITE_PLATFORM "ESP32S3")
 endif()
 
+if(IDF_TARGET STREQUAL "esp32c3")
+  set(MICROLITE_PLATFORM "ESP32C3")
+endif()
 
 get_filename_component(TENSORFLOW_DIR ${PROJECT_DIR}/../../../tensorflow ABSOLUTE)
 
 add_library(microlite INTERFACE)
 
-if (MICROLITE_PLATFORM STREQUAL "ESP32" OR MICROLITE_PLATFORM STREQUAL "ESP32S3")
+if (MICROLITE_PLATFORM STREQUAL "ESP32" OR 
+    MICROLITE_PLATFORM STREQUAL "ESP32S3" OR
+    MICROLITE_PLATFORM STREQUAL "ESP32C3")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
@@ -55,7 +60,7 @@ endif()
 #     DEPENDS MICROPY_FORCE_BUILD
 # )
 
-if (MICROLITE_PLATFORM STREQUAL "ESP32" OR MICROLITE_PLATFORM STREQUAL "ESP32S3")
+if (MICROLITE_PLATFORM STREQUAL "ESP32" OR MICROLITE_PLATFORM STREQUAL "ESP32S3"  OR MICROLITE_PLATFORM STREQUAL "ESP32C3")
     set (TF_MICROLITE_LOG 
         ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/debug_log.cpp
         ${CMAKE_CURRENT_LIST_DIR}/tflm/tensorflow/lite/micro/micro_time.cpp
@@ -102,6 +107,8 @@ file(GLOB TF_LITE_KERNELS_SRCS
           "${TF_LITE_DIR}/kernels/*.cpp"
           "${TF_LITE_DIR}/kernels/internal/*.c"
           "${TF_LITE_DIR}/kernels/internal/*.cpp"
+          "${TF_LITE_DIR}/kernels/internal/reference/*.c"
+          "${TF_LITE_DIR}/kernels/internal/reference/*.cpp"
           )
 
 # lite schema 
@@ -137,6 +144,12 @@ file(GLOB TF_MICRO_KERNELS_SRCS
 file(GLOB TF_MICRO_MEMORY_PLANNER_SRCS
           "${TF_MICRO_DIR}/memory_planner/*.cpp"
           "${TF_MICRO_DIR}/memory_planner/*.c")
+
+# tflite_bridge
+
+file(GLOB TF_MICRO_TFLITE_BRIDGE_SRCS
+          "${TF_MICRO_DIR}/tflite_bridge/*.cpp"
+          "${TF_MICRO_DIR}/tflite_bridge/*.c")
 
 set (BOARD_ADDITIONAL_SRCS "")
 
@@ -266,6 +279,7 @@ target_sources(microlite INTERFACE
     ${TF_MICRO_ARENA_ALLOCATOR_SRCS}
     ${TF_MICRO_KERNELS_SRCS}
     ${TF_MICRO_MEMORY_PLANNER_SRCS}
+    ${TF_MICRO_TFLITE_BRIDGE_SRCS}
 
     ${TF_MICROLITE_LOG}
 
@@ -295,6 +309,7 @@ target_sources(microlite INTERFACE
     ${TF_MICRO_ARENA_ALLOCATOR_SRCS}
     ${TF_MICRO_KERNELS_SRCS}
     ${TF_MICRO_MEMORY_PLANNER_SRCS}
+    ${TF_MICRO_TFLITE_BRIDGE_SRCS}
 
     ${TF_MICROLITE_LOG}
 
