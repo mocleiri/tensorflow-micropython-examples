@@ -107,6 +107,8 @@ file(GLOB TF_LITE_KERNELS_SRCS
           "${TF_LITE_DIR}/kernels/*.cpp"
           "${TF_LITE_DIR}/kernels/internal/*.c"
           "${TF_LITE_DIR}/kernels/internal/*.cpp"
+          "${TF_LITE_DIR}/kernels/internal/reference/*.c"
+          "${TF_LITE_DIR}/kernels/internal/reference/*.cpp"
           )
 
 # lite schema 
@@ -142,6 +144,12 @@ file(GLOB TF_MICRO_KERNELS_SRCS
 file(GLOB TF_MICRO_MEMORY_PLANNER_SRCS
           "${TF_MICRO_DIR}/memory_planner/*.cpp"
           "${TF_MICRO_DIR}/memory_planner/*.c")
+
+# tflite_bridge
+
+file(GLOB TF_MICRO_TFLITE_BRIDGE_SRCS
+          "${TF_MICRO_DIR}/tflite_bridge/*.cpp"
+          "${TF_MICRO_DIR}/tflite_bridge/*.c")
 
 set (BOARD_ADDITIONAL_SRCS "")
 
@@ -271,6 +279,7 @@ target_sources(microlite INTERFACE
     ${TF_MICRO_ARENA_ALLOCATOR_SRCS}
     ${TF_MICRO_KERNELS_SRCS}
     ${TF_MICRO_MEMORY_PLANNER_SRCS}
+    ${TF_MICRO_TFLITE_BRIDGE_SRCS}
 
     ${TF_MICROLITE_LOG}
 
@@ -300,6 +309,7 @@ target_sources(microlite INTERFACE
     ${TF_MICRO_ARENA_ALLOCATOR_SRCS}
     ${TF_MICRO_KERNELS_SRCS}
     ${TF_MICRO_MEMORY_PLANNER_SRCS}
+    ${TF_MICRO_TFLITE_BRIDGE_SRCS}
 
     ${TF_MICROLITE_LOG}
 
