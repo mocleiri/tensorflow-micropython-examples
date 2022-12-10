@@ -92,7 +92,7 @@ jobs:
           cmake -S ports/rp2 -B build-ADAFRUIT_ITSYBITSY_RP2040 -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=ADAFRUIT_ITSYBITSY_RP2040 \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
-          cd ../build-ADAFRUIT_ITSYBITSY_RP2040
+          cd build-ADAFRUIT_ITSYBITSY_RP2040
           make
           cd ..
 
@@ -100,7 +100,7 @@ jobs:
           cmake -S ports/rp2 -B build-ADAFRUIT_QTPY_RP2040 -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=ADAFRUIT_QTPY_RP2040 \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
-          cd ../build-ADAFRUIT_QTPY_RP2040
+          cd build-ADAFRUIT_QTPY_RP2040
           make
           cd ..
 
@@ -109,7 +109,7 @@ jobs:
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
 
-          cd ../build-PICO
+          cd build-PICO
           make
           cd ..          
 
@@ -117,7 +117,7 @@ jobs:
           cmake -S ports/rp2 -B build-PIMORONI_PICOLIPO_4MB -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=PIMORONI_PICOLIPO_4MB \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
-          cd ../build-PIMORONI_PICOLIPO_4MB
+          cd build-PIMORONI_PICOLIPO_4MB
           make
           cd ..          
 
@@ -126,7 +126,7 @@ jobs:
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
 
-          cd ../build-PIMORONI_PICOLIPO_16MB
+          cd build-PIMORONI_PICOLIPO_16MB
           make
           cd ..          
 
@@ -134,7 +134,7 @@ jobs:
           cmake -S ports/rp2 -B build-PIMORONI_TINY2040 -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=PIMORONI_TINY2040 \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
-          cd ../build-PIMORONI_TINY2040
+          cd build-PIMORONI_TINY2040
           make
           cd ..          
 
@@ -142,7 +142,7 @@ jobs:
           cmake -S ports/rp2 -B build-SPARKFUN_PROMICRO -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=SPARKFUN_PROMICRO \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
-          cd ../build-SPARKFUN_PROMICRO
+          cd build-SPARKFUN_PROMICRO
           make
           cd ..          
 
@@ -150,7 +150,7 @@ jobs:
           cmake -S ports/rp2 -B build-SPARKFUN_THINGPLUS -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=SPARKFUN_THINGPLUS \
                     -DUSER_C_MODULES=/home/runner/work/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython-modules/micropython.cmake
 
-          cd ../build-SPARKFUN_THINGPLUS
+          cd build-SPARKFUN_THINGPLUS
           make
           
       - name: Archive ADAFRUIT_FEATHER_RP2040 firmware
