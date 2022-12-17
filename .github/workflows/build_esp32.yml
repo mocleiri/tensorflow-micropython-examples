@@ -91,14 +91,16 @@ jobs:
           rm -rf builds
           idf.py clean build
 
+          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
+          ../../../micropython/ports/esp32
+
       - name: Archive ESP32-MICROLITE firmware
         uses: actions/upload-artifact@v2
         with:
           name: microlite-esp32-firmware
           path: |
-            boards/esp32/MICROLITE/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE/build/micropython.bin
+            boards/esp32/MICROLITE/build/firmware.bin
+
       - name: Build with psram support and 16MB Flash firmware
         run: |
           source ./esp-idf/export.sh
@@ -110,14 +112,15 @@ jobs:
           rm -rf build
           idf.py clean build
 
+          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
+          ../../../micropython/ports/esp32
+
       - name: Archive ESP32-MICROLITE-SPIRAM-16M firmware
         uses: actions/upload-artifact@v2
         with:
           name: microlite-spiram-16m-esp32-firmware
           path: |
-            boards/esp32/MICROLITE_SPIRAM_16M/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE_SPIRAM_16M/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE_SPIRAM_16M/build/micropython.bin
+            boards/esp32/MICROLITE_SPIRAM_16M/build/firmware.bin
 
       - name: Build with psram support
         run: |
@@ -129,15 +132,17 @@ jobs:
           echo "Building MICROLITE_SPIRAM"
           rm -rf build
           idf.py clean build
+          
+          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
+          ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE-SPIRAM firmware
         uses: actions/upload-artifact@v2
         with:
           name: microlite-spiram-esp32-firmware
           path: |
-            boards/esp32/MICROLITE_SPIRAM/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE_SPIRAM/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE_SPIRAM/build/micropython.bin
+            boards/esp32/MICROLITE_SPIRAM/build/firmware.bin
+
       - name: Build MICROLITE_SPIRAM_CAM
         run: |
           
@@ -150,11 +155,12 @@ jobs:
           rm -rf builds
           idf.py clean build
 
+          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
+          ../../../micropython/ports/esp32
+
       - name: Archive ESP32-MICROLITE_SPIRAM_CAM firmware
         uses: actions/upload-artifact@v2
         with:
           name: microlite-spiram-cam-esp32-firmware
           path: |
-            boards/esp32/MICROLITE_SPIRAM_CAM/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE_SPIRAM_CAM/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE_SPIRAM_CAM/build/micropython.bin    
+            boards/esp32/MICROLITE_SPIRAM_CAM/build/firmware.bin    
