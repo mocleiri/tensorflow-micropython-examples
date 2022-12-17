@@ -118,3 +118,4 @@ jobs:
             micropython/ports/esp32/build-GENERIC_C3/partition_table/partition-table.bin
             micropython/ports/esp32/build-GENERIC_C3/micropython.bin
 
+

@@ -12,7 +12,7 @@ on:
       - '.github/workflows/build_unix.yml'
 
 jobs:
-  tensorflow_micropython_esp32s3_build:
+  tensorflow_micropython_esp32s3s2c3_build:
     runs-on: ubuntu-latest
 
     steps:
@@ -158,3 +158,27 @@ jobs:
             boards/esp32/MICROLITE_S3_SPIRAM_OCTAL/build/bootloader/bootloader.bin
             boards/esp32/MICROLITE_S3_SPIRAM_OCTAL/build/partition_table/partition-table.bin
             boards/esp32/MICROLITE_S3_SPIRAM_OCTAL/build/micropython.bin
+
+      - name: Build ESP32 S2 with SPIRAM
+        run: |
+         source ./esp-idf/export.sh
+
+          echo "cd ./boards/esp32/MICROLITE_S2_SPIRAM"
+          cd ./boards/esp32/MICROLITE_S2_SPIRAM
+
+          echo "Building MICROLITE_S2_SPIRAM"
+          rm -rf builds
+          idf.py clean build
+
+          
+
+      - name: Archive ESP32-MICROLITE_S2_SPIRAM firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: microlite-esp3223-spiram-firmware
+          path: |
+            boards/esp32/MICROLITE_S2_SPIRAM/build/bootloader/bootloader.bin
+            boards/esp32/MICROLITE_S2_SPIRAM/build/partition_table/partition-table.bin
+            boards/esp32/MICROLITE_S2_SPIRAM/build/micropython.bin
+          
+ 
