@@ -12,7 +12,7 @@ on:
       - '.github/workflows/build_unix.yml'
 
 jobs:
-  tensorflow_micropython_esp32s3_build:
+  tensorflow_micropython_esp32_s3_build:
     runs-on: ubuntu-latest
 
     steps:
@@ -81,80 +81,88 @@ jobs:
 
       - name: Build standard non-ps ram ESP32 S3 8MB FLASH
         run: |
+          
           source ./esp-idf/export.sh
-
+          
           echo "cd ./boards/esp32/MICROLITE_S3"
           cd ./boards/esp32/MICROLITE_S3
-
-          echo "Building MICROLITE_S3"
-          rm -rf build
+          
+          echo "Building ESP32-MICROLITE_S3"
+          rm -rf builds
           idf.py clean build
 
-      - name: Archive ESP32-S3  MICROLITE firmware
+          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
+          ../../../micropython/ports/esp32
+
+      - name: Archive ESP32-MICROLITE_S3 firmware
         uses: actions/upload-artifact@v2
         with:
-          name: microlite-esp32-s3-firmware
+          name: microlite-esp32s3-firmware
           path: |
-            boards/esp32/MICROLITE_S3/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE_S3/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE_S3/build/micropython.bin
+            boards/esp32/MICROLITE_S3/build/firmware.bin    
 
       - name: Build ESP32 S3 psram support and 8MB Flash firmware
         run: |
+          
           source ./esp-idf/export.sh
-
+          
           echo "cd ./boards/esp32/MICROLITE_S3_SPIRAM"
           cd ./boards/esp32/MICROLITE_S3_SPIRAM
-
-          echo "Building MICROLITE_S3_SPIRAM"
+          
+          echo "Building ESP32-MICROLITE_S3_SPIRAM"
           rm -rf builds
           idf.py clean build
+
+          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
+          ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE_S3_SPIRAM firmware
         uses: actions/upload-artifact@v2
         with:
-          name: microlite-esp32-s3-spiram-firmware
+          name: microlite-esp32s3-spiram-firmware
           path: |
-            boards/esp32/MICROLITE_S3_SPIRAM/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE_S3_SPIRAM/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE_S3_SPIRAM/build/micropython.bin
+            boards/esp32/MICROLITE_S3_SPIRAM/build/firmware.bin    
 
       - name: Build ESP32 S3 psram support and 8MB Flash firmware - spiram cs gpio 20
         run: |
+          
           source ./esp-idf/export.sh
-
+          
           echo "cd ./boards/esp32/MICROLITE_S3_SPIRAM_CS_GPIO_20"
           cd ./boards/esp32/MICROLITE_S3_SPIRAM_CS_GPIO_20
-
-          echo "Building MICROLITE_S3_SPIRAM_CS_GPIO_20"
+          
+          echo "Building ESP32-MICROLITE_S3_SPIRAM_CS_GPIO_20"
           rm -rf builds
           idf.py clean build
+
+          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
+          ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE_S3_SPIRAM_CS_GPIO_20 firmware
         uses: actions/upload-artifact@v2
         with:
           name: microlite-esp32-s3-spiram-cs-gpio-20-firmware
           path: |
-            boards/esp32/MICROLITE_S3_SPIRAM_CS_GPIO_20/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE_S3_SPIRAM_CS_GPIO_20/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE_S3_SPIRAM_CS_GPIO_20/build/micropython.bin
+            boards/esp32/MICROLITE_S3_SPIRAM_CS_GPIO_20/build/firmware.bin    
 
       - name: Build ESP32 S3 psram support and 8MB Flash firmware - OCTAL SPIRAM
         run: |
+          
           source ./esp-idf/export.sh
-
+          
           echo "cd ./boards/esp32/MICROLITE_S3_SPIRAM_OCTAL"
           cd ./boards/esp32/MICROLITE_S3_SPIRAM_OCTAL
-
-          echo "Building MICROLITE_S3_SPIRAM_OCTAL"
+          
+          echo "Building ESP32-MICROLITE_S3_SPIRAM_OCTAL"
           rm -rf builds
           idf.py clean build
+
+          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
+          ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE_S3_SPIRAM_OCTAL firmware
         uses: actions/upload-artifact@v2
         with:
-          name: microlite-esp32-s3-spiram-octal-firmware
+          name:  microlite-esp32-s3-spiram-octal-firmware
           path: |
-            boards/esp32/MICROLITE_S3_SPIRAM_OCTAL/build/bootloader/bootloader.bin
-            boards/esp32/MICROLITE_S3_SPIRAM_OCTAL/build/partition_table/partition-table.bin
-            boards/esp32/MICROLITE_S3_SPIRAM_OCTAL/build/micropython.bin
+            boards/esp32/MICROLITE_S3_SPIRAM_OCTAL/build/firmware.bin    

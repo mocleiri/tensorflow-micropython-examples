@@ -11,7 +11,7 @@ on:
       - ".github/workflows/build_unix.yml"
 
 jobs:
-  tensorflow_micropython_esp32_build:
+  tensorflow_micropython_esp32_c3_build:
     runs-on: ubuntu-latest
 
     steps:
@@ -80,41 +80,46 @@ jobs:
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
 
-      - name: Build generic C3 with jtag usb
+      - name: Build ESP32-MICROLITE_C3
         run: |
-          source ./esp-idf/export.sh
-
-          MICROLITE_DIR=$(pwd)/micropython-modules
-          cd micropython
-          echo "make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3_USB"
-          make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3_USB
           
-
-      - name: Archive ESP32-MICROLITE_C3_USB firmware
-        uses: actions/upload-artifact@v2
-        with:
-          name: microlite-esp32c3-usb-firmware
-          path: |
-            micropython/ports/esp32/build-GENERIC_C3_USB/bootloader/bootloader.bin
-            micropython/ports/esp32/build-GENERIC_C3_USB/partition_table/partition-table.bin
-            micropython/ports/esp32/build-GENERIC_C3_USB/micropython.bin
-
-      - name: Build generic C3
-        run: |
           source ./esp-idf/export.sh
-
-          MICROLITE_DIR=$(pwd)/micropython-modules
-          cd micropython
-          echo "make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3"
-          make -C ports/esp32 USER_C_MODULES=$MICROLITE_DIR/micropython.cmake BOARD=GENERIC_C3
           
+          echo "cd ./boards/esp32/MICROLITE_C3"
+          cd ./boards/esp32/MICROLITE_C3
+          
+          echo "Building ESP32-MICROLITE_C3"
+          rm -rf builds
+          idf.py clean build
+
+          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
+          ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE_C3 firmware
         uses: actions/upload-artifact@v2
         with:
           name: microlite-esp32c3-firmware
           path: |
-            micropython/ports/esp32/build-GENERIC_C3/bootloader/bootloader.bin
-            micropython/ports/esp32/build-GENERIC_C3/partition_table/partition-table.bin
-            micropython/ports/esp32/build-GENERIC_C3/micropython.bin
+            boards/esp32/MICROLITE_C3/build/firmware.bin    
 
+      - name: Build ESP32-MICROLITE_C3_USB
+        run: |
+          
+          source ./esp-idf/export.sh
+          
+          echo "cd ./boards/esp32/MICROLITE_C3_USB"
+          cd ./boards/esp32/MICROLITE_C3_USB
+          
+          echo "Building ESP32 MICROLITE_C3_USB"
+          rm -rf builds
+          idf.py clean build
+
+          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
+          ../../../micropython/ports/esp32
+
+      - name: Archive ESP32-MICROLITE_C3_USB firmware
+        uses: actions/upload-artifact@v2
+        with:
+          name: microlite-esp32c3-usb-firmware
+          path: |
+            boards/esp32/MICROLITE_C3_USB/build/firmware.bin    
