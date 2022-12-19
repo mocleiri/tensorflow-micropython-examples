@@ -4,6 +4,9 @@
 #define MICROPY_PY_BLUETOOTH                (0)
 #define MICROPY_HW_ENABLE_SDCARD            (0)
 
+// Enable UART REPL for modules that have an external USB-UART and don't use native USB.
+#define MICROPY_HW_ENABLE_UART_REPL         (1)
+
 // these were from the um_tiny s2 double check if they match the ESP32S2DEVKITM1R
 // #define MICROPY_HW_I2C0_SCL (9)
 // #define MICROPY_HW_I2C0_SDA (8)
