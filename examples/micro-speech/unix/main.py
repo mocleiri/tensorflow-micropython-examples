@@ -17,7 +17,7 @@ model_file.close()
 
 currentFeatureData = None
 
-def input_callback (microlite_interpreter):
+def input_callback (inputTensor):
 
     # print ("input callback")
     # can't print the tensor directly because it is not an mp_obj_t
@@ -25,7 +25,6 @@ def input_callback (microlite_interpreter):
     # we may be able to put the pointer directly as a field in the interpreter class
     # print (input_tensor)
 
-    inputTensor = microlite_interpreter.getInputTensor(0)
 
     currentFeatureData.setInputTensorValues(inputTensor)
 
@@ -61,10 +60,8 @@ def maxIndex ():
 
     return maxIndex
 
-def output_callback (microlite_interpreter):
+def output_callback (outputTensor):
     # print ("output callback")
-
-    outputTensor = microlite_interpreter.getOutputTensor(0)
 
     # we expect there to be a category
 

@@ -34,15 +34,13 @@ model_file.close()
 
 
 
-def input_callback (microlite_interpreter):
+def input_callback (inputTensor):
 
 	# print ("input callback")
 	# can't print the tensor directly because it is not an mp_obj_t
 	# we probably need to define a container object that will hold the TfLiteTensor pointer
 	# we may be able to put the pointer directly as a field in the interpreter class
 	# print (input_tensor)
-
-	inputTensor = microlite_interpreter.getInputTensor(0)
 
 	featureData.setInputTensorValues(inputTensor)
 
@@ -172,10 +170,8 @@ class Results:
 
 results = Results()
 
-def output_callback (microlite_interpreter):
+def output_callback (outputTensor):
 	# print ("output callback")
-
-	outputTensor = microlite_interpreter.getOutputTensor(0)
 
 	# we expect there to be a category
 

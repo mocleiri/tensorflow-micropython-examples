@@ -39,6 +39,7 @@ extern "C" {
 #include "py/objstr.h"
 #include "py/objarray.h"
 
+#include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/experimental/microfrontend/lib/frontend.h"
 #include "tensorflow/lite/experimental/microfrontend/lib/frontend_util.h"
 
@@ -56,9 +57,7 @@ typedef struct _microlite_interpreter_obj_t {
     mp_obj_base_t base;
     mp_obj_array_t  *model_data;
     mp_obj_array_t  *tensor_area;
-    mp_obj_t tf_interpreter;
     mp_obj_t tf_model;
-    mp_obj_t tf_error_reporter;
     int16_t inference_count;
     mp_obj_t input_callback;
     mp_obj_t output_callback;
@@ -67,7 +66,6 @@ typedef struct _microlite_interpreter_obj_t {
 typedef struct _microlite_tensor_obj_t {
     mp_obj_base_t base;    
     mp_obj_t tf_tensor;
-    microlite_interpreter_obj_t *microlite_interpreter;
 } microlite_tensor_obj_t;
 
 typedef struct _microlite_audio_frontend_obj_t {
@@ -78,6 +76,8 @@ typedef struct _microlite_audio_frontend_obj_t {
 
 mp_obj_t audio_frontend_execute (mp_obj_t self_in, mp_obj_t input);
 mp_obj_t audio_frontend_configure (mp_obj_t self_in);
+
+mp_obj_t interpreter_tensor_new(TfLiteTensor *tf_tensor);
 
 #ifdef __cplusplus
 }

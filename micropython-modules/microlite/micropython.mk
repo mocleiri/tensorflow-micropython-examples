@@ -132,11 +132,11 @@ ifeq ($(TF_BOARD),CMSIS_NN)
 
 SRC_USERMOD += $(MICROLITE_MOD_DIR)/../../micropython/shared/libc/__errno.c
 
-SRC_USERMOD += $(MICROLITE_MOD_DIR)/xalloc.c
-SRC_USERMOD += $(MICROLITE_MOD_DIR)/mpy_heap_malloc.c
-SRC_USERMOD += $(MICROLITE_MOD_DIR)/bare-metal-gc-heap.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/xalloc.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/mpy_heap_malloc.c
+# SRC_USERMOD += $(MICROLITE_MOD_DIR)/bare-metal-gc-heap.c
 
-SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/mpy_heap_new_delete.cpp
+# SRC_USERMOD_CXX += $(MICROLITE_MOD_DIR)/mpy_heap_new_delete.cpp
 
 # LIBC_FILE_NAME   = $(shell $(CC) $(CFLAGS_USERMOD) -print-file-name=libc.a)
 

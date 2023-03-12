@@ -10,6 +10,8 @@
 #ifndef __OPENMV_LIBTF_H
 #define __OPENMV_LIBTF_H
 
+#define LIBTF_TENSOR_ARENA_ALIGNMENT 16
+
 #ifdef __cplusplus
 extern "C" {
 #endif

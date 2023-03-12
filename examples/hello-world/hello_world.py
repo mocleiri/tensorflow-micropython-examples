@@ -10,11 +10,9 @@ steps = 1000
 current_input = None
 
 
-def input_callback (microlite_interpreter):
+def input_callback (inputTensor):
 
     global current_input
-
-    inputTensor = microlite_interpreter.getInputTensor(0)
 
     # print (inputTensor)
 
@@ -31,13 +29,9 @@ def input_callback (microlite_interpreter):
 
     inputTensor.setValue(0, x_quantized)
 
-def output_callback (microlite_interpreter):
+def output_callback (outputTensor):
     global current_input
     # print ("output callback")
-
-    outputTensor = microlite_interpreter.getOutputTensor(0)
-
-    # print (outputTensor)
 
     y_quantized = outputTensor.getValue(0)
 

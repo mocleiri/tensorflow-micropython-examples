@@ -47,14 +47,12 @@ def handle_output(person):
 		# if m5 timer camera
         # flash_light.off()
         
-def input_callback (microlite_interpreter):    
-	inputTensor = microlite_interpreter.getInputTensor(0)
+def input_callback (inputTensor):    
 	for i in range (0, len(test_image)):
 		inputTensor.setValue(i, test_image[i])
 	print ("setup %d bytes on the inputTensor." % (len(test_image)))
 
-def output_callback (microlite_interpreter):
-	outputTensor = microlite_interpreter.getOutputTensor(0)
+def output_callback (outputTensor):
 	not_a_person = outputTensor.getValue(0)
 	person = outputTensor.getValue(1)
 	print ("'not a person' = %d, 'person' = %d" % (not_a_person, person))
