@@ -28,6 +28,13 @@ if (PICO_SDK_PATH)
   set(MICROLITE_PLATFORM "RP2")
 endif()
 
+if(NOT MICROPY_DIR)
+    get_filename_component(MICROPY_DIR ${PROJECT_DIR}/../.. ABSOLUTE)
+endif()
+
+# `py.cmake` for `micropy_gather_target_properties` macro usage
+include(${MICROPY_DIR}/py/py.cmake)
+
 include (${CMAKE_CURRENT_LIST_DIR}/micropython_esp.cmake)
 
 get_filename_component(TENSORFLOW_DIR ${PROJECT_DIR}/../../../tensorflow ABSOLUTE)
@@ -448,3 +455,4 @@ target_compile_options(microlite INTERFACE
 endif()
 
 target_link_libraries(usermod INTERFACE microlite)
+micropy_gather_target_properties(microlite)
