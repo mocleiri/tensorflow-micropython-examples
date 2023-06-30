@@ -24,7 +24,14 @@
 # THE SOFTWARE.
 #
 
-include(${CMAKE_CURRENT_LIST_DIR}/microlite/micropython.cmake)
+if (PICO_SDK_PATH)
+  include(${CMAKE_CURRENT_LIST_DIR}/microlite/micropython_rp2.cmake)
+endif()
+
+if(IDF_TARGET)
+    include(${CMAKE_CURRENT_LIST_DIR}/microlite/micropython_esp.cmake)
+endif()
+
 
 # disabled.  will  be incorporated into microlite in #36
 # include(${CMAKE_CURRENT_LIST_DIR}/audio_frontend/micropython.cmake)

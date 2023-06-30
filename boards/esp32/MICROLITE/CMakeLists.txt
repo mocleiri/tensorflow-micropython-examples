@@ -12,6 +12,8 @@ message (STATUS "PROJECT_DIR=${PROJECT_DIR}")
 message (STATUS "MICROPY_PORT_DIR=${MICROPY_PORT_DIR}")
 message (STATUS "MICROPY_BOARD_DIR=${MICROPY_BOARD_DIR}")
 
+set(EXTRA_COMPONENT_DIRS ../../../tflm_esp_kernels/components)
+
 # Define the output sdkconfig so it goes in the build directory.
 set(SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig)
 
