@@ -28,6 +28,9 @@ jobs:
           cd ports/esp32
           make BOARD= submodules
           cd ../../..
+          cd tflm_esp_kernels
+          git submodule update --init components/esp32-camera
+          git submodule update --init components/esp-nn
       - name: Get Cache Keys
         # later get this like this: git ls-remote --heads https://github.com/espressif/esp-idf
         # this commit is hard-coded in micropython/tools/ci.sh
@@ -71,7 +74,7 @@ jobs:
           cd ./tensorflow
 
           ../micropython-modules/microlite/prepare-tflm-esp.sh
-          
+
       - name: Build micropython cross compiler
         run:  |
           source ./esp-idf/export.sh
@@ -81,12 +84,12 @@ jobs:
 
       - name: Build ESP32 S2 with SPIRAM
         run: |
-          
+
           source ./esp-idf/export.sh
-          
+
           echo "cd ./boards/esp32/MICROLITE_S2_SPIRAM"
           cd ./boards/esp32/MICROLITE_S2_SPIRAM
-          
+
           echo "Building ESP32 MICROLITE_S2_SPIRAM"
           rm -rf builds
           idf.py clean build
@@ -99,6 +102,5 @@ jobs:
         with:
           name: microlite-esp32s2-spiram-firmware
           path: |
-            boards/esp32/MICROLITE_S2_SPIRAM/build/firmware.bin    
-          
- 
+            boards/esp32/MICROLITE_S2_SPIRAM/build/firmware.bin
+

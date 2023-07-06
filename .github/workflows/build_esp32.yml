@@ -29,6 +29,7 @@ jobs:
           cd ../../..
           cd tflm_esp_kernels
           git submodule update --init components/esp32-camera
+          git submodule update --init components/esp-nn
       - name: Get Cache Keys
         # later get this like this: git ls-remote --heads https://github.com/espressif/esp-idf
         # this commit is hard-coded in micropython/tools/ci.sh
@@ -132,7 +133,7 @@ jobs:
           echo "Building MICROLITE_SPIRAM"
           rm -rf build
           idf.py clean build
-          
+
           ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
           ../../../micropython/ports/esp32
 
@@ -145,12 +146,12 @@ jobs:
 
       - name: Build MICROLITE_SPIRAM_CAM
         run: |
-          
+
           source ./esp-idf/export.sh
-          
+
           echo "cd ./boards/esp32/MICROLITE_SPIRAM_CAM"
           cd ./boards/esp32/MICROLITE_SPIRAM_CAM
-          
+
           echo "Building MICROLITE_SPIRAM_CAM"
           rm -rf builds
           idf.py clean build
@@ -163,4 +164,4 @@ jobs:
         with:
           name: microlite-spiram-cam-esp32-firmware
           path: |
-            boards/esp32/MICROLITE_SPIRAM_CAM/build/firmware.bin    
+            boards/esp32/MICROLITE_SPIRAM_CAM/build/firmware.bin

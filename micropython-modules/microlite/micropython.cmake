@@ -398,7 +398,7 @@ target_compile_options(microlite INTERFACE
     -Wno-error=maybe-uninitialized
 )
 
-else()
+else() # not "RP2"
 if (CONFIG_IDF_TARGET)
 target_include_directories(microlite INTERFACE
     ${TF_ESP_DIR}
@@ -452,6 +452,9 @@ target_compile_options(microlite INTERFACE
     -Wno-error=maybe-uninitialized
 )
 
+if (CONFIG_IDF_TARGET_ESP32S3) # Extra compile options needed to build esp-nn ASM for ESP32-S3
+    target_compile_options(microlite INTERFACE -mlongcalls -fno-unroll-loops -Wno-unused-function)
+endif()
 endif()
 
 target_link_libraries(usermod INTERFACE microlite)

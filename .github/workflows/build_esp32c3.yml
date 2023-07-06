@@ -29,6 +29,7 @@ jobs:
           cd ../../..
           cd tflm_esp_kernels
           git submodule update --init components/esp32-camera
+          git submodule update --init components/esp-nn
       - name: Get Cache Keys
         # later get this like this: git ls-remote --heads https://github.com/espressif/esp-idf
         # this commit is hard-coded in micropython/tools/ci.sh
@@ -82,12 +83,12 @@ jobs:
 
       - name: Build ESP32-MICROLITE_C3
         run: |
-          
+
           source ./esp-idf/export.sh
-          
+
           echo "cd ./boards/esp32/MICROLITE_C3"
           cd ./boards/esp32/MICROLITE_C3
-          
+
           echo "Building ESP32-MICROLITE_C3"
           rm -rf builds
           idf.py clean build
@@ -100,16 +101,16 @@ jobs:
         with:
           name: microlite-esp32c3-firmware
           path: |
-            boards/esp32/MICROLITE_C3/build/firmware.bin    
+            boards/esp32/MICROLITE_C3/build/firmware.bin
 
       - name: Build ESP32-MICROLITE_C3_USB
         run: |
-          
+
           source ./esp-idf/export.sh
-          
+
           echo "cd ./boards/esp32/MICROLITE_C3_USB"
           cd ./boards/esp32/MICROLITE_C3_USB
-          
+
           echo "Building ESP32 MICROLITE_C3_USB"
           rm -rf builds
           idf.py clean build
@@ -122,4 +123,4 @@ jobs:
         with:
           name: microlite-esp32c3-usb-firmware
           path: |
-            boards/esp32/MICROLITE_C3_USB/build/firmware.bin    
+            boards/esp32/MICROLITE_C3_USB/build/firmware.bin
