@@ -70,7 +70,7 @@ STATIC mp_obj_t tensor_get_tensor_type (mp_obj_t self_in, mp_obj_t index_obj) {
 
     TfLiteTensor * tensor = (TfLiteTensor *)self->tf_tensor;
 
-    char *type = TfLiteTypeGetName(tensor->type);
+    const char *type = TfLiteTypeGetName(tensor->type);
 
     return mp_obj_new_str(type, strlen(type));
 
@@ -212,13 +212,13 @@ STATIC const mp_rom_map_elem_t tensor_locals_dict_table[] = {
 
 STATIC MP_DEFINE_CONST_DICT(tensor_locals_dict, tensor_locals_dict_table);
 
-const mp_obj_type_t microlite_tensor_type = {
-    { &mp_type_type },
-    .name = MP_QSTR_tensor,
-    .print = tensor_print,
-    .locals_dict = (mp_obj_dict_t*)&tensor_locals_dict,
-};
-
+MP_DEFINE_CONST_OBJ_TYPE(
+    microlite_tensor_type,
+    MP_QSTR_tensor,
+    MP_TYPE_FLAG_NONE,
+    print, tensor_print,
+    locals_dict,&tensor_locals_dict
+);
 // audio_frontend
 
 STATIC mp_obj_t af_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
@@ -261,13 +261,14 @@ STATIC const mp_rom_map_elem_t audio_frontend_locals_dict_table[] = {
 
 STATIC MP_DEFINE_CONST_DICT(audio_frontend_locals_dict, audio_frontend_locals_dict_table);
 
-const mp_obj_type_t microlite_audio_frontend_type = {
-    { &mp_type_type },
-    .name = MP_QSTR_audio_frontend,
-    .make_new = af_make_new,
-    .print = af_print,
-    .locals_dict = (mp_obj_dict_t*)&audio_frontend_locals_dict,
-};
+MP_DEFINE_CONST_OBJ_TYPE(
+    microlite_audio_frontend_type,
+    MP_QSTR_audio_frontend,
+    MP_TYPE_FLAG_NONE,
+    make_new, af_make_new,
+    print, af_print,
+    locals_dict, &audio_frontend_locals_dict
+);
 
 // - microlite interpreter
 
@@ -411,14 +412,14 @@ STATIC const mp_rom_map_elem_t interpreter_locals_dict_table[] = {
 
 STATIC MP_DEFINE_CONST_DICT(interpreter_locals_dict, interpreter_locals_dict_table);
 
-const mp_obj_type_t microlite_interpreter_type = {
-    { &mp_type_type },
-    .name = MP_QSTR_interpreter,
-    .print = interpreter_print,
-    .make_new = interpreter_make_new,
-    .locals_dict = (mp_obj_dict_t*)&interpreter_locals_dict,
-};
-
+MP_DEFINE_CONST_OBJ_TYPE(
+    microlite_interpreter_type,
+    MP_QSTR_interpreter,
+    MP_TYPE_FLAG_NONE,
+    print, interpreter_print,
+    make_new, interpreter_make_new,
+    locals_dict, &interpreter_locals_dict
+);
 
 // main microlite module
 
@@ -451,4 +452,3 @@ const mp_obj_module_t microlite_cmodule = {
 MP_REGISTER_MODULE(MP_QSTR_microlite, microlite_cmodule);
 
 // #endif
-
