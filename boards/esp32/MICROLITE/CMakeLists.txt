@@ -1,16 +1,18 @@
 # Top-level cmake file for building MicroPython on ESP32.
 # Nothing in here needs to be customised, it will work for any board.
 
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.16)
 
 # Set the location of MicroPython, the esp32 port, and the board directory.
 get_filename_component(PROJECT_DIR "../../.." ABSOLUTE)
-set(MICROPY_PORT_DIR ${PROJECT_DIR}/micropython/ports/esp32)
+set(MICROPY_PORT_DIR ${PROJECT_DIR}/dependencies/micropython/ports/esp32)
 get_filename_component(MICROPY_BOARD_DIR "." ABSOLUTE)
 
 message (STATUS "PROJECT_DIR=${PROJECT_DIR}")
 message (STATUS "MICROPY_PORT_DIR=${MICROPY_PORT_DIR}")
 message (STATUS "MICROPY_BOARD_DIR=${MICROPY_BOARD_DIR}")
+
+set(EXTRA_COMPONENT_DIRS ../../../dependencies/tflite-micro-esp-examples/components)
 
 # Define the output sdkconfig so it goes in the build directory.
 set(SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig)

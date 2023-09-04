@@ -3,22 +3,19 @@
  * This work is licensed under the MIT license, see the file LICENSE for details.
  */
 
-#include "tensorflow/lite/micro/all_ops_resolver.h"
+// Copied and modified for using with newer tflite-micro sources
+
+#include "python_ops_resolver.h"
 #include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
 #include "tensorflow-microlite.h"
 #include "openmv-libtf.h"
-#include "micropython-error-reporter.h"
 #include <stdio.h>
 
 extern "C" {
-
     STATIC microlite::MicropythonErrorReporter micro_error_reporter;
-    
-
-    
 /*
  Return the index'th tensor
  */
@@ -27,11 +24,10 @@ extern "C" {
         tflite::MicroInterpreter *interpreter = (tflite::MicroInterpreter *)microlite_interpreter->tf_interpreter;
 
         return interpreter->input((size_t)index);
-        
     }
 
     TfLiteTensor *libtf_interpreter_get_output_tensor(microlite_interpreter_obj_t *microlite_interpreter, mp_uint_t index) {
-                
+
         tflite::MicroInterpreter *interpreter = (tflite::MicroInterpreter *)microlite_interpreter->tf_interpreter;
 
         return interpreter->output((size_t)index);
@@ -82,17 +78,18 @@ extern "C" {
 
 
         // tflite::MicroAllocator *allocator = tflite::MicroAllocator::Create(
-        //     (uint8_t*)microlite_interpreter->tensor_area->items, 
+        //     (uint8_t*)microlite_interpreter->tensor_area->items,
         //     microlite_interpreter->tensor_area->len, error_reporter);
 
-        tflite::AllOpsResolver resolver;
-        tflite::MicroInterpreter *interpreter = new tflite::MicroInterpreter(model, 
-                                             resolver, 
-                                             (uint8_t*)microlite_interpreter->tensor_area->items, 
+
+        tflite::PythonOpsResolver op_resolver;
+        tflite::MicroInterpreter *interpreter = new tflite::MicroInterpreter(model,
+                                             op_resolver,
+                                             (uint8_t*)microlite_interpreter->tensor_area->items,
                                              microlite_interpreter->tensor_area->len);
 
         if (interpreter->AllocateTensors() != kTfLiteOk) {
-            error_reporter->Report("AllocateTensors() failed!");
+            MicroPrintf("AllocateTensors() failed!");
             return 1;
         }
 
@@ -103,21 +100,16 @@ extern "C" {
 
     int libtf_interpreter_invoke(microlite_interpreter_obj_t *microlite_interpreter)
     {
-        
-        tflite::ErrorReporter *error_reporter = (tflite::ErrorReporter *)microlite_interpreter->tf_error_reporter;
-
         tflite::MicroInterpreter *interpreter = (tflite::MicroInterpreter *)microlite_interpreter->tf_interpreter;
 
         mp_call_function_1(microlite_interpreter->input_callback, microlite_interpreter);
 
         if (interpreter->Invoke() != kTfLiteOk) {
-            error_reporter->Report("Invoke() failed!");
+            MicroPrintf("Invoke() failed!");
             return 1;
         }
 
         mp_call_function_1(microlite_interpreter->output_callback, microlite_interpreter);
-
         return 0;
     }
-
 }

@@ -49,7 +49,7 @@ jobs:
       - name: Setup IDF
         #        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
         run: |
-          source ./micropython/tools/ci.sh && ci_esp32_setup_helper v4.3.1
+          source ./micropython/tools/ci.sh && ci_esp32_idf50_setup
       - name: Cache tflm
         id: cache-tflm
         uses: actions/cache@v2
