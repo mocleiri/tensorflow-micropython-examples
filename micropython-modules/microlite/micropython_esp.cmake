@@ -29,13 +29,14 @@ add_library(microlite INTERFACE)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
 
-set (COMPONENTS esp-tflite-micro)
+
 
 target_sources(microlite INTERFACE
 #   microlite micropython module sources
     ${CMAKE_CURRENT_LIST_DIR}/tensorflow-microlite.c
     ${CMAKE_CURRENT_LIST_DIR}/audio_frontend.c
     ${CMAKE_CURRENT_LIST_DIR}/openmv-libtf.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/python_ops_resolver.cc
 )
 
 get_filename_component(TENSORFLOW_DIR ${CMAKE_CURRENT_LIST_DIR}/../../dependencies/tflite-micro-esp-examples/components/esp-tflite-micro ABSOLUTE)

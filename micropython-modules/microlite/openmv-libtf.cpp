@@ -6,7 +6,6 @@
 // Copied and modified for using with newer tflite-micro sources
 
 #include "python_ops_resolver.h"
-#include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
 
@@ -15,7 +14,6 @@
 #include <stdio.h>
 
 extern "C" {
-    STATIC microlite::MicropythonErrorReporter micro_error_reporter;
 /*
  Return the index'th tensor
  */
@@ -58,8 +56,6 @@ extern "C" {
 
     int libtf_interpreter_init(microlite_interpreter_obj_t *microlite_interpreter) {
 
-        tflite::ErrorReporter *error_reporter = &micro_error_reporter;
-
         const tflite::Model *model = tflite::GetModel(microlite_interpreter->model_data->items);
 
 //        if (model->version() != TFLITE_SCHEMA_VERSION) {
@@ -73,7 +69,6 @@ extern "C" {
         //  }
 
 
-        microlite_interpreter->tf_error_reporter = (mp_obj_t)error_reporter;
         microlite_interpreter->tf_model = (mp_obj_t)model;
 
 
