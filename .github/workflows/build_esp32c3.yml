@@ -2,125 +2,35 @@ name: ESP32 C3
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
 on:
-  push:
   pull_request:
-    paths-ignore:
-      - "examples/**"
-      - "README.md"
-      - "ci/*unix*.sh"
-      - ".github/workflows/build_unix.yml"
+    paths:
+      - '.github/workflows/build_esp32c3.yml'
+      - "micropython-modules/microlite/**"
+      - "micropython-modules/micropython-camera-driver/**"
 
 jobs:
-  tensorflow_micropython_esp32_c3_build:
+  tensorflow_micropython_esp32c3_build:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
-      - name: Prepare to Build Tensorflow Micropython Firmware for ESP32
+        uses: actions/checkout@v4
+
+      - name: Build ESP32 MICROLITE_C3 No SPIRAM - 4MB Flash
         run: |
-          git submodule init
-          git submodule update --recursive
-          cd micropython
-          git submodule update --init lib/axtls
-          git submodule update --init lib/berkeley-db-1.xx
-          cd ports/esp32
-          make BOARD= submodules
-          cd ../../..
-          cd tflm_esp_kernels
-          git submodule update --init components/esp32-camera
-          git submodule update --init components/esp-nn
-      - name: Get Cache Keys
-        # later get this like this: git ls-remote --heads https://github.com/espressif/esp-idf
-        # this commit is hard-coded in micropython/tools/ci.sh
-        run: |
-          IDF_COMMIT=142bb32c50fa9875b8b69fa539a2d59559460d72
-          echo "esp-idf-commit=$IDF_COMMIT" >> $GITHUB_ENV
-          TFLM_COMMIT=$(git submodule status tensorflow | awk '{print ($1)}')
-          echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
-      #      - name: Cache esp-idf
-      #        id: cache-esp-idf
-      #        uses: actions/cache@v2
-      #        env:
-      #          cache-name: cache-esp-idf
-      #        with:
-      #          path: ./esp-idf
-      #          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.esp-idf-commit }}
-      - name: Setup IDF
-        #        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
-        run: |
-          source ./micropython/tools/ci.sh && ci_esp32_idf44_setup
-      - name: Cache tflm
-        id: cache-tflm
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-tflm
+          mv * ..
+          cd ..
+          source ./scripts/build.sh && prepare_dependencies
+          source ./dependencies/micropython/tools/ci.sh && ci_esp32_idf50_setup
+          echo "BUILDING MICROLITE_C3"
+          source ./scripts/build.sh && build_esp32 "MICROLITE_C3"
+          TARGET=$(pwd)/dependencies/micropython/ports/esp32
+          echo "TARGET=$TARGET"
+          ./scripts/assemble-unified-image-esp.sh $TARGET "MICROLITE_C3"
+          ls $TARGET/build-MICROLITE_C3
+        shell: bash
+
+      - name: Archive ESP32-MICROLITE_C3 No SPIRAM - 4 MB Flash firmware
+        uses: actions/upload-artifact@v3
         with:
-          path: ./micropython-modules/microlite/tflm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.tflm-commit }}
-      - name: Setup Build for Tensorflow
-#        if: steps.cache-tflm.outputs.cache-hit != 'true'
-        run: |
-
-          source ./esp-idf/export.sh
-
-          pip3 install Pillow
-          pip3 install Wave
-
-          echo "Regenerating microlite/tfm directory"
-          rm -rf ./micropython-modules/microlite/tflm
-
-          cd ./tensorflow
-
-          ../micropython-modules/microlite/prepare-tflm-esp.sh
-
-      - name: Build micropython cross compiler
-        run: |
-          source ./esp-idf/export.sh
-          cd ./micropython
-          echo "make -C mpy-cross V=1 clean all"
-          make -C mpy-cross V=1 clean all
-
-      - name: Build ESP32-MICROLITE_C3
-        run: |
-
-          source ./esp-idf/export.sh
-
-          echo "cd ./boards/esp32/MICROLITE_C3"
-          cd ./boards/esp32/MICROLITE_C3
-
-          echo "Building ESP32-MICROLITE_C3"
-          rm -rf builds
-          idf.py clean build
-
-          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
-          ../../../micropython/ports/esp32
-
-      - name: Archive ESP32-MICROLITE_C3 firmware
-        uses: actions/upload-artifact@v2
-        with:
-          name: microlite-esp32c3-firmware
-          path: |
-            boards/esp32/MICROLITE_C3/build/firmware.bin
-
-      - name: Build ESP32-MICROLITE_C3_USB
-        run: |
-
-          source ./esp-idf/export.sh
-
-          echo "cd ./boards/esp32/MICROLITE_C3_USB"
-          cd ./boards/esp32/MICROLITE_C3_USB
-
-          echo "Building ESP32 MICROLITE_C3_USB"
-          rm -rf builds
-          idf.py clean build
-
-          ../../../micropython-modules/microlite/assemble-unified-image-esp.sh \
-          ../../../micropython/ports/esp32
-
-      - name: Archive ESP32-MICROLITE_C3_USB firmware
-        uses: actions/upload-artifact@v2
-        with:
-          name: microlite-esp32c3-usb-firmware
-          path: |
-            boards/esp32/MICROLITE_C3_USB/build/firmware.bin
+          name: microlite-esp32-firmware
+          path: /home/runner/work/tensorflow-micropython-examples/dependencies/micropython/ports/esp32/build-MICROLITE_C3/firmware.bin

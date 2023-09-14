@@ -24,14 +24,26 @@
 # THE SOFTWARE.
 #
 
-include(${CMAKE_CURRENT_LIST_DIR}/microlite/micropython.cmake)
+include(CMakePrintHelpers)
+
+cmake_print_variables(CMAKE_CURRENT_LIST_DIR)
+
+if (PICO_SDK_PATH)
+  include(${CMAKE_CURRENT_LIST_DIR}/microlite/micropython_rp2.cmake)
+endif()
+
+if(IDF_TARGET)
+    include(${CMAKE_CURRENT_LIST_DIR}/microlite/micropython_esp.cmake)
+endif()
+
 
 # disabled.  will  be incorporated into microlite in #36
 # include(${CMAKE_CURRENT_LIST_DIR}/audio_frontend/micropython.cmake)
 
-include(${CMAKE_CURRENT_LIST_DIR}/../micropython-ulab/code/micropython.cmake)
+include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/micropython-ulab/code/micropython.cmake)
 
 # the camera driver
-include(${CMAKE_CURRENT_LIST_DIR}/micropython-camera-driver/micropython.cmake)
+#include(${CMAKE_CURRENT_LIST_DIR}/../dependencies/micropython-camera-driver/src/micropython.cmake)
+
 
 

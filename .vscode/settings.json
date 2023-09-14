@@ -63,5 +63,6 @@
         }
     ],
     "cortex-debug.variableUseNaturalFormat": false,
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "git.ignoreLimitWarning": true
 }

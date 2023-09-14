@@ -2,33 +2,35 @@ name: UNIX
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
 on:
-  push:
   pull_request:
-    paths-ignore:
-      - 'examples/**'
-      - 'README.md'
-      - 'ci/*esp32*.sh'
-      - '.github/workflows/build_esp32.yml'
+    paths:
+      - '.github/workflows/build_unix.yml'
+      - "micropython-modules/microlite/**"
+      - "micropython-modules/micropython-camera-driver/**"
 
 jobs:
   tensorflow_micropython_unix_build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Set up Python 3.8
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: 3.8
+          python-version: 3.9
+
       - name: Install Pillow & Wave
         run: |
           pip install Pillow
           pip3 install Wave
+
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+        
       - name: Prepare to Build Tensorflow Micropython Firmware for UNIX
         run: |
-          git submodule init
-          git submodule update --recursive
+          mv * ..
+          cd ..
+          source ./scripts/build.sh && prepare_dependencies
 
       - name: Setup Build for Tensorflow
         run: |
@@ -36,31 +38,24 @@ jobs:
           echo "Regenerating microlite/tfm directory"
           rm -rf ./micropython-modules/microlite/tflm
 
-          cd ./tensorflow
+          cd ./dependencies/tflite-micro
 
-          ../micropython-modules/microlite/prepare-tflm-unix.sh
+          ../../scripts/prepare-tflm-unix.sh
 
-      - name: Setup micropython modules
-        run: |
-          cd ./micropython-modules
-          ln -s ../micropython-ulab/code ulab
-          
-      - name: Build micropython cross compiler
-        run:  |
-          cd ./micropython
+          cd ../../micropython-modules
+          ln -s ../depenencies/micropython-ulab/code ulab
+ 
+          cd ./dependencies/micropython
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
-      - name: Prepare to Build Tensorflow Micropython Firmware for unix
-        run: |
-          cd micropython/ports/unix
+          cd ports/unix
           make submodules
           make deplibs
 
-          make VARIANT_DIR=../../../boards/unix/microlite-variant VARIANT=microlite
+          make VARIANT_DIR=../../../../boards/unix/microlite-variant VARIANT=microlite
          
       - name: Archive Unix MICROLITE micropython interpreter
         uses: actions/upload-artifact@v2
         with:
           name: microlite-unix-micropython
-          path: |
-            micropython/ports/unix/micropython
+          path: /home/runner/work/tensorflow-micropython-examples/dependencies/micropython/ports/unix/micropython

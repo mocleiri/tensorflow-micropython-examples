@@ -3,16 +3,11 @@ name: STM32
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
 on:
-  push:
   pull_request:
-    paths-ignore:
-      - 'examples/**'
-      - 'README.md'
-      - 'ci/*unix*.sh'
-      - '.github/workflows/build_unix.yml'
-      - '.github/workflows/build_esp32.yml'
-      - '.github/workflows/build_esp32s3.yml'
-      - '.github/workflows/build_rp2.yml'
+    paths:
+      - '.github/workflows/build_stm32.yml'
+      - "micropython-modules/microlite/**"
+      - "micropython-modules/micropython-camera-driver/**"
 
 jobs:
   tensorflow_micropython_stm32_build:

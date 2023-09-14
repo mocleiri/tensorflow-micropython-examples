@@ -5,14 +5,14 @@
     "docs": "",
     "features": [
         "BLE",
+        "External Flash",
         "WiFi"
     ],
-    "id": "esp32c3-usb",
     "images": [
         "esp32c3_devkitmini.jpg"
     ],
     "mcu": "esp32c3",
-    "product": "ESP32-C3 with USB",
+    "product": "ESP32-C3",
     "thumbnail": "",
     "url": "https://www.espressif.com/en/products/modules",
     "vendor": "Espressif"
