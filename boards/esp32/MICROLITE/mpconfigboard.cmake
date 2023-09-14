@@ -1,7 +1,7 @@
 set(SDKCONFIG_DEFAULTS
     boards/sdkconfig.base
     boards/sdkconfig.ble
-    ../../../../boards/esp32/ESP32_GENERIC/sdkconfig.partition
+    ../../../../boards/esp32/MICROLITE/sdkconfig.partition
 )
 
 if(MICROPY_BOARD_VARIANT STREQUAL "D2WD")
@@ -53,6 +53,4 @@ set(USER_C_MODULES
     ${CMAKE_CURRENT_LIST_DIR}/../../../micropython-modules/micropython.cmake
 )
 
-# set (COMPONENTS esp-tflite-micro)
-# list(APPEND IDF_COMPONENTS esp-tflite-micro)
 list(APPEND EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/../../../dependencies/tflite-micro-esp-examples/components/esp-tflite-micro)

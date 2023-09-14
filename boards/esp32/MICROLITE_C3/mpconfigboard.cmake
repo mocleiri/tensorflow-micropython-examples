@@ -1,18 +1,14 @@
-set (IDF_TARGET esp32c3)
+set(IDF_TARGET esp32c3)
 
 set(SDKCONFIG_DEFAULTS
-    ${MICROPY_PORT_DIR}/boards/sdkconfig.base
-    ${MICROPY_PORT_DIR}/boards/sdkconfig.ble
-    ${MICROPY_BOARD_DIR}/sdkconfig.partition
-
+    boards/sdkconfig.base
+    boards/sdkconfig.ble
+    boards/ESP32_GENERIC_C3/sdkconfig.c3usb
+    ../../../../boards/esp32/MICROLITE_C3/sdkconfig.partition
 )
-
-message (STATUS "mpconfigboard.cmake: PROJECT_DIR=${PROJECT_DIR}")
 
 set(USER_C_MODULES
-    ${PROJECT_DIR}/micropython-modules/micropython.cmake
+    ${CMAKE_CURRENT_LIST_DIR}/../../../micropython-modules/micropython.cmake
 )
 
-if(NOT MICROPY_FROZEN_MANIFEST)
-    set(MICROPY_FROZEN_MANIFEST ${MICROPY_PORT_DIR}/boards/manifest.py)
-endif()
+list(APPEND EXTRA_COMPONENT_DIRS ${CMAKE_CURRENT_LIST_DIR}/../../../dependencies/tflite-micro-esp-examples/components/esp-tflite-micro)

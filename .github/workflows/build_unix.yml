@@ -2,13 +2,11 @@ name: UNIX
 
 # https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#onschedule
 on:
-  push:
   pull_request:
-    paths-ignore:
-      - 'examples/**'
-      - 'README.md'
-      - 'ci/*esp32*.sh'
-      - '.github/workflows/build_esp32.yml'
+    paths:
+      - '.github/workflows/build_unix.yml'
+      - "micropython-modules/microlite/**"
+      - "micropython-modules/micropython-camera-driver/**"
 
 jobs:
   tensorflow_micropython_unix_build:

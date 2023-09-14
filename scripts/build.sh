@@ -1,5 +1,13 @@
 #!bin/bash
 
+MAKEOPTS=
+
+# if which nproc > /dev/null; then
+#     MAKEOPTS="-j$(nproc)"
+# else
+#     MAKEOPTS="-j$(sysctl -n hw.ncpu)"
+# fi
+
 function prepare_dependencies {
 
     rm -rf dependencies
@@ -36,17 +44,40 @@ function prepare_dependencies {
     # build : 
     # $ cd dependencies/micropython/ports/esp32
     # $ 
-    cd micropython
-    git submodule init
-    git submodule update --recursive
+    # cd micropython
+    # git submodule init
+    # git submodule update --recursive
+
+    # cd ../..
+    cd ..
 }
 
 function build_esp32 {
+    BOARD=$1
+    if test -z "$BOARD"; then
+    	echo "USAGE: build_esp32 <microlite board name>"
+	    exit 1;
+    fi
+    pwd
+    python --version
+    which python
+    # xargs --show-limits
+    source esp-idf/export.sh
+    cd dependencies/micropython
+    make ${MAKEOPTS} -C mpy-cross
+    cd ports/esp32
+    make ${MAKEOPTS} submodules
+    
+    PWD=$(pwd)
+    echo "make ${MAKEOPTS} V=1 BOARD_DIR=$(pwd)/../../../../boards/esp32/${BOARD} BOARD=${BOARD} FROZEN_MANIFEST=$PWD/boards/manifest.py"
 
-    cd dependencies/micropython/ports/esp32    
-    make BOARD_DIR=../../../../boards/esp32/MICROLITE
+    make ${MAKEOPTS} V=1 \
+        BOARD_DIR=$(pwd)/../../../../boards/esp32/${BOARD} \
+        BOARD=${BOARD} 
+
     # creates the build into dependencies/micropython/ports/esp32/build-MICROLITE
-
+    # find build-${BOARD} -ls
+    cd ../../../..
 }
 
 
