@@ -7,7 +7,6 @@ test_image = bytearray(9612)
 
 
 def input_callback (microlite_interpreter):
-    
     inputTensor = microlite_interpreter.getInputTensor(0)
 
     for i in range (0, len(test_image)):
