@@ -16,6 +16,10 @@ jobs:
     container:
       image: espressif/idf:release-v4.4
     steps:
+      - name: setup
+        run: |
+          apt update
+          apt install git
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Prepare to Build Tensorflow Micropython Firmware for ESP32
