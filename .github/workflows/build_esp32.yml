@@ -99,11 +99,8 @@ jobs:
           name: microlite-esp32-firmware
           path: |
             boards/esp32/MICROLITE/build/firmware.bin
-
       - name: Build with psram support and 16MB Flash firmware
         run: |
-  #        source ./esp-idf/export.sh
-
           echo "cd ./boards/esp32/MICROLITE_SPIRAM_16M"
           cd ./boards/esp32/MICROLITE_SPIRAM_16M
 
