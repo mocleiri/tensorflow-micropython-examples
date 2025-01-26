@@ -20,6 +20,8 @@ jobs:
         run: |
           apt update
           apt install git
+          git config --global --add safe.directory /__w/tensorflow-micropython-examples/tensorflow-micropython-examples
+          
       - name: Checkout repository
         uses: actions/checkout@v2
       - name: Prepare to Build Tensorflow Micropython Firmware for ESP32
