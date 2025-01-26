@@ -59,7 +59,7 @@ jobs:
           make VARIANT_DIR=../../../boards/unix/microlite-variant VARIANT=microlite
          
       - name: Archive Unix MICROLITE micropython interpreter
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-unix-micropython
           path: |

@@ -96,7 +96,7 @@ jobs:
           ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-esp32-firmware
           path: |
@@ -117,7 +117,7 @@ jobs:
           ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE-SPIRAM-16M firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-spiram-16m-esp32-firmware
           path: |
@@ -138,7 +138,7 @@ jobs:
           ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE-SPIRAM firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-spiram-esp32-firmware
           path: |
@@ -160,7 +160,7 @@ jobs:
           ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE_SPIRAM_CAM firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-spiram-cam-esp32-firmware
           path: |

@@ -98,7 +98,7 @@ jobs:
           ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE_S3 firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-esp32s3-firmware
           path: |
@@ -120,7 +120,7 @@ jobs:
           ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE_S3_SPIRAM firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-esp32s3-spiram-firmware
           path: |
@@ -142,7 +142,7 @@ jobs:
           ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE_S3_SPIRAM_CS_GPIO_20 firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-esp32-s3-spiram-cs-gpio-20-firmware
           path: |
@@ -164,7 +164,7 @@ jobs:
           ../../../micropython/ports/esp32
 
       - name: Archive ESP32-MICROLITE_S3_SPIRAM_OCTAL firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name:  microlite-esp32-s3-spiram-octal-firmware
           path: |

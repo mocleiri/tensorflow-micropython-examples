@@ -84,7 +84,7 @@ jobs:
           find build -ls
 
       - name: Archive NUCLEO_H743ZI2_MICROLITE firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-stm32-nucleo-h743zi2-firmware
           path: |
@@ -103,7 +103,7 @@ jobs:
           find build -ls
 
       - name: Archive SPARKFUN_THINGPLUS_MICROLITE firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-stm32-sparkfun-thingplus-firmware
           path: |

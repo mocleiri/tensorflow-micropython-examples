@@ -154,7 +154,7 @@ jobs:
           make
           
       - name: Archive ADAFRUIT_FEATHER_RP2040 firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-rp2-adafruit-feather-rp2040-firmware
           path: |
@@ -166,7 +166,7 @@ jobs:
             micropython/build-ADAFRUIT_FEATHER_RP2040/firmware.uf2
 
       - name: Archive ADAFRUIT_ITSYBITSY_RP2040 firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-rp2-adafruit-itsybitsy-rp2040-firmware
           path: |
@@ -177,7 +177,7 @@ jobs:
             micropython/build-ADAFRUIT_ITSYBITSY_RP2040/firmware.hex
             micropython/build-ADAFRUIT_ITSYBITSY_RP2040/firmware.uf2
       - name: Archive ADAFRUIT_QTPY_RP2040 firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-rp2-adafruit-qtpy-rp2040-firmware
           path: |
@@ -189,7 +189,7 @@ jobs:
             micropython/build-ADAFRUIT_QTPY_RP2040/firmware.uf2
 
       - name: Archive PICO firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-rp2-pico-firmware
           path: |
@@ -201,7 +201,7 @@ jobs:
             micropython/build-PICO/firmware.uf2
 
       - name: Archive PIMORONI_PICOLIPO_4MB firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-rp2-pimoroni-picolipo-4mb-firmware
           path: |
@@ -213,7 +213,7 @@ jobs:
             micropython/build-PIMORONI_PICOLIPO_4MB/firmware.uf2
 
       - name: Archive PIMORONI_PICOLIPO_16MB firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-rp2-pimoroni-picolipo-16mb-firmware
           path: |
@@ -225,7 +225,7 @@ jobs:
             micropython/build-PIMORONI_PICOLIPO_16MB/firmware.uf2
 
       - name: Archive PIMORONI_TINY2040 firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-rp2-pimoroni-tiny2040-firmware
           path: |
@@ -237,7 +237,7 @@ jobs:
             micropython/build-PIMORONI_TINY2040/firmware.uf2
 
       - name: Archive SPARKFUN_PROMICRO firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-rp2-sparkfun_promicro-firmware
           path: |
@@ -249,7 +249,7 @@ jobs:
             micropython/build-SPARKFUN_PROMICRO/firmware.uf2
 
       - name: Archive SPARKFUN_THINGPLUS firmware
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: microlite-rp2-sparkfun_thingplus-firmware
           path: |
