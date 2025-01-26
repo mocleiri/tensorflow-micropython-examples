@@ -56,6 +56,8 @@ jobs:
       - name: Setup IDF
         #        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
         run: |
+          pwd
+          cd /__w/tensorflow-micropython-examples/tensorflow-micropython-examples
           source ./micropython/tools/ci.sh && ci_esp32_setup_helper v4.3.1
       - name: Cache tflm
         id: cache-tflm
@@ -68,8 +70,8 @@ jobs:
       - name: Setup Build for Tensorflow
 #        if: steps.cache-tflm.outputs.cache-hit != 'true'
         run: |
-
-          source ./esp-idf/export.sh
+          cd  /__w/tensorflow-micropython-examples/tensorflow-micropython-examples
+          # source ./esp-idf/export.sh
 
           pip3 install Pillow
           pip3 install Wave
@@ -83,7 +85,8 @@ jobs:
 
       - name: Build micropython cross compiler
         run: |
-          source ./esp-idf/export.sh
+          # source ./esp-idf/export.sh
+          cd /__w/tensorflow-micropython-examples/tensorflow-micropython-examples
           cd ./micropython
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
