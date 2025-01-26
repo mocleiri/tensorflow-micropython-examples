@@ -14,7 +14,7 @@ jobs:
   tensorflow_micropython_esp32_build:
     runs-on: ubuntu-latest
     container:
-      image: espressif/idf:release-v4.4
+      image: espressif/idf:v4.3.1
     steps:
       - name: setup
         run: |
@@ -53,11 +53,6 @@ jobs:
       #        with:
       #          path: ./esp-idf
       #          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ env.esp-idf-commit }}
-      - name: Setup IDF
-        #        if: steps.cache-esp-idf.outputs.cache-hit != 'true'
-        run: |
-          source /__w/tensorflow-micropython-examples/tensorflow-micropython-examples/micropython/tools/ci.sh && ci_esp32_setup_helper v4.3.1
-    
       - name: Setup Build for Tensorflow
 #        if: steps.cache-tflm.outputs.cache-hit != 'true'
         run: |
@@ -73,7 +68,6 @@ jobs:
 
       - name: Build micropython cross compiler
         run: |
-          # source ./esp-idf/export.sh
           cd /__w/tensorflow-micropython-examples/tensorflow-micropython-examples
           cd ./micropython
           echo "make -C mpy-cross V=1 clean all"
