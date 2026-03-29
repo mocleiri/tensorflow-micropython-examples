@@ -5,14 +5,14 @@
 
 deps_list() {
 cat <<'EOF'
-micropython|micropython|https://github.com/micropython/micropython.git|9b486340da22931cde82872f79e1c34db959548b
-micropython-ulab|micropython-ulab|https://github.com/v923z/micropython-ulab.git|57de23c1fb434ba99aaafe1d00bd77d5cdf5d66b
-tensorflow|tensorflow|https://github.com/mocleiri/tflite-micro.git|626501f6010ce6e073bed0cdec70b692e5d38e11
-tflm_esp_kernels|tflm_esp_kernels|https://github.com/espressif/tflite-micro-esp-examples.git|1987ce2e5ae7b518a0d0ca16fdecc1783460fd2b
+micropython|micropython|https://github.com/micropython/micropython.git|77427c8038f5f00c701ceac933fed969bc9143d6
+micropython-ulab|micropython-ulab|https://github.com/v923z/micropython-ulab.git|a8b25eff3eea742b949012e512de7c69886e7794
+tensorflow|tensorflow|https://github.com/tensorflow/tflite-micro.git|f5302ed4fa99b7ec697e578057a1f61445a442fe
+tflm_esp_kernels|tflm_esp_kernels|https://github.com/espressif/tflite-micro-esp-examples.git|e06bd902394dfd7c21f14377623c157700431e43
 EOF
 }
 
-readonly MICROPYTHON_COMMIT="9b486340da22931cde82872f79e1c34db959548b"
-readonly MICROPYTHON_ULAB_COMMIT="57de23c1fb434ba99aaafe1d00bd77d5cdf5d66b"
-readonly TENSORFLOW_COMMIT="626501f6010ce6e073bed0cdec70b692e5d38e11"
-readonly TFLM_ESP_KERNELS_COMMIT="1987ce2e5ae7b518a0d0ca16fdecc1783460fd2b"
+readonly MICROPYTHON_COMMIT="77427c8038f5f00c701ceac933fed969bc9143d6"
+readonly MICROPYTHON_ULAB_COMMIT="a8b25eff3eea742b949012e512de7c69886e7794"
+readonly TENSORFLOW_COMMIT="f5302ed4fa99b7ec697e578057a1f61445a442fe"
+readonly TFLM_ESP_KERNELS_COMMIT="e06bd902394dfd7c21f14377623c157700431e43"

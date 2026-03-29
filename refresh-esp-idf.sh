@@ -29,10 +29,10 @@ main() {
         rm -rf "$IDF_DIR"
     fi
 
-    printf '%s\n' "--- provisioning ESP-IDF using Micropython's ci_esp32_idf44_setup helper ---"
+    printf '%s\n' "--- provisioning ESP-IDF using Micropython's ci_esp32_idf_setup helper ---"
     # shellcheck disable=SC1090
     source "$CI_SCRIPT"
-    ci_esp32_idf44_setup
+    ci_esp32_idf_setup
 
     printf '%s\n' "--- ESP-IDF ready: source ./esp-idf/export.sh ---"
 }

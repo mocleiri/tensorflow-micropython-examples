@@ -20,6 +20,12 @@ The top-level build dependencies are bootstrapped with `./setup-deps.sh` and pin
 * ulab
 * tflm_esp_kernels
 
+Current pinned revisions:
+* micropython: `v1.27.0` (`77427c8038f5f00c701ceac933fed969bc9143d6`)
+* ulab: `6.11.0` (`a8b25eff3eea742b949012e512de7c69886e7794`)
+* tensorflow lite micro (`tensorflow/tflite-micro`): `main` at `f5302ed4fa99b7ec697e578057a1f61445a442fe`
+* tflm_esp_kernels (`espressif/tflite-micro-esp-examples`): `master` at `e06bd902394dfd7c21f14377623c157700431e43`
+
 tflite-micro sources are generated within the microlite module at build time using the tensorflow lite example generator.
 
 The microlite module has several types:
@@ -153,14 +159,16 @@ Status:
 
 # About Tensorflow
 
-At the moment we are using the **main** branch in the
-[tensorflow lite micro repository](https://github.com/tensorflow/tflite-micro).
+At the moment we are using the `main` branch from the
+[tensorflow lite micro repository](https://github.com/tensorflow/tflite-micro),
+pinned in [`deps.sh`](deps.sh) to commit `f5302ed4fa99b7ec697e578057a1f61445a442fe`.
 
 This is the C++ api version of tensorflow lite designed to run on microcontrollers.
 
 # About Micropython
 
-We are building from micropython **master** branch.  
+We are building from the Micropython `v1.27.0` release tag,
+pinned in [`deps.sh`](deps.sh) to commit `77427c8038f5f00c701ceac933fed969bc9143d6`.
 
 # Flash image
 
