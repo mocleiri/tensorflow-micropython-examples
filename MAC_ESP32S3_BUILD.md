@@ -58,17 +58,13 @@ git clone https://github.com/mocleiri/tensorflow-micropython-examples.git
 
 cd /tensorflow-micropython-examples
 
-git submodule init
-git submodule update --recursive
-cd micropython
-git submodule update --init lib/axtls
-git submodule update --init lib/berkeley-db-1.xx
-cd ..
+./setup-deps.sh
 
 # Get Cache Keys
 
 IDF_COMMIT=142bb32c50fa9875b8b69fa539a2d59559460d72
-TFLM_COMMIT=$(git submodule status tensorflow | awk '{print ($1)}')
+source ./deps.sh
+TFLM_COMMIT=$TENSORFLOW_COMMIT
 
 # Setup IDF within Repo (Another Option)
 

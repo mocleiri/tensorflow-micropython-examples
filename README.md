@@ -14,7 +14,7 @@ This project is a micropython module built using the USER_C_MODULES extension me
 * ulab
 * modcamera (for the person_detection example)
 
-There are 4 top level git submodules:
+The top-level build dependencies are bootstrapped with `./setup-deps.sh` and pinned in [`deps.sh`](deps.sh):
 * tensorflow lite micro
 * micropython
 * ulab
@@ -76,7 +76,7 @@ pipeline scripts for each board.
 Issues are welcomed to request adding ci support for new boards.
 
 Follow the [Upgrade Instructions](UPGRADE.md) on how to upgrade.  The main issue is to get the
-3 git submodules updated to the latest values.
+dependency pins updated to the latest values in `deps.sh`.
 
 Follow the [Linux Build Instructions](BUILD.md) on how to build the latest firmware from a fresh clone
 of this repository.

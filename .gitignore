@@ -2,3 +2,9 @@
 build
 lib/*.a
 micropython-modules/microlite/tflm
+/micropython
+/micropython-ulab
+/tensorflow
+/tflm_esp_kernels
+/esp-idf
+/micropython-modules/ulab

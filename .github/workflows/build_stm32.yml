@@ -29,16 +29,13 @@ jobs:
           pip3 install Wave
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Prepare to Build Tensorflow Micropython Firmware for STM32
+      - name: Bootstrap pinned dependencies
         run: |
-          git submodule init
-          git submodule update --recursive
-          cd micropython
-          git submodule update --init lib/mynewt-nimble
-          cd ..
+          ./setup-deps.sh
       - name: Get Cache Keys
         run: |
-          TFLM_COMMIT=$(git submodule status tensorflow | awk '{print ($1)}')
+          source ./deps.sh
+          TFLM_COMMIT=$TENSORFLOW_COMMIT
           echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
       - name: Setup GCC ARM
         run: |
@@ -68,10 +65,6 @@ jobs:
           make -C ports/stm32 submodules
           echo "make -C mpy-cross V=1 clean all"
           make -C mpy-cross V=1 clean all
-          
-          cd ../micropython-modules
-          ln -s ../micropython-ulab/code  ulab
-          cd ..
       - name: Build Nucleo H743ZI2 Microlite
         run: |
           echo "cd ./boards/stm32/NUCLEO_H743ZI2_MICROLITE"

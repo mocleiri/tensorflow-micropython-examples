@@ -33,16 +33,13 @@ jobs:
           pip3 install Wave
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Prepare to Build Tensorflow Micropython Firmware for RP2
+      - name: Bootstrap pinned dependencies
         run: |
-          git submodule init
-          git submodule update --recursive
-          cd micropython
-          git submodule update --init lib/pico-sdk lib/tinyusb
-          cd ..
+          ./setup-deps.sh
       - name: Get Cache Keys
         run: |
-          TFLM_COMMIT=$(git submodule status tensorflow | awk '{print ($1)}')
+          source ./deps.sh
+          TFLM_COMMIT=$TENSORFLOW_COMMIT
           echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
       - name: Setup GCC ARM
         run: |
@@ -76,9 +73,7 @@ jobs:
       - name: Build RP2
         run: |
 
-          cd micropython-modules
-          ln -s ../micropython-ulab/code  ulab
-          cd ../micropython
+          cd ./micropython
 
           # ADAFRUIT_FEATHER_RP2040
           cmake -S ports/rp2 -B build-ADAFRUIT_FEATHER_RP2040 -DPICO_BUILD_DOCS=0 -DMICROPY_BOARD=ADAFRUIT_FEATHER_RP2040 \

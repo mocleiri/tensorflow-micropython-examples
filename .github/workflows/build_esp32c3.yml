@@ -17,25 +17,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Prepare to Build Tensorflow Micropython Firmware for ESP32
+      - name: Bootstrap pinned dependencies
         run: |
-          git submodule init
-          git submodule update --recursive
-          cd micropython
-          git submodule update --init lib/axtls
-          git submodule update --init lib/berkeley-db-1.xx
-          cd ports/esp32
-          make BOARD= submodules
-          cd ../../..
-          cd tflm_esp_kernels
-          git submodule update --init components/esp32-camera
+          ./setup-deps.sh
       - name: Get Cache Keys
         # later get this like this: git ls-remote --heads https://github.com/espressif/esp-idf
         # this commit is hard-coded in micropython/tools/ci.sh
         run: |
           IDF_COMMIT=142bb32c50fa9875b8b69fa539a2d59559460d72
           echo "esp-idf-commit=$IDF_COMMIT" >> $GITHUB_ENV
-          TFLM_COMMIT=$(git submodule status tensorflow | awk '{print ($1)}')
+          source ./deps.sh
+          TFLM_COMMIT=$TENSORFLOW_COMMIT
           echo "tflm-commit=$TFLM_COMMIT" >> $GITHUB_ENV
       #      - name: Cache esp-idf
       #        id: cache-esp-idf

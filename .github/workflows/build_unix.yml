@@ -25,10 +25,9 @@ jobs:
           pip3 install Wave
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Prepare to Build Tensorflow Micropython Firmware for UNIX
+      - name: Bootstrap pinned dependencies
         run: |
-          git submodule init
-          git submodule update --recursive
+          ./setup-deps.sh
 
       - name: Setup Build for Tensorflow
         run: |
@@ -40,11 +39,6 @@ jobs:
 
           ../micropython-modules/microlite/prepare-tflm-unix.sh
 
-      - name: Setup micropython modules
-        run: |
-          cd ./micropython-modules
-          ln -s ../micropython-ulab/code ulab
-          
       - name: Build micropython cross compiler
         run:  |
           cd ./micropython

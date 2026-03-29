@@ -43,15 +43,10 @@ micropython to build esp32.
 If you have the idf installed somewhere else you can use that instead.  The shells running the build steps just
 need to have been configured by esp-idf/export.sh prior to running commands.
 
-###  Setup submodules
+### Setup pinned dependencies
 
 ```shell
-git submodule init
-git submodule update --recursive
-cd micropython
-git submodule update --init lib/axtls
-git submodule update --init lib/berkeley-db-1.xx
-cd ..
+./setup-deps.sh
 ```
 
 ### Generate Tensorflow Micro source files
@@ -109,14 +104,10 @@ somewhere permanently and have it available so that it will be used by the build
 pip3 install Pillow
 pip3 install Wave
 
-###  Setup submodules
+### Setup pinned dependencies
 
 ```shell
-git submodule init
-git submodule update --recursive
-cd micropython
-git submodule update --init lib/pico-sdk lib/tinyusb
-cd ..
+./setup-deps.sh
 ```
 
 ### Generate Tensorflow Micro source files
@@ -165,14 +156,10 @@ somewhere permanently and have it available so that it will be used by the build
 pip3 install Pillow
 pip3 install Wave
 
-###  Setup submodules
+### Setup pinned dependencies
 
 ```shell
-git submodule init
-git submodule update --recursive
-cd micropython
-git submodule update --init lib/mynewt-nimble
-cd ..
+./setup-deps.sh
 ```
 
 ### Generate Tensorflow Micro source files
@@ -199,10 +186,6 @@ RP2 doesn't have the same external build configuration like esp32 and stm32 have
 of the boards defined by micropython for rp2.
 
 ```shell
-cd micropython-modules
-ln -s ../micropython-ulab/code  ulab
-cd ..
-
 echo "cd ./boards/stm32/NUCLEO_H743ZI2_MICROLITE"
 cd ./boards/stm32/NUCLEO_H743ZI2_MICROLITE
 
