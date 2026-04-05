@@ -2,10 +2,12 @@
 
 set -euo pipefail
 
-SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SCRIPT_DIR=.
 
 CI_SCRIPT="$SCRIPT_DIR/micropython/tools/ci.sh"
+MICROPY_DIR="$SCRIPT_DIR/micropython"
 IDF_DIR="$SCRIPT_DIR/esp-idf"
+MICROPY_IDF_DIR="$MICROPY_DIR/esp-idf"
 
 die() {
     printf 'ERROR: %s\n' "$*" >&2
@@ -28,11 +30,24 @@ main() {
         printf '%s\n' "--- removing existing esp-idf checkout at $IDF_DIR ---"
         rm -rf "$IDF_DIR"
     fi
+    if [ -e "$MICROPY_IDF_DIR" ]; then
+        printf '%s\n' "--- removing existing esp-idf checkout at $MICROPY_IDF_DIR ---"
+        rm -rf "$MICROPY_IDF_DIR"
+    fi
 
     printf '%s\n' "--- provisioning ESP-IDF using Micropython's ci_esp32_idf_setup helper ---"
-    # shellcheck disable=SC1090
-    source "$CI_SCRIPT"
-    ci_esp32_idf_setup
+    (
+        cd "$MICROPY_DIR"
+        # shellcheck disable=SC1090
+        set +u
+        source "$CI_SCRIPT"
+        set -u
+        ci_esp32_idf_setup
+    )
+
+    if [ -d "$MICROPY_IDF_DIR" ]; then
+        mv "$MICROPY_IDF_DIR" "$IDF_DIR"
+    fi
 
     printf '%s\n' "--- ESP-IDF ready: source ./esp-idf/export.sh ---"
 }
