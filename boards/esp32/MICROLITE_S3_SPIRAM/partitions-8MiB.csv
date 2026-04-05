@@ -1,8 +1,11 @@
+# Partition table for MicroPython using 8 MiB flash.
+# The first 5 MiB is reserved for bootloader, metadata and the factory app.
+# The remaining 3 MiB is a dedicated FAT filesystem partition.
+#
 # Notes: the offset of the partition table itself is set in
 # $IDF_PATH/components/partition_table/Kconfig.projbuild.
-# Name,   Type, SubType, Offset,  Size, Flags
-nvs,      data, nvs,     0x9000,  0x6000,
-phy_init, data, phy,     0xf000,  0x1000,
-factory,  app,  factory, 0x10000, 0x1F0000,
-vfs,      data, fat,     0x200000, 0x600000,
-
+# Name,   Type, SubType, Offset,   Size,     Flags
+nvs,      data, nvs,     0x9000,   0x6000,
+phy_init, data, phy,     0xf000,   0x1000,
+factory,  app,  factory, 0x10000,  0x4F0000,
+vfs,      data, fat,     0x500000, 0x300000,

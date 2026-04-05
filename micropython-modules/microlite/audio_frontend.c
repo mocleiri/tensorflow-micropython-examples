@@ -70,6 +70,17 @@ static const int kFeatureSliceDurationMs = 30;
 mp_obj_t audio_frontend_configure (mp_obj_t self_in) {
 
 microlite_audio_frontend_obj_t*self = MP_OBJ_TO_PTR(self_in);
+struct FrontendConfig *config = (struct FrontendConfig *)self->config;
+struct FrontendState *state = (struct FrontendState *)self->state;
+
+  if (config == NULL) {
+    config = m_malloc(sizeof(struct FrontendConfig));
+    self->config = config;
+  }
+  if (state == NULL) {
+    state = m_malloc(sizeof(struct FrontendState));
+    self->state = state;
+  }
 
 //  mp_arg_check_num(n_args, n_kw, 5, 5, true);
 
@@ -79,26 +90,26 @@ microlite_audio_frontend_obj_t*self = MP_OBJ_TO_PTR(self_in);
 
   // the 3 variables pass through from the micro_speech micro_model_settings.h file imported above
   // this is temporary and we will make them pass through micropython as a next step.
-  self->config->window.size_ms = kFeatureSliceDurationMs;
-  self->config->window.step_size_ms = kFeatureSliceStrideMs;
-  self->config->noise_reduction.smoothing_bits = 10;
-  self->config->filterbank.num_channels = kFeatureSliceSize;
-  self->config->filterbank.lower_band_limit = 125.0;
-  self->config->filterbank.upper_band_limit = 7500.0;
-  self->config->noise_reduction.smoothing_bits = 10;
-  self->config->noise_reduction.even_smoothing = 0.025;
-  self->config->noise_reduction.odd_smoothing = 0.06;
-  self->config->noise_reduction.min_signal_remaining = 0.05;
-  self->config->pcan_gain_control.enable_pcan = 1;
-  self->config->pcan_gain_control.strength = 0.95;
-  self->config->pcan_gain_control.offset = 80.0;
-  self->config->pcan_gain_control.gain_bits = 21;
-  self->config->log_scale.enable_log = 1;
-  self->config->log_scale.scale_shift = 6;
+  config->window.size_ms = kFeatureSliceDurationMs;
+  config->window.step_size_ms = kFeatureSliceStrideMs;
+  config->noise_reduction.smoothing_bits = 10;
+  config->filterbank.num_channels = kFeatureSliceSize;
+  config->filterbank.lower_band_limit = 125.0;
+  config->filterbank.upper_band_limit = 7500.0;
+  config->noise_reduction.smoothing_bits = 10;
+  config->noise_reduction.even_smoothing = 0.025;
+  config->noise_reduction.odd_smoothing = 0.06;
+  config->noise_reduction.min_signal_remaining = 0.05;
+  config->pcan_gain_control.enable_pcan = 1;
+  config->pcan_gain_control.strength = 0.95;
+  config->pcan_gain_control.offset = 80.0;
+  config->pcan_gain_control.gain_bits = 21;
+  config->log_scale.enable_log = 1;
+  config->log_scale.scale_shift = 6;
 
-    if (!FrontendPopulateState(self->config, self->state,
+    if (!FrontendPopulateState(config, state,
                              kAudioSampleFrequency)) {
-        mp_raise_TypeError("Failed to setup the frontend state");
+        mp_raise_TypeError(MP_ERROR_TEXT("Failed to setup the frontend state"));
     }
 
     return mp_const_none;
@@ -110,6 +121,7 @@ static int32_t value_div = (int32_t)((25.6f * 26.0f) + 0.5f);
 mp_obj_t audio_frontend_execute (mp_obj_t self_in, mp_obj_t input) {
 
   microlite_audio_frontend_obj_t*self = MP_OBJ_TO_PTR(self_in);
+  struct FrontendState *state = (struct FrontendState *)self->state;
 
   ndarray_obj_t *frontend_input = MP_OBJ_TO_PTR(input);
 
@@ -119,10 +131,14 @@ mp_obj_t audio_frontend_execute (mp_obj_t self_in, mp_obj_t input) {
   // but FrontendProcessSamples will window to 320 bytes on each subsequent call
   // so reset back to zero so that the whole fronend_input array is processed each time.
   
-  self->state->window.input_used = 0;
+  if (state == NULL) {
+    mp_raise_TypeError(MP_ERROR_TEXT("Audio frontend is not configured"));
+  }
+
+  state->window.input_used = 0;
 
   struct FrontendOutput frontend_output = FrontendProcessSamples(
-      self->state, frontend_input->array, frontend_input->len, &num_samples_read);
+      state, frontend_input->array, frontend_input->len, &num_samples_read);
 
     //  mp_printf(MP_PYTHON_PRINTER, "num_samples_read %d\n", num_samples_read);
 

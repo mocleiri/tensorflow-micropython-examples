@@ -30,7 +30,6 @@
 
 #include "tensorflow/lite/core/api/error_reporter.h"
 #include "tensorflow/lite/micro/compatibility.h"
-#include "tensorflow/lite/micro/micro_string.h"
 
 namespace microlite {
 

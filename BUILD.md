@@ -14,12 +14,15 @@ python script.
 Depending on the port it works in conjunction with the ./tensorflow/lite/micro/tools/make/Makefile to generate the source files
 for the tensorflow lite micro project suitable for inclusion in downstream projects.
 
+The ESP32 build now consumes Espressif's managed `esp-tflite-micro` component through the ESP-IDF Component Manager
+instead of compiling a locally generated TFLM source tree. The non-ESP ports continue to use the generated local
+TensorFlow Lite Micro sources.
+
 Some ports like stm32 and rp2 have custom kernels that are provided in place of the reference kernels.
 
 There is a per port script within the micropython-modules/microlite directory that will invoke this script with the correct
-options.
+options for ports that still vendor generated TensorFlow Lite Micro sources.
 
-* [prepare-tflm-esp.sh](https://github.com/mocleiri/tensorflow-micropython-examples/blob/main/micropython-modules/microlite/prepare-tflm-esp.sh)
 * [prepare-tflm-rp2.sh](https://github.com/mocleiri/tensorflow-micropython-examples/blob/main/micropython-modules/microlite/prepare-tflm-rp2.sh)
 * [prepare-tflm-stm32.sh](https://github.com/mocleiri/tensorflow-micropython-examples/blob/main/micropython-modules/microlite/prepare-tflm-stm32.sh)
 
@@ -49,16 +52,19 @@ need to have been configured by esp-idf/export.sh prior to running commands.
 ./setup-deps.sh
 ```
 
-### Generate Tensorflow Micro source files
+### Initialize MicroPython submodules
+
+MicroPython's ESP32 build expects its submodules, including `micropython-lib`, to
+be initialized before running `idf.py build`.
 
 ```shell
-echo "Regenerating microlite/tfm directory"
-rm -rf ./micropython-modules/microlite/tflm
-
-cd ./tensorflow
-
-../micropython-modules/microlite/prepare-tflm-esp.sh
+git -C ./micropython submodule update --init --recursive
 ```
+
+### ESP TensorFlow Lite Micro dependency
+
+The ESP32 board build pulls in `espressif/esp-tflite-micro` from the ESP Component Registry via
+`boards/esp32/<BOARD>/main/idf_component.yml`. No local TFLM regeneration step is required for ESP32.
 
 ### Build mpy-cross before building the board
 
@@ -82,8 +88,8 @@ build for all boards supported by the ports supported.
 
 
 ```shell
-$ source ./esp-idf/export.sh
-$ cd boards/esp32/MICROLITE
+$ source ./setup-esp-idf.sh
+$ cd boards/esp32/MICROLITE_S3_SPIRAM
 $ rm -rf build
 $ idf.py build
 ```

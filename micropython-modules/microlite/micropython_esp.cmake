@@ -26,46 +26,25 @@
 
 add_library(microlite INTERFACE)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++")
-
-set (COMPONENTS tflite-lib)
-
-target_sources(microlite INTERFACE
-#   microlite micropython module sources
-    ${CMAKE_CURRENT_LIST_DIR}/tensorflow-microlite.c
-    ${CMAKE_CURRENT_LIST_DIR}/audio_frontend.c
-    ${CMAKE_CURRENT_LIST_DIR}/openmv-libtf.cpp
-    ${CMAKE_CURRENT_LIST_DIR}/micropython-error-reporter.cpp
-)
+list(APPEND IDF_COMPONENTS espressif__esp-tflite-micro)
 
 get_filename_component(TFLM_ESP_KERNELS_DIR ${CMAKE_CURRENT_LIST_DIR}/../../tflm_esp_kernels ABSOLUTE)
-get_filename_component(TENSORFLOW_COMPONENT_DIR ${TFLM_ESP_KERNELS_DIR}/components/tflite-lib ABSOLUTE)
+get_filename_component(TFLM_ESP_EXAMPLE_DIR ${TFLM_ESP_KERNELS_DIR}/examples/micro_speech/main ABSOLUTE)
 
-if(EXISTS ${TENSORFLOW_COMPONENT_DIR})
-    set(TENSORFLOW_DIR ${TENSORFLOW_COMPONENT_DIR})
-    set(TENSORFLOW_THIRD_PARTY_DIR ${TENSORFLOW_COMPONENT_DIR}/third_party)
-else()
-    set(TENSORFLOW_DIR ${TFLM_ESP_KERNELS_DIR})
-    set(TENSORFLOW_THIRD_PARTY_DIR ${TFLM_ESP_KERNELS_DIR}/third_party)
-endif()
+set(microlite_module_srcs
+    ${CMAKE_CURRENT_LIST_DIR}/tensorflow-microlite.c
+    ${CMAKE_CURRENT_LIST_DIR}/audio_frontend_esp.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/openmv-libtf.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/micropython-error-reporter.cpp)
 
+target_sources(microlite INTERFACE ${microlite_module_srcs})
 
-# ESP32 
 target_include_directories(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}
-    ${TENSORFLOW_DIR}
-    ${TENSORFLOW_THIRD_PARTY_DIR}
-)   
+    ${TFLM_ESP_EXAMPLE_DIR})
 
-target_compile_definitions(microlite INTERFACE
-    MODULE_MICROLITE_ENABLED=1
-    TF_LITE_STATIC_MEMORY=1
-    TF_LITE_MCU_DEBUG_LOG
-    NDEBUG
-)
-
-target_compile_options(microlite INTERFACE
+set(microlite_common_compile_options
+    -O3
     -Wno-error
     -Wno-error=float-conversion
     -Wno-error=nonnull
@@ -73,11 +52,35 @@ target_compile_options(microlite INTERFACE
     -Wno-error=pointer-arith
     -Wno-error=unused-const-variable
     -Wno-error=sign-compare
-    -fno-rtti
-    -fno-exceptions
-    -O3
     -Wno-error=maybe-uninitialized
-)
+    -Wno-error=attributes
+    -Wno-error=shadow
+    -Wno-maybe-uninitialized
+    -Wno-missing-field-initializers
+    -Wno-type-limits
+    -Wno-unused-parameter
+    -Wno-nonnull
+    -ffunction-sections
+    -fdata-sections)
 
+set(microlite_cxx_compile_options
+    -std=gnu++11
+    -fno-rtti
+    -fno-exceptions)
+
+foreach(src IN LISTS microlite_module_srcs)
+    set_property(SOURCE ${src} APPEND PROPERTY COMPILE_DEFINITIONS
+        TF_LITE_STATIC_MEMORY=1
+        TF_LITE_DISABLE_X86_NEON
+        TF_LITE_MCU_DEBUG_LOG
+        NDEBUG)
+    set_property(SOURCE ${src} APPEND PROPERTY COMPILE_OPTIONS ${microlite_common_compile_options})
+endforeach()
+
+foreach(src IN LISTS microlite_module_srcs)
+    if (src MATCHES "\\.(cc|cpp)$")
+        set_property(SOURCE ${src} APPEND PROPERTY COMPILE_OPTIONS ${microlite_cxx_compile_options})
+    endif()
+endforeach()
 
 target_link_libraries(usermod INTERFACE microlite)

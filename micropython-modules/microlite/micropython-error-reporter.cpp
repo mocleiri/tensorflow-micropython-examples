@@ -26,6 +26,7 @@
 #include "micropython-error-reporter.h"
 
 #include <cstdarg>
+#include <cstdio>
 
 namespace microlite {
 
@@ -45,7 +46,7 @@ int MicropythonErrorReporter::Report(const char* format, va_list args) {
     static constexpr int kMaxLogLen = 256;
     char log_buffer[kMaxLogLen];
 
-    MicroVsnprintf(log_buffer, kMaxLogLen, format, args);
+    vsnprintf(log_buffer, kMaxLogLen, format, args);
 
     mp_printf(MP_PYTHON_PRINTER, log_buffer);
     mp_printf(MP_PYTHON_PRINTER, "\n");

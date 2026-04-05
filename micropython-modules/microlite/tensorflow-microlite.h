@@ -39,9 +39,6 @@ extern "C" {
 #include "py/objstr.h"
 #include "py/objarray.h"
 
-#include "tensorflow/lite/experimental/microfrontend/lib/frontend.h"
-#include "tensorflow/lite/experimental/microfrontend/lib/frontend_util.h"
-
 // TODO #15 get this from the tensorflow submodule via a ci script
 #define TFLITE_MICRO_VERSION "e87305ee53c124188d0390b1ef8ec0555760d4d6"
 
@@ -72,8 +69,8 @@ typedef struct _microlite_tensor_obj_t {
 
 typedef struct _microlite_audio_frontend_obj_t {
      mp_obj_base_t base; 
-     struct FrontendConfig *config;
-     struct FrontendState *state;
+     void *config;
+     void *state;
 } microlite_audio_frontend_obj_t;
 
 mp_obj_t audio_frontend_execute (mp_obj_t self_in, mp_obj_t input);

@@ -3,7 +3,7 @@
  * This work is licensed under the MIT license, see the file LICENSE for details.
  */
 
-#include "tensorflow/lite/micro/all_ops_resolver.h"
+#include "tensorflow/lite/micro/micro_mutable_op_resolver.h"
 #include "tensorflow/lite/micro/tflite_bridge/micro_error_reporter.h"
 #include "tensorflow/lite/micro/micro_interpreter.h"
 #include "tensorflow/lite/schema/schema_generated.h"
@@ -15,7 +15,28 @@
 
 extern "C" {
 
-    STATIC microlite::MicropythonErrorReporter micro_error_reporter;
+    static microlite::MicropythonErrorReporter micro_error_reporter;
+
+    using MicroliteAllOpsResolver = tflite::MicroMutableOpResolver<32>;
+
+    static void libtf_populate_op_resolver(MicroliteAllOpsResolver &resolver) {
+        resolver.AddAdd();
+        resolver.AddAveragePool2D();
+        resolver.AddConv2D();
+        resolver.AddDepthwiseConv2D();
+        resolver.AddDequantize();
+        resolver.AddFullyConnected();
+        resolver.AddLogistic();
+        resolver.AddMaxPool2D();
+        resolver.AddMul();
+        resolver.AddPad();
+        resolver.AddQuantize();
+        resolver.AddRelu();
+        resolver.AddRelu6();
+        resolver.AddReshape();
+        resolver.AddSoftmax();
+        resolver.AddTransposeConv();
+    }
     
 
     
@@ -85,7 +106,12 @@ extern "C" {
         //     (uint8_t*)microlite_interpreter->tensor_area->items, 
         //     microlite_interpreter->tensor_area->len, error_reporter);
 
-        tflite::AllOpsResolver resolver;
+        static MicroliteAllOpsResolver resolver;
+        static bool resolver_initialized = false;
+        if (!resolver_initialized) {
+            libtf_populate_op_resolver(resolver);
+            resolver_initialized = true;
+        }
         tflite::MicroInterpreter *interpreter = new tflite::MicroInterpreter(model, 
                                              resolver, 
                                              (uint8_t*)microlite_interpreter->tensor_area->items, 
