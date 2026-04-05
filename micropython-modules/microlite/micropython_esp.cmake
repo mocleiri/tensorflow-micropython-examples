@@ -39,8 +39,16 @@ target_sources(microlite INTERFACE
     ${CMAKE_CURRENT_LIST_DIR}/micropython-error-reporter.cpp
 )
 
-get_filename_component(TENSORFLOW_DIR ${CMAKE_CURRENT_LIST_DIR}/../../tflm_esp_kernels/components/tflite-lib ABSOLUTE)
-get_filename_component(TENSORFLOW_THIRD_PARTY_DIR ${CMAKE_CURRENT_LIST_DIR}/../../tflm_esp_kernels/components/tflite-lib/third_party ABSOLUTE)
+get_filename_component(TFLM_ESP_KERNELS_DIR ${CMAKE_CURRENT_LIST_DIR}/../../tflm_esp_kernels ABSOLUTE)
+get_filename_component(TENSORFLOW_COMPONENT_DIR ${TFLM_ESP_KERNELS_DIR}/components/tflite-lib ABSOLUTE)
+
+if(EXISTS ${TENSORFLOW_COMPONENT_DIR})
+    set(TENSORFLOW_DIR ${TENSORFLOW_COMPONENT_DIR})
+    set(TENSORFLOW_THIRD_PARTY_DIR ${TENSORFLOW_COMPONENT_DIR}/third_party)
+else()
+    set(TENSORFLOW_DIR ${TFLM_ESP_KERNELS_DIR})
+    set(TENSORFLOW_THIRD_PARTY_DIR ${TFLM_ESP_KERNELS_DIR}/third_party)
+endif()
 
 
 # ESP32 
@@ -73,4 +81,3 @@ target_compile_options(microlite INTERFACE
 
 
 target_link_libraries(usermod INTERFACE microlite)
-
