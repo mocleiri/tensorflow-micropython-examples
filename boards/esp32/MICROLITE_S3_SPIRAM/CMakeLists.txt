@@ -15,8 +15,18 @@ message (STATUS "MICROPY_BOARD_DIR=${MICROPY_BOARD_DIR}")
 # Define the output sdkconfig so it goes in the build directory.
 set(SDKCONFIG ${CMAKE_BINARY_DIR}/sdkconfig)
 
+# Save any command-line override before including board config.
+set(MICROPY_USER_FROZEN_MANIFEST ${MICROPY_FROZEN_MANIFEST})
+
 # Include board config; this is expected to set SDKCONFIG_DEFAULTS (among other options).
 include(${MICROPY_BOARD_DIR}/mpconfigboard.cmake)
+
+# Match the upstream ESP32 port behavior for frozen manifests.
+if(MICROPY_USER_FROZEN_MANIFEST)
+    set(MICROPY_FROZEN_MANIFEST ${MICROPY_USER_FROZEN_MANIFEST})
+elseif(NOT MICROPY_FROZEN_MANIFEST)
+    set(MICROPY_FROZEN_MANIFEST ${MICROPY_PORT_DIR}/boards/manifest.py)
+endif()
 
 # Concatenate all sdkconfig files into a combined one for the IDF to use.
 file(WRITE ${CMAKE_BINARY_DIR}/sdkconfig.combined.in "")
