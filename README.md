@@ -1,3 +1,22 @@
+> [!WARNING]
+> Upcoming Breaking Changes.
+>
+> BUILDS BASED ON THE CURRENT main BRANCH WILL BREAK.
+>
+> A clean checkout is going to be required.
+> 
+> I'm switching the build from sub-module based to work like ulab where the dependencies are shallowly checked out.
+> 
+> The initial merge will break everything but core ESP32 boards.  From there more boards will be updated and ports fixed.
+> 
+> ROADMAP
+> 1. Update the main branch to use the new build process
+> 2. Expand supported ESP32 boards
+> 3. Expand back to other kinds of boards like RP2
+> 4. After this project was made tflm added a python interpreter.  Planning to add a new micropython inference api to match to make the same code runnable in the tflm python api for windows and micropython
+> 5. Try to fix bugs in STM32 port using agentic tools.
+> 6. Add support for Zephyr based boards.
+
 <p align="center">
     <img src="images/tensorflow-micropython-examples.png">
 </p>
